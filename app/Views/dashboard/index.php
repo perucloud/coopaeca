@@ -15,6 +15,9 @@ $modules = array_values(array_filter($modules, fn ($module) => can($module['perm
 $quickLinks = [
     ['perm' => 'posts',           'url' => '/posts/create',       'icon' => 'edit',     'label' => 'Nueva noticia', 'hint' => 'Publicar contenido', 'color' => 'noticias'],
     ['perm' => 'products',        'url' => '/products',           'icon' => 'package',  'label' => 'Productos', 'hint' => 'Catalogo comercial', 'color' => 'productos'],
+    ['perm' => 'orders',          'url' => '/orders',             'icon' => 'clipboard-list', 'label' => 'Pedidos', 'hint' => 'Por revisar', 'color' => 'pedidos'],
+    ['perm' => 'sales',           'url' => '/sales',              'icon' => 'shopping-bag', 'label' => 'Ventas', 'hint' => 'Registro comercial', 'color' => 'ventas'],
+    ['perm' => 'inventory',       'url' => '/inventory',          'icon' => 'boxes',    'label' => 'Inventario', 'hint' => 'Stock de productos', 'color' => 'inventario'],
     ['perm' => 'services',        'url' => '/services',           'icon' => 'layers',   'label' => 'Servicios', 'hint' => 'Landing page', 'color' => 'servicios'],
     ['perm' => 'galleries',       'url' => '/galleries',          'icon' => 'image',    'label' => 'Galeria', 'hint' => 'Imagenes publicas', 'color' => 'galeria'],
     ['perm' => 'social_networks', 'url' => '/social-networks',    'icon' => 'share',    'label' => 'Redes sociales', 'hint' => 'Canales activos', 'color' => 'redes'],

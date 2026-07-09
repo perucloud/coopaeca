@@ -3266,6 +3266,12 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
 .dashboard-mobile-card.qc-noticias   span { background: #d7e6ff; color: #2f5fd6; }
 .dashboard-mobile-card.qc-productos  { background: #e6f7f3; border-color: #c7ede3; }
 .dashboard-mobile-card.qc-productos  span { background: #cdf0e6; color: #0f9488; }
+.dashboard-mobile-card.qc-pedidos    { background: #e7ebff; border-color: #ccd4fb; }
+.dashboard-mobile-card.qc-pedidos    span { background: #d6ddfd; color: #3730a3; }
+.dashboard-mobile-card.qc-ventas     { background: #dcfbec; border-color: #b8f0d1; }
+.dashboard-mobile-card.qc-ventas     span { background: #c3f5db; color: #047857; }
+.dashboard-mobile-card.qc-inventario { background: #fde8e8; border-color: #f8c9c9; }
+.dashboard-mobile-card.qc-inventario span { background: #fad2d2; color: #b91c1c; }
 .dashboard-mobile-card.qc-servicios  { background: #f2ecff; border-color: #ddd0fb; }
 .dashboard-mobile-card.qc-servicios  span { background: #e6d9fe; color: #7c3aed; }
 .dashboard-mobile-card.qc-galeria    { background: #ffeef5; border-color: #fbd3e5; }
@@ -3285,6 +3291,9 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
 [data-theme="dark"] .dashboard-mobile-card[class*="qc-"] { background: var(--panel); border-color: var(--line); }
 [data-theme="dark"] .dashboard-mobile-card.qc-noticias   span { background: #1e3a63; color: #8fb4ff; }
 [data-theme="dark"] .dashboard-mobile-card.qc-productos  span { background: #103b34; color: #4fd9c3; }
+[data-theme="dark"] .dashboard-mobile-card.qc-pedidos    span { background: #2a2f6b; color: #a5b4fc; }
+[data-theme="dark"] .dashboard-mobile-card.qc-ventas     span { background: #0f3d2e; color: #6ee7b7; }
+[data-theme="dark"] .dashboard-mobile-card.qc-inventario span { background: #4a1414; color: #fca5a5; }
 [data-theme="dark"] .dashboard-mobile-card.qc-servicios  span { background: #331f5c; color: #c4a7ff; }
 [data-theme="dark"] .dashboard-mobile-card.qc-galeria    span { background: #4a1530; color: #f78fc0; }
 [data-theme="dark"] .dashboard-mobile-card.qc-redes      span { background: #262c66; color: #b4bcff; }
