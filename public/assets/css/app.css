@@ -3376,3 +3376,126 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
     margin-left: 0;
   }
 }
+
+/* Manual sales */
+.manual-sale-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 22px;
+  align-items: start;
+}
+.manual-sale-main {
+  display: grid;
+  gap: 18px;
+}
+.manual-sale-summary {
+  position: sticky;
+  top: 92px;
+}
+.manual-sale-items {
+  display: grid;
+  gap: 12px;
+}
+.manual-sale-item {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 110px 150px 120px auto;
+  gap: 12px;
+  align-items: end;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #f8fafc;
+}
+.manual-sale-item label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.manual-sale-item select,
+.manual-sale-item input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  padding: 12px 13px;
+  outline: 0;
+}
+.manual-sale-item.has-stock-warning {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249,115,22,.12);
+}
+.manual-sale-item.has-stock-warning::after {
+  content: 'Cantidad mayor al stock disponible';
+  grid-column: 1 / -1;
+  color: #9a3412;
+  font-size: 12px;
+  font-weight: 800;
+}
+.sale-line-total {
+  min-height: 46px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  display: grid;
+  align-content: center;
+  padding: 6px 12px;
+}
+.sale-line-total span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+.sale-line-total strong {
+  color: var(--primary);
+  font-size: 15px;
+}
+.manual-sale-summary-lines {
+  display: grid;
+  gap: 10px;
+}
+.manual-sale-summary-lines div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.manual-sale-summary-lines strong {
+  color: var(--text);
+  white-space: nowrap;
+}
+@media (max-width: 1100px) {
+  .manual-sale-grid {
+    grid-template-columns: 1fr;
+  }
+  .manual-sale-summary {
+    position: static;
+  }
+}
+@media (max-width: 860px) {
+  .manual-sale-item {
+    grid-template-columns: 1fr 1fr;
+  }
+  .sale-line-total,
+  .sale-remove {
+    grid-column: span 2;
+  }
+}
+@media (max-width: 560px) {
+  .manual-sale-item {
+    grid-template-columns: 1fr;
+  }
+  .sale-line-total,
+  .sale-remove {
+    grid-column: auto;
+  }
+}

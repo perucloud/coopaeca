@@ -90,6 +90,37 @@ final class SalesController extends Controller
         ]);
     }
 
+    public function create(): void
+    {
+        $products = Database::connection()->query(
+            "SELECT id, name, sku, presentation, price, sale_price, stock
+             FROM products
+             WHERE status = 'published'
+             ORDER BY name ASC"
+        )->fetchAll();
+
+        $paymentMethods = Database::connection()->query(
+            'SELECT name FROM payment_methods WHERE is_active = 1 ORDER BY position ASC, id ASC'
+        )->fetchAll();
+
+        render('sales/create', [
+            'title' => 'Nueva venta',
+            'products' => $products,
+            'paymentMethods' => $paymentMethods,
+        ]);
+    }
+
+    public function store(): void
+    {
+        try {
+            $sale = SaleService::createManual($_POST, $_FILES['voucher'] ?? [], (int)user()['id']);
+            flash('status', 'Venta registrada y stock actualizado.');
+            Response::redirect('/sales/show?id=' . (int)$sale['id']);
+        } catch (Throwable $e) {
+            back_with_errors(array_filter(array_map('trim', explode("\n", $e->getMessage()))) ?: [$e->getMessage()], $_POST);
+        }
+    }
+
     public function cancel(): void
     {
         $id = (int)($_POST['id'] ?? 0);

@@ -104,3 +104,84 @@ document.addEventListener('keydown', (event) => {
     closeSearch();
   }
 });
+
+// Venta manual: productos dinamicos y total en vivo
+(function () {
+  const form = document.getElementById('manualSaleForm');
+  const list = document.getElementById('saleItems');
+  const template = document.getElementById('saleItemTemplate');
+  const addBtn = document.getElementById('addSaleItem');
+  const summary = document.getElementById('saleSummaryLines');
+  const grandTotal = document.getElementById('saleGrandTotal');
+  const products = Array.isArray(window.MANUAL_SALE_PRODUCTS) ? window.MANUAL_SALE_PRODUCTS : [];
+  if (!form || !list || !template) return;
+
+  const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
+  })[char]);
+
+  function productById(id) {
+    return products.find((product) => Number(product.id) === Number(id));
+  }
+
+  function money(value) {
+    return `S/ ${(Number(value) || 0).toFixed(2)}`;
+  }
+
+  function recalc() {
+    let total = 0;
+    const lines = [];
+    list.querySelectorAll('.manual-sale-item').forEach((row) => {
+      const select = row.querySelector('.sale-product');
+      const quantityInput = row.querySelector('.sale-quantity');
+      const priceInput = row.querySelector('.sale-price');
+      const product = productById(select.value);
+      const quantity = Math.max(0, Number(quantityInput.value) || 0);
+      const price = Math.max(0, Number(priceInput.value) || 0);
+      const max = product && product.stock !== null ? Number(product.stock) : null;
+      row.classList.toggle('has-stock-warning', max !== null && quantity > max);
+      const subtotal = quantity * price;
+      total += subtotal;
+      row.querySelector('.sale-line-total strong').textContent = money(subtotal);
+      if (product && quantity > 0) {
+        lines.push(`<div><span>${escapeHtml(product.name)} x ${quantity}</span><strong>${money(subtotal)}</strong></div>`);
+      }
+    });
+    if (summary) summary.innerHTML = lines.length ? lines.join('') : '<p class="text-muted">Agrega productos para calcular el total.</p>';
+    if (grandTotal) grandTotal.textContent = money(total);
+  }
+
+  function addRow() {
+    const row = template.content.firstElementChild.cloneNode(true);
+    const select = row.querySelector('.sale-product');
+    const price = row.querySelector('.sale-price');
+    select.addEventListener('change', () => {
+      const product = productById(select.value);
+      price.value = product ? Number(product.price).toFixed(2) : '';
+      recalc();
+    });
+    row.querySelectorAll('input').forEach((input) => input.addEventListener('input', recalc));
+    row.querySelector('.sale-remove').addEventListener('click', () => {
+      if (list.children.length > 1) {
+        row.remove();
+        recalc();
+      }
+    });
+    list.appendChild(row);
+    recalc();
+  }
+
+  addBtn?.addEventListener('click', addRow);
+  form.addEventListener('submit', (event) => {
+    const warning = list.querySelector('.manual-sale-item.has-stock-warning');
+    if (warning) {
+      event.preventDefault();
+      alert('Una cantidad supera el stock disponible. Ajusta la venta antes de guardar.');
+    }
+  });
+  addRow();
+})();

@@ -15,7 +15,7 @@ Implementar el plan `PLAN_ECOMMERCE_PEDIDOS_VENTAS_INVENTARIO.md` usando la arqu
 - Completado: Fase 7 inicial modulo Ventas.
 - Completado: Fase 8 inicial modulo Inventario.
 - Completado: Fase 9 gestion administrativa de metodos de pago con QR.
-- Pendiente: ventas manuales.
+- Completado: ventas manuales desde dashboard con voucher e inventario sincronizado.
 - Pendiente: integraciones DNI/RUC y ubigeo local.
 - Bloqueado: no.
 
@@ -184,6 +184,29 @@ HANDOFF aceptado por ORCHESTRATOR:
 - Administrador puede subir/reemplazar QR de pago JPG, PNG o WebP hasta 3 MB.
 - Checkout publico muestra QR, cuenta/contacto, titular e instrucciones cuando estan configurados.
 
+### ORCHESTRATOR -> BACKEND_ENGINEER + DASHBOARD_UI_UX_ENGINEER
+
+Fecha: 2026-07-08
+
+Tarea:
+
+- Implementar ventas manuales desde dashboard para operaciones confirmadas por WhatsApp, telefono o atencion interna.
+- Mantener voucher obligatorio, validacion de metodo de pago, numero de operacion unico e inventario auditable.
+- Crear una interfaz administrativa moderna, clara y consistente con el sistema actual.
+
+Estado: completado.
+
+HANDOFF aceptado por ORCHESTRATOR:
+
+- Ruta `/sales/create` agregada con permiso `sales.create`.
+- Ruta `/sales/store` registra venta manual confirmada.
+- Formulario administrativo permite comprador, origen, documento, productos multiples, cantidades, precio unitario, metodo de pago, numero de operacion y voucher.
+- `SaleService::createManual` valida cliente, productos publicados, stock disponible, metodo activo y operacion duplicada.
+- Al guardar venta manual se crean `sales`, `sale_items` y movimientos `salida_venta`.
+- El stock se descuenta automaticamente solo al confirmar la venta.
+- Listado de ventas incorpora acceso rapido a `Nueva venta`.
+- UI con resumen lateral, totales en vivo, filas dinamicas y advertencia visual si una cantidad supera stock.
+
 ## Archivos modificados
 
 - `docs/ECOMMERCE_IMPLEMENTATION_STATUS.md`
@@ -205,6 +228,7 @@ HANDOFF aceptado por ORCHESTRATOR:
 - `app/Views/orders/index.php`
 - `app/Views/orders/show.php`
 - `app/Views/sales/index.php`
+- `app/Views/sales/create.php`
 - `app/Views/sales/show.php`
 - `app/Views/inventory/index.php`
 - `app/Views/inventory/movements.php`
@@ -238,6 +262,15 @@ HANDOFF aceptado por ORCHESTRATOR:
 - `node --check public\assets\js\landing.js`
 - `php -l app\Services\OrderService.php` despues de hardening de metodo de pago.
 - `node --check public\assets\js\landing.js` despues de hardening de escape frontend.
+- `php -l app\Services\SaleService.php` despues de ventas manuales.
+- `php -l app\Controllers\SalesController.php` despues de ventas manuales.
+- `php -l app\Views\sales\create.php`.
+- `node --check public\assets\js\app.js` despues de ventas manuales.
+- QA HTTP local de venta manual con login administrativo, CSRF y voucher multipart.
+- Venta manual QA generada: `VEN-20260708-5A6ABDF6`.
+- Operacion QA: `QAMAN20260709031330`.
+- Verificado descuento de stock y movimiento `salida_venta` durante la prueba.
+- Datos QA limpiados despues de la prueba; producto 6 verificado nuevamente con stock 10.
 - Aplicacion local de `database/migrations/0026_create_ecommerce_orders_sales_inventory.sql`
 - Aplicacion local de `database/seeders/0001_permissions.sql`
 - Render HTTP local con servidor temporal: `/checkout?lang=es` y `/?lang=es`.

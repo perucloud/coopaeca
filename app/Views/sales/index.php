@@ -9,6 +9,7 @@ $statusLabels = ['confirmada' => 'Confirmada', 'anulada' => 'Anulada', 'entregad
             <h2>Ventas</h2>
             <span>Registro comercial definitivo generado por pedidos aprobados o ventas confirmadas.</span>
         </div>
+        <a class="button primary" href="<?= e(url('/sales/create')) ?>"><?= icon('plus') ?> Nueva venta</a>
     </div>
 
     <div class="stats-grid compact">

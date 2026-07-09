@@ -76,6 +76,8 @@ $router->group(['middleware' => ['AuthMiddleware', 'CsrfMiddleware']], function 
     $r->post('/orders/reject',[OrderController::class, 'reject'],    ['PermissionMiddleware:orders.reject']);
 
     $r->get('/sales',        [SalesController::class, 'index'],      ['PermissionMiddleware:sales.view']);
+    $r->get('/sales/create', [SalesController::class, 'create'],     ['PermissionMiddleware:sales.create']);
+    $r->post('/sales/store', [SalesController::class, 'store'],      ['PermissionMiddleware:sales.create']);
     $r->get('/sales/show',   [SalesController::class, 'show'],       ['PermissionMiddleware:sales.view']);
     $r->post('/sales/cancel',[SalesController::class, 'cancel'],     ['PermissionMiddleware:sales.cancel']);
 
