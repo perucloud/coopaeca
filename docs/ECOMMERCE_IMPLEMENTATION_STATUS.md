@@ -17,7 +17,8 @@ Implementar el plan `PLAN_ECOMMERCE_PEDIDOS_VENTAS_INVENTARIO.md` usando la arqu
 - Completado: Fase 9 gestion administrativa de metodos de pago con QR.
 - Completado: ventas manuales desde dashboard con voucher e inventario sincronizado.
 - Completado: integracion DNI/RUC preparada con API Peru mediante token de entorno.
-- Completado: ubigeo local (departamentos, provincias y distritos base para Junin/Satipo, Lima y Callao) conectado al checkout publico.
+- Completado: ubigeo local con cobertura nacional (25 departamentos, 196 provincias, 1892 distritos) con codigos INEI y RENIEC, importado desde `ubigeo-peru-aumentado`.
+- Completado: direccion del comprador reubicada al paso de datos del comprador, con autocompletado desde DNI/RUC y visible en confirmacion, exito y panel admin.
 - Bloqueado: no.
 
 ## Decisiones tecnicas iniciales
@@ -303,6 +304,13 @@ Validado por QA_ENGINEER (verificacion tecnica):
 - `app/Controllers/UbigeoController.php`
 - `app/Services/UbigeoService.php`
 - `database/migrations/0027_seed_core_ubigeo.sql`
+- `database/migrations/0028_expand_ubigeo_catalog.sql`
+- `database/seeders/import_ubigeo.php`
+- `database/seeders/data/ubigeo/departamento.csv`
+- `database/seeders/data/ubigeo/provincia.csv`
+- `database/seeders/data/ubigeo/distrito.csv`
+- `app/Services/ApiPeruIdentityService.php`
+- `app/Views/landing/checkout-success.php`
 
 ## Pruebas ejecutadas
 
@@ -350,8 +358,66 @@ Validado por QA_ENGINEER (verificacion tecnica):
   - Verificar venta, stock y movimiento de inventario.
   - Limpiar datos QA y restaurar stock.
 
+### ORCHESTRATOR -> BACKEND_ENGINEER + FRONTEND_ENGINEER
+
+Fecha: 2026-07-09
+
+Tarea:
+
+- Reubicar el campo de direccion (fiscal/domicilio) al paso de datos del comprador para que el autocompletado de DNI/RUC lo llene junto con el nombre.
+- Permitir que el autocompletado de direccion funcione tanto para DNI como para RUC (antes solo aplicaba a RUC).
+- Mostrar la direccion en el modal de confirmacion, en la pagina de exito del pedido y en el resumen enviado por WhatsApp.
+
+Estado: completado.
+
+HANDOFF aceptado por ORCHESTRATOR:
+
+- `ApiPeruIdentityService::normalizeDni` ahora expone `address` (desde `direccion_completa`/`direccion` de RENIEC) igual que `normalizeRuc`.
+- `checkout.php`: el input `address` (`checkoutAddress`) se movio al panel 2 (Datos del comprador); el panel 3 quedo como "Ubicacion de entrega" (region/provincia/distrito/referencia).
+- `landing.js`: el autofill de `address` ya no depende del tipo de documento; los selects de ubigeo se aplican solo cuando la API devuelve region/provincia/distrito.
+- Modal de confirmacion, `checkout-success.php` y el mensaje de WhatsApp ahora incluyen la direccion completa.
+- La validacion server-side de `OrderService::validateCustomer` (direccion obligatoria) no cambio; ya exigia el campo antes de este ajuste.
+
+Validado por QA_ENGINEER:
+
+- `php -l` sin errores en `ApiPeruIdentityService.php` y `checkout-success.php`.
+- `node --check` sin errores en `landing.js`.
+- `/checkout?lang=es` HTTP 200 con el campo `checkoutAddress` presente en el HTML renderizado.
+- Verificacion en vivo contra RENIEC/SUNAT real (Apache, no CLI): DNI y RUC devuelven la clave `address` en la respuesta JSON.
+
+### ORCHESTRATOR -> DATABASE_ENGINEER
+
+Fecha: 2026-07-09
+
+Tarea:
+
+- Ampliar el catalogo de ubigeo de 3 regiones de muestra a cobertura nacional completa, usando `https://github.com/jmcastagnetto/ubigeo-peru-aumentado` como fuente.
+- Guardar codigos INEI y RENIEC por nivel (departamento/provincia/distrito) sin romper el esquema ni los datos ya usados por `UbigeoService`.
+- Evitar duplicados y mantener la jerarquia region -> provincia -> distrito.
+
+Estado: completado.
+
+HANDOFF aceptado por ORCHESTRATOR:
+
+- CSVs fuente (`departamento.csv`, `provincia.csv`, `distrito.csv`) descargados de la rama `main` del repositorio y guardados en `database/seeders/data/ubigeo/` para importaciones reproducibles.
+- Migracion `0028_expand_ubigeo_catalog.sql` agrega `department_reniec_code`, `province_reniec_code` y `district_reniec_code` a la tabla `ubigeo` existente (sin tocar `department_code`/`province_code`/`district_code`, que siguen siendo codigos INEI/UBIGEO estandar y mantienen la clave unica `district_code`).
+- Importador `database/seeders/import_ubigeo.php` hace upsert (`INSERT ... ON DUPLICATE KEY UPDATE`) por `district_code`, cruzando departamento/provincia por nombre para asignar sus codigos INEI/RENIEC correctos a cada distrito.
+- Antes de importar se respaldo la tabla original en `ubigeo_backup_pre0028` (68 filas previas) en la base local.
+- Cobertura final: 25 departamentos, 196 provincias, 1892 distritos. Se omitio 1 distrito (Moquegua / Mariscal Nieto / San Antonio) por no tener codigo INEI oficial en la fuente; queda documentado en la salida del importador.
+- No se modificaron `UbigeoController`, `UbigeoService` ni las rutas `/ubigeo/*`: siguen funcionando igual, ahora sobre datos nacionales completos.
+
+Validado por QA_ENGINEER:
+
+- Verificacion de duplicados: `SELECT district_code FROM ubigeo GROUP BY district_code HAVING COUNT(*) > 1` devuelve 0 filas.
+- `GET /ubigeo/departments` devuelve los 25 departamentos del Peru.
+- `GET /ubigeo/provinces?department_code=12` devuelve las 9 provincias de Junin.
+- `GET /ubigeo/districts?province_code=1206` devuelve los distritos de Satipo.
+- `/checkout?lang=es` HTTP 200 con el select de region mostrando las 25 opciones (verificado AMAZONAS...UCAYALI en el HTML renderizado).
+- `php -l` sin errores en `import_ubigeo.php`.
+
 ## Siguiente paso
 
 - SECURITY_ENGINEER debe revisar carga de voucher, CSRF publico, validaciones y superficie de carrito.
 - QA_ENGINEER debe ejecutar prueba funcional manual/end-to-end en navegador real: agregar producto, checkout con voucher (incluyendo el nuevo selector de ubigeo), pedido en dashboard, aprobacion, venta y stock.
-- Evaluar ampliar la cobertura de `ubigeo` a mas departamentos/provincias si el negocio lo requiere (actualmente solo Junin/Satipo, Lima y Callao).
+- Aplicar `database/migrations/0028_expand_ubigeo_catalog.sql` y `database/seeders/import_ubigeo.php` en el servidor de produccion cuando se despliegue (en local ya estan aplicados y verificados).
+- Eliminar `ubigeo_backup_pre0028` de la base local una vez confirmado que la cobertura nacional no rompio nada (se dejo como respaldo temporal).

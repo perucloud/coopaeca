@@ -12,6 +12,7 @@ $message = ($isEn ? 'Hello, I generated my COOPAECA order.' : 'Hola, genere mi p
     . "\nCodigo: " . $order['code']
     . "\nCliente: " . $order['customer_name']
     . "\nDocumento: " . $order['document_type'] . ' ' . $order['document_number']
+    . "\nDireccion: " . $order['address'] . ', ' . $order['district'] . ', ' . $order['province'] . ', ' . $order['region']
     . "\nProductos:\n" . implode("\n", $lines)
     . "\nTotal: S/ " . number_format((float)$order['total'], 2)
     . "\nMetodo de pago: " . $order['payment_method']
@@ -32,6 +33,7 @@ $message = ($isEn ? 'Hello, I generated my COOPAECA order.' : 'Hola, genere mi p
                 <div><span>Total</span><strong>S/ <?= e(number_format((float)$order['total'], 2)) ?></strong></div>
                 <div><span><?= e($isEn ? 'Status' : 'Estado') ?></span><strong><?= e($order['status']) ?></strong></div>
                 <div><span><?= e($isEn ? 'Payment' : 'Pago') ?></span><strong><?= e($order['payment_method']) ?></strong></div>
+                <div class="span-full"><span><?= e($isEn ? 'Delivery address' : 'Direccion de entrega') ?></span><strong><?= e($order['address']) ?><?= $order['address_reference'] ? ' (' . e($order['address_reference']) . ')' : '' ?>, <?= e($order['district']) ?>, <?= e($order['province']) ?>, <?= e($order['region']) ?></strong></div>
             </div>
 
             <div class="success-items">

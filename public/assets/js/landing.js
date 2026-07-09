@@ -556,7 +556,8 @@ if (hasGsap) {
           <div><span>Cliente</span><strong>${esc(data.get('customer_name') || '')}</strong></div>
           <div><span>Documento</span><strong>${esc(data.get('document_type'))} ${esc(data.get('document_number'))}</strong></div>
           <div><span>WhatsApp</span><strong>${esc(data.get('whatsapp') || '')}</strong></div>
-          <div><span>Direccion</span><strong>${esc(data.get('region') || '')}, ${esc(data.get('province') || '')}, ${esc(data.get('district') || '')}</strong></div>
+          <div><span>Direccion</span><strong>${esc(data.get('address') || '')}${data.get('address_reference') ? ' (' + esc(data.get('address_reference')) + ')' : ''}</strong></div>
+          <div><span>Ubicacion</span><strong>${esc(data.get('region') || '')}, ${esc(data.get('province') || '')}, ${esc(data.get('district') || '')}</strong></div>
           <div><span>Pago</span><strong>${esc(data.get('payment_method') || '')} / ${esc(data.get('payment_operation_number') || '')}</strong></div>
           <div><span>${text.total}</span><strong>${money(cartTotal(cart))}</strong></div>
           <div class="span-full"><span>Productos</span><strong>${cart.map((item) => `${esc(item.name)} x ${Number(item.quantity) || 0}`).join('<br>')}</strong></div>`;
@@ -699,7 +700,7 @@ if (hasGsap) {
           }
           const data = payload.data || {};
           if (data.customer_name && name) name.value = data.customer_name;
-          if (docType === 'RUC') {
+          if (data.region || data.province || data.district) {
             if (ubigeo) {
               ubigeo.apply(data);
             } else {
@@ -707,8 +708,8 @@ if (hasGsap) {
               if (data.province && province) province.value = data.province;
               if (data.district && district) district.value = data.district;
             }
-            if (data.address && address && !address.value.trim()) address.value = data.address;
           }
+          if (data.address && address && !address.value.trim()) address.value = data.address;
           setStatus(text.lookupSuccess, 'success');
         })
         .catch((error) => setStatus(error.message || text.lookupError, 'error'))

@@ -93,6 +93,7 @@ final class ApiPeruIdentityService
             'paternal_last_name' => (string)($data['apellido_paterno'] ?? ''),
             'maternal_last_name' => (string)($data['apellido_materno'] ?? ''),
             'verification_code' => (string)($data['codigo_verificacion'] ?? ''),
+            'address' => (string)($data['direccion_completa'] ?? $data['direccion'] ?? ''),
         ];
     }
 

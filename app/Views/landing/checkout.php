@@ -85,6 +85,10 @@ $hasUbigeo = !empty($departments);
                     <label class="span-2"><?= e($isEn ? 'Email' : 'Correo electronico') ?>
                         <input type="email" name="email" value="<?= e(old('email')) ?>" autocomplete="email">
                     </label>
+                    <label class="span-2"><?= e($isEn ? 'Address (fiscal / home)' : 'Direccion (fiscal o domicilio)') ?>
+                        <input type="text" name="address" id="checkoutAddress" value="<?= e(old('address')) ?>" required>
+                        <small><?= e($isEn ? 'Autofilled from RUC when available. You can edit it.' : 'Se autocompleta con el RUC cuando esta disponible. Puedes editarla.') ?></small>
+                    </label>
                 </div>
             </div>
 
@@ -92,12 +96,12 @@ $hasUbigeo = !empty($departments);
                 <div class="checkout-card-head">
                     <div>
                         <span><?= e($isEn ? 'Step 3' : 'Paso 3') ?></span>
-                        <h2><?= e($isEn ? 'Delivery address' : 'Direccion de entrega') ?></h2>
+                        <h2><?= e($isEn ? 'Delivery location' : 'Ubicacion de entrega') ?></h2>
                     </div>
                 </div>
                 <?php if (!$hasUbigeo): ?>
                     <div class="lp-alert checkout-alert">
-                        <?= e($isEn ? 'Location catalog is not loaded yet. You can type the address manually.' : 'El catalogo de ubicaciones aun no esta cargado. Puedes escribir la direccion manualmente.') ?>
+                        <?= e($isEn ? 'Location catalog is not loaded yet. You can type the location manually.' : 'El catalogo de ubicaciones aun no esta cargado. Puedes escribir la ubicacion manualmente.') ?>
                     </div>
                 <?php endif; ?>
                 <div class="checkout-fields three" data-ubigeo-root data-provinces-url="<?= e(url('/ubigeo/provinces')) ?>" data-districts-url="<?= e(url('/ubigeo/districts')) ?>">
@@ -130,9 +134,6 @@ $hasUbigeo = !empty($departments);
                         <?php else: ?>
                             <input type="text" name="district" id="checkoutDistrict" value="<?= e(old('district')) ?>" required>
                         <?php endif; ?>
-                    </label>
-                    <label class="span-3"><?= e($isEn ? 'Exact address' : 'Direccion exacta') ?>
-                        <input type="text" name="address" id="checkoutAddress" value="<?= e(old('address')) ?>" required>
                     </label>
                     <label class="span-3"><?= e($isEn ? 'Reference' : 'Referencia') ?>
                         <input type="text" name="address_reference" value="<?= e(old('address_reference')) ?>">
