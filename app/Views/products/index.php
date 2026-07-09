@@ -65,6 +65,7 @@
                     <th>Producto</th>
                     <th>Categoría</th>
                     <th>Precio</th>
+                    <th>Stock</th>
                     <th>Estado</th>
                     <th>Destacado</th>
                     <th></th>
@@ -104,25 +105,34 @@
                             <span class="price-regular">S/ <?= e(number_format((float)$item['price'], 2)) ?></span>
                         <?php endif; ?>
                     </td>
+                    <td data-label="Stock">
+                        <?php if ($item['stock'] === null): ?>
+                            <span class="badge muted">Sin control</span>
+                        <?php elseif ((int)$item['stock'] <= 5): ?>
+                            <span class="badge off"><?= (int)$item['stock'] ?> und.</span>
+                        <?php else: ?>
+                            <strong><?= (int)$item['stock'] ?></strong> und.
+                        <?php endif; ?>
+                    </td>
                     <td data-label="Estado"><span class="badge <?= $item['status'] === 'published' ? 'ok' : 'off' ?>"><?= $item['status'] === 'published' ? 'Publicado' : 'Borrador' ?></span></td>
                     <td data-label="Destacado"><?= $item['is_featured'] ? '<span class="badge accent">★ Destacado</span>' : '<span class="text-muted">—</span>' ?></td>
-                    <td class="actions">
-                        <a class="button small info" href="<?= e(url('/products/edit?id=' . $item['id'])) ?>"><?= icon('edit') ?> Editar</a>
+                    <td class="actions products-actions">
+                        <a class="button small action-edit" href="<?= e(url('/products/edit?id=' . $item['id'])) ?>"><?= icon('edit') ?> Editar</a>
                         <form method="post" action="<?= e(url('/products/delete')) ?>" data-confirm="¿Eliminar este producto?">
                             <?= csrf_field() ?><input type="hidden" name="id" value="<?= e($item['id']) ?>">
-                            <button class="button small danger" type="submit"><?= icon('trash') ?> Eliminar</button>
+                            <button class="button small action-delete" type="submit"><?= icon('trash') ?> Eliminar</button>
                         </form>
                     </td>
                 </tr>
             <?php endforeach; ?>
             <?php if (!$items && !array_filter($filters)): ?>
-                <tr><td colspan="7" class="empty-state">
+                <tr><td colspan="8" class="empty-state">
                     <div class="empty-icon"><?= icon('package') ?></div>
                     <p>Sin productos registrados.</p>
                     <a class="button primary" href="<?= e(url('/products/create')) ?>">Crear primer producto</a>
                 </td></tr>
             <?php elseif (!$items): ?>
-                <tr><td colspan="7" class="empty-state">
+                <tr><td colspan="8" class="empty-state">
                     <div class="empty-icon"><?= icon('search') ?></div>
                     <p>Ningún producto coincide con los filtros aplicados.</p>
                     <a class="button ghost" href="<?= e(url('/products')) ?>">Limpiar filtros</a>

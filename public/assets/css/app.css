@@ -3713,6 +3713,20 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
 .inventory-table .actions .action-edit { background: #f59e0b; color: #fff; flex: 0 0 auto; }
 .inventory-table .actions .action-edit:hover { background: #d97706; }
 
+/* Productos: mismos botones de accion grandes y de color que Inventario */
+.products-actions.actions { flex-wrap: nowrap; }
+.products-actions .action-edit,
+.products-actions .action-delete {
+  border: none;
+  border-radius: 10px;
+  font-weight: 800;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .12);
+}
+.products-actions .action-edit { background: #f59e0b; color: #fff; }
+.products-actions .action-edit:hover { background: #d97706; }
+.products-actions .action-delete { background: #dc2626; color: #fff; }
+.products-actions .action-delete:hover { background: #b91c1c; }
+
 /* PDF: modal de previsualizacion */
 .pdf-modal-body { padding: 0; display: flex; }
 .pdf-frame { width: 100%; height: 72vh; border: 0; }
