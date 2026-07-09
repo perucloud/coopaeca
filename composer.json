@@ -1,0 +1,19 @@
+{
+    "name": "ccopaeca/dashboard",
+    "description": "Dashboard CCOPAECA - framework MVC propio con modulo de webmail",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.2",
+        "ext-iconv": "*",
+        "ext-mbstring": "*",
+        "ext-sodium": "*",
+        "ezyang/htmlpurifier": "^4.19",
+        "phpmailer/phpmailer": "^7.1",
+        "webklex/php-imap": "^6.2"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

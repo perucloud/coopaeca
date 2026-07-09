@@ -1,0 +1,6 @@
+<?php
+
+interface MiddlewareInterface
+{
+    public function handle(Request $request, Closure $next): mixed;
+}
