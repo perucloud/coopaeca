@@ -17,7 +17,7 @@ Implementar el plan `PLAN_ECOMMERCE_PEDIDOS_VENTAS_INVENTARIO.md` usando la arqu
 - Completado: Fase 9 gestion administrativa de metodos de pago con QR.
 - Completado: ventas manuales desde dashboard con voucher e inventario sincronizado.
 - Completado: integracion DNI/RUC preparada con API Peru mediante token de entorno.
-- Pendiente: ubigeo local.
+- Completado: ubigeo local (departamentos, provincias y distritos base para Junin/Satipo, Lima y Callao) conectado al checkout publico.
 - Bloqueado: no.
 
 ## Decisiones tecnicas iniciales
@@ -233,6 +233,36 @@ HANDOFF aceptado por ORCHESTRATOR:
 - Frontend muestra estados visuales de carga, exito y error.
 - `.env.example` documenta variables necesarias sin incluir credenciales reales.
 
+### ORCHESTRATOR -> DATABASE_ENGINEER + BACKEND_ENGINEER + LANDING_UI_UX_ENGINEER
+
+Fecha: 2026-07-08
+
+Tarea:
+
+- Implementar ubigeo local (departamentos, provincias, distritos) para reemplazar los campos de texto libre de region/provincia/distrito en el checkout publico.
+- Mantener carga manual como fallback si el catalogo de ubigeo no esta disponible.
+
+Estado: completado.
+
+HANDOFF aceptado por ORCHESTRATOR:
+
+- Migracion `0027_seed_core_ubigeo.sql` agrega datos base de ubigeo (Junin/Satipo, Lima, Callao) sobre la tabla `ubigeo` creada en `0026_create_ecommerce_orders_sales_inventory.sql`.
+- `UbigeoService` expone `departments()`, `provinces()`, `districts()` y `coverageCount()`.
+- `UbigeoController` expone `GET /ubigeo/departments`, `GET /ubigeo/provinces` y `GET /ubigeo/districts`.
+- `CheckoutController::cart` inyecta `departments` y `ubigeoCount` a la vista.
+- `checkout.php` usa selects en cascada region -> provincia -> distrito cuando hay cobertura de ubigeo, y cae a inputs de texto libre cuando no la hay.
+- `landing.js` implementa la cascada de selects y la integra con el autocompletado DNI/RUC existente (RUC ahora selecciona el ubigeo por nombre en vez de solo rellenar texto).
+
+Validado por QA_ENGINEER (verificacion tecnica):
+
+- `php -l` sin errores en `UbigeoController.php`, `UbigeoService.php`, `CheckoutController.php`, `public/index.php`, `app/bootstrap.php`.
+- `node --check public/assets/js/landing.js` sin errores.
+- Migracion `0027_seed_core_ubigeo.sql` aplicada en base local: tabla `ubigeo` con 68 filas.
+- Render HTTP local: `/checkout?lang=es` HTTP 200, `/?lang=es` HTTP 200.
+- `GET /ubigeo/departments` devuelve 3 departamentos.
+- `GET /ubigeo/provinces?department_code=15` devuelve provincia de Lima.
+- `GET /ubigeo/districts?province_code=1501` devuelve distritos de Lima.
+
 ## Archivos modificados
 
 - `docs/ECOMMERCE_IMPLEMENTATION_STATUS.md`
@@ -270,6 +300,9 @@ HANDOFF aceptado por ORCHESTRATOR:
 - `public/assets/css/landing.css`
 - `public/assets/js/landing.js`
 - `.env.example`
+- `app/Controllers/UbigeoController.php`
+- `app/Services/UbigeoService.php`
+- `database/migrations/0027_seed_core_ubigeo.sql`
 
 ## Pruebas ejecutadas
 
@@ -320,5 +353,5 @@ HANDOFF aceptado por ORCHESTRATOR:
 ## Siguiente paso
 
 - SECURITY_ENGINEER debe revisar carga de voucher, CSRF publico, validaciones y superficie de carrito.
-- QA_ENGINEER debe ejecutar prueba funcional manual/end-to-end en navegador real: agregar producto, checkout con voucher, pedido en dashboard, aprobacion, venta y stock.
-- BACKEND_ENGINEER debe implementar en fase posterior gestion administrativa completa de metodos de pago y venta manual si el usuario lo autoriza.
+- QA_ENGINEER debe ejecutar prueba funcional manual/end-to-end en navegador real: agregar producto, checkout con voucher (incluyendo el nuevo selector de ubigeo), pedido en dashboard, aprobacion, venta y stock.
+- Evaluar ampliar la cobertura de `ubigeo` a mas departamentos/provincias si el negocio lo requiere (actualmente solo Junin/Satipo, Lima y Callao).

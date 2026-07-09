@@ -28,6 +28,7 @@ require __DIR__ . '/Services/ImapService.php';
 require __DIR__ . '/Services/SmtpService.php';
 require __DIR__ . '/Services/ContactNotifier.php';
 require __DIR__ . '/Services/ApiPeruIdentityService.php';
+require __DIR__ . '/Services/UbigeoService.php';
 require __DIR__ . '/Services/VoucherStorageService.php';
 require __DIR__ . '/Services/InventoryService.php';
 require __DIR__ . '/Services/OrderService.php';

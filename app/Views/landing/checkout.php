@@ -5,6 +5,8 @@ $lang = landing_lang();
 $isEn = $lang === 'en';
 $errors = errors();
 $oldItems = old('items', '');
+$departments = $departments ?? [];
+$hasUbigeo = !empty($departments);
 ?>
 
 <section class="checkout-hero">
@@ -93,15 +95,41 @@ $oldItems = old('items', '');
                         <h2><?= e($isEn ? 'Delivery address' : 'Direccion de entrega') ?></h2>
                     </div>
                 </div>
-                <div class="checkout-fields three">
+                <?php if (!$hasUbigeo): ?>
+                    <div class="lp-alert checkout-alert">
+                        <?= e($isEn ? 'Location catalog is not loaded yet. You can type the address manually.' : 'El catalogo de ubicaciones aun no esta cargado. Puedes escribir la direccion manualmente.') ?>
+                    </div>
+                <?php endif; ?>
+                <div class="checkout-fields three" data-ubigeo-root data-provinces-url="<?= e(url('/ubigeo/provinces')) ?>" data-districts-url="<?= e(url('/ubigeo/districts')) ?>">
                     <label><?= e($isEn ? 'Region' : 'Region') ?>
-                        <input type="text" name="region" id="checkoutRegion" value="<?= e(old('region')) ?>" required>
+                        <?php if ($hasUbigeo): ?>
+                            <select name="region" id="checkoutRegion" data-old-value="<?= e(old('region')) ?>" required>
+                                <option value=""><?= e($isEn ? 'Select region' : 'Selecciona region') ?></option>
+                                <?php foreach ($departments as $department): ?>
+                                    <option value="<?= e($department['name']) ?>" data-code="<?= e($department['code']) ?>" <?= old('region') === $department['name'] ? 'selected' : '' ?>><?= e($department['name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        <?php else: ?>
+                            <input type="text" name="region" id="checkoutRegion" value="<?= e(old('region')) ?>" required>
+                        <?php endif; ?>
                     </label>
                     <label><?= e($isEn ? 'Province' : 'Provincia') ?>
-                        <input type="text" name="province" id="checkoutProvince" value="<?= e(old('province')) ?>" required>
+                        <?php if ($hasUbigeo): ?>
+                            <select name="province" id="checkoutProvince" data-old-value="<?= e(old('province')) ?>" required disabled>
+                                <option value=""><?= e($isEn ? 'Select province' : 'Selecciona provincia') ?></option>
+                            </select>
+                        <?php else: ?>
+                            <input type="text" name="province" id="checkoutProvince" value="<?= e(old('province')) ?>" required>
+                        <?php endif; ?>
                     </label>
                     <label><?= e($isEn ? 'District' : 'Distrito') ?>
-                        <input type="text" name="district" id="checkoutDistrict" value="<?= e(old('district')) ?>" required>
+                        <?php if ($hasUbigeo): ?>
+                            <select name="district" id="checkoutDistrict" data-old-value="<?= e(old('district')) ?>" required disabled>
+                                <option value=""><?= e($isEn ? 'Select district' : 'Selecciona distrito') ?></option>
+                            </select>
+                        <?php else: ?>
+                            <input type="text" name="district" id="checkoutDistrict" value="<?= e(old('district')) ?>" required>
+                        <?php endif; ?>
                     </label>
                     <label class="span-3"><?= e($isEn ? 'Exact address' : 'Direccion exacta') ?>
                         <input type="text" name="address" id="checkoutAddress" value="<?= e(old('address')) ?>" required>

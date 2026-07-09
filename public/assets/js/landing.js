@@ -572,6 +572,82 @@ if (hasGsap) {
     paint();
   }
 
+  function setupUbigeoSelects() {
+    const root = document.querySelector('[data-ubigeo-root]');
+    if (!root) return null;
+
+    const region = document.getElementById('checkoutRegion');
+    const province = document.getElementById('checkoutProvince');
+    const district = document.getElementById('checkoutDistrict');
+    if (!(region instanceof HTMLSelectElement) || !(province instanceof HTMLSelectElement) || !(district instanceof HTMLSelectElement)) return null;
+
+    const normalize = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    const placeholder = (select, textValue) => {
+      select.innerHTML = `<option value="">${textValue}</option>`;
+      select.disabled = true;
+    };
+    const selectedCode = (select) => select.selectedOptions[0]?.dataset.code || '';
+    const selectByName = (select, name) => {
+      const target = normalize(name);
+      if (!target) return false;
+      const option = Array.from(select.options).find((item) => normalize(item.value) === target || normalize(item.textContent) === target);
+      if (!option) return false;
+      select.value = option.value;
+      return true;
+    };
+
+    function fill(select, items, emptyText, oldValue) {
+      select.innerHTML = `<option value="">${emptyText}</option>` + items.map((item) => (
+        `<option value="${esc(item.name)}" data-code="${esc(item.code)}">${esc(item.name)}</option>`
+      )).join('');
+      select.disabled = false;
+      if (oldValue) selectByName(select, oldValue);
+    }
+
+    function loadProvinces(oldProvince, oldDistrict) {
+      const code = selectedCode(region);
+      placeholder(province, isEn ? 'Select province' : 'Selecciona provincia');
+      placeholder(district, isEn ? 'Select district' : 'Selecciona distrito');
+      if (!code) return Promise.resolve(false);
+      return fetch(`${root.dataset.provincesUrl}?department_code=${encodeURIComponent(code)}`)
+        .then((response) => response.json())
+        .then((payload) => {
+          fill(province, payload.items || [], isEn ? 'Select province' : 'Selecciona provincia', oldProvince);
+          return oldDistrict ? loadDistricts(oldDistrict) : true;
+        })
+        .catch(() => false);
+    }
+
+    function loadDistricts(oldDistrict) {
+      const code = selectedCode(province);
+      placeholder(district, isEn ? 'Select district' : 'Selecciona distrito');
+      if (!code) return Promise.resolve(false);
+      return fetch(`${root.dataset.districtsUrl}?province_code=${encodeURIComponent(code)}`)
+        .then((response) => response.json())
+        .then((payload) => {
+          fill(district, payload.items || [], isEn ? 'Select district' : 'Selecciona distrito', oldDistrict);
+          return true;
+        })
+        .catch(() => false);
+    }
+
+    region.addEventListener('change', () => loadProvinces('', ''));
+    province.addEventListener('change', () => loadDistricts(''));
+
+    if (region.value || region.dataset.oldValue) {
+      if (!region.value && region.dataset.oldValue) selectByName(region, region.dataset.oldValue);
+      loadProvinces(province.dataset.oldValue || '', district.dataset.oldValue || '');
+    }
+
+    return {
+      apply(data) {
+        const selectedRegion = selectByName(region, data.region || '');
+        if (!selectedRegion) return;
+        loadProvinces(data.province || '', data.district || '');
+      },
+    };
+  }
+
   function setupIdentityLookup() {
     const form = document.getElementById('checkoutForm');
     const button = document.getElementById('identityLookupBtn');
@@ -585,6 +661,7 @@ if (hasGsap) {
     const province = document.getElementById('checkoutProvince');
     const district = document.getElementById('checkoutDistrict');
     const address = document.getElementById('checkoutAddress');
+    const ubigeo = setupUbigeoSelects();
 
     function setStatus(message, state) {
       if (!status) return;
@@ -623,9 +700,13 @@ if (hasGsap) {
           const data = payload.data || {};
           if (data.customer_name && name) name.value = data.customer_name;
           if (docType === 'RUC') {
-            if (data.region && region) region.value = data.region;
-            if (data.province && province) province.value = data.province;
-            if (data.district && district) district.value = data.district;
+            if (ubigeo) {
+              ubigeo.apply(data);
+            } else {
+              if (data.region && region) region.value = data.region;
+              if (data.province && province) province.value = data.province;
+              if (data.district && district) district.value = data.district;
+            }
             if (data.address && address && !address.value.trim()) address.value = data.address;
           }
           setStatus(text.lookupSuccess, 'success');

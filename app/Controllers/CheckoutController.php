@@ -30,6 +30,8 @@ final class CheckoutController extends Controller
             'settings' => $settings,
             'socials' => $this->socialesActivos(),
             'paymentMethods' => $paymentMethods,
+            'departments' => UbigeoService::departments(),
+            'ubigeoCount' => UbigeoService::coverageCount(),
         ], 'layouts/landing');
     }
 
