@@ -43,28 +43,26 @@
             </div>
             <?php endif; ?>
 
-            <?php if (can('products')): ?>
-            <a href="<?= e(url('/products')) ?>" class="nav-link <?= is_active('/products') ?>">
-                <?= icon('package') ?><span>Productos</span>
-            </a>
-            <?php endif; ?>
-
-            <?php if (can('orders')): ?>
-            <a href="<?= e(url('/orders')) ?>" class="nav-link <?= is_active('/orders') ?>">
-                <?= icon('clipboard-list') ?><span>Pedidos</span>
-            </a>
-            <?php endif; ?>
-
-            <?php if (can('sales')): ?>
-            <a href="<?= e(url('/sales')) ?>" class="nav-link <?= is_active('/sales') ?>">
-                <?= icon('shopping-bag') ?><span>Ventas</span>
-            </a>
-            <?php endif; ?>
-
-            <?php if (can('inventory')): ?>
-            <a href="<?= e(url('/inventory')) ?>" class="nav-link <?= is_active('/inventory') ?>">
-                <?= icon('boxes') ?><span>Inventario</span>
-            </a>
+            <?php if (can('products') || can('orders') || can('sales') || can('inventory')): ?>
+            <div class="nav-group <?= is_active('/products', '/orders', '/sales', '/inventory') ? 'open' : '' ?>">
+                <button type="button" class="nav-link nav-group-toggle" data-submenu-toggle>
+                    <?= icon('shopping-cart') ?><span>Tienda</span><?= icon('chevron-down', 'nav-chevron') ?>
+                </button>
+                <div class="nav-submenu">
+                    <?php if (can('products')): ?>
+                    <a href="<?= e(url('/products')) ?>" class="<?= is_active('/products') ?>"><?= icon('package') ?><span>Productos</span></a>
+                    <?php endif; ?>
+                    <?php if (can('orders')): ?>
+                    <a href="<?= e(url('/orders')) ?>" class="<?= is_active('/orders') ?>"><?= icon('clipboard-list') ?><span>Pedidos</span></a>
+                    <?php endif; ?>
+                    <?php if (can('sales')): ?>
+                    <a href="<?= e(url('/sales')) ?>" class="<?= is_active('/sales') ?>"><?= icon('shopping-bag') ?><span>Ventas</span></a>
+                    <?php endif; ?>
+                    <?php if (can('inventory')): ?>
+                    <a href="<?= e(url('/inventory')) ?>" class="<?= is_active('/inventory') ?>"><?= icon('boxes') ?><span>Inventario</span></a>
+                    <?php endif; ?>
+                </div>
+            </div>
             <?php endif; ?>
 
             <?php if (can('services')): ?>
