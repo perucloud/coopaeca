@@ -1,11 +1,14 @@
 <?php
 $modules = [
-    ['perm' => 'posts',    'url' => '/posts',    'icon' => 'edit',      'color' => 'noticias',  'label' => 'Noticias',  'hint' => 'Registradas', 'count' => $stats['noticias'] ?? 0],
-    ['perm' => 'products', 'url' => '/products', 'icon' => 'package',   'color' => 'productos', 'label' => 'Productos', 'hint' => 'En catalogo', 'count' => $stats['productos'] ?? 0],
-    ['perm' => 'services', 'url' => '/services', 'icon' => 'layers',    'color' => 'servicios', 'label' => 'Servicios', 'hint' => 'Del landing', 'count' => $stats['servicios'] ?? 0],
-    ['perm' => 'contacts', 'url' => '/contacts', 'icon' => 'mail',      'color' => 'contactos', 'label' => 'Mensajes',  'hint' => 'Sin atender', 'count' => $stats['contactos'] ?? 0],
-    ['perm' => 'files',    'url' => '/media',    'icon' => 'image',     'color' => 'media',     'label' => 'Media',     'hint' => 'Archivos', 'count' => $stats['media'] ?? 0],
-    ['perm' => 'users',    'url' => '/users',    'icon' => 'users',     'color' => 'usuarios',  'label' => 'Usuarios',  'hint' => 'Del sistema', 'count' => $stats['usuarios'] ?? 0],
+    ['perm' => 'posts',      'url' => '/posts',      'icon' => 'edit',          'color' => 'noticias',   'label' => 'Noticias',   'hint' => 'Registradas',     'count' => $stats['noticias'] ?? 0],
+    ['perm' => 'products',   'url' => '/products',   'icon' => 'package',       'color' => 'productos',  'label' => 'Productos',  'hint' => 'En catalogo',     'count' => $stats['productos'] ?? 0],
+    ['perm' => 'orders',     'url' => '/orders',     'icon' => 'clipboard-list','color' => 'pedidos',    'label' => 'Pedidos',    'hint' => 'Por revisar',     'count' => $stats['pedidos'] ?? 0],
+    ['perm' => 'sales',      'url' => '/sales',      'icon' => 'shopping-bag',  'color' => 'ventas',     'label' => 'Ventas',     'hint' => 'Este mes',        'count' => $stats['ventas'] ?? 0],
+    ['perm' => 'inventory',  'url' => '/inventory',  'icon' => 'boxes',         'color' => 'inventario', 'label' => 'Inventario', 'hint' => 'Con stock bajo',  'count' => $stats['inventario'] ?? 0],
+    ['perm' => 'services',   'url' => '/services',   'icon' => 'layers',        'color' => 'servicios',  'label' => 'Servicios',  'hint' => 'Del landing',     'count' => $stats['servicios'] ?? 0],
+    ['perm' => 'contacts',   'url' => '/contacts',   'icon' => 'mail',          'color' => 'contactos',  'label' => 'Mensajes',   'hint' => 'Sin atender',     'count' => $stats['contactos'] ?? 0],
+    ['perm' => 'files',      'url' => '/media',      'icon' => 'image',         'color' => 'media',      'label' => 'Media',      'hint' => 'Archivos',        'count' => $stats['media'] ?? 0],
+    ['perm' => 'users',      'url' => '/users',      'icon' => 'users',         'color' => 'usuarios',   'label' => 'Usuarios',   'hint' => 'Del sistema',     'count' => $stats['usuarios'] ?? 0],
 ];
 $modules = array_values(array_filter($modules, fn ($module) => can($module['perm'])));
 
@@ -44,12 +47,24 @@ $statusLabel = function (?string $status): string {
         'read' => 'Leido',
         'answered' => 'Respondido',
         'archived' => 'Archivado',
+        'pendiente' => 'Pendiente',
+        'voucher_enviado' => 'Voucher enviado',
+        'en_revision' => 'En revision',
+        'aprobado' => 'Aprobado',
+        'rechazado' => 'Rechazado',
+        'cancelado' => 'Cancelado',
+        'confirmada' => 'Confirmada',
+        'anulada' => 'Anulada',
+        'entregada' => 'Entregada',
         default => $status ? (str_starts_with($status, 'image/') ? 'Imagen' : $status) : 'Sin estado',
     };
 };
 
 $statusClass = function (?string $status): string {
-    return in_array($status, ['published', 'active', 'answered'], true) ? 'ok' : 'off';
+    if (in_array($status, ['published', 'active', 'answered', 'aprobado', 'confirmada', 'entregada'], true)) return 'ok';
+    if (in_array($status, ['rechazado', 'cancelado', 'anulada'], true)) return 'off';
+    if (in_array($status, ['en_revision', 'voucher_enviado', 'pendiente'], true)) return 'warn';
+    return 'off';
 };
 ?>
 
@@ -117,6 +132,21 @@ $statusClass = function (?string $status): string {
                     <span>Productos publicados</span>
                     <strong><?= e($portal['products']['published'] ?? 0) ?></strong>
                     <small><?= e($portal['products']['draft'] ?? 0) ?> borradores</small>
+                </div>
+                <div>
+                    <span>Pedidos por revisar</span>
+                    <strong><?= e(($portal['orders']['voucher_enviado'] ?? 0) + ($portal['orders']['en_revision'] ?? 0) + ($portal['orders']['pendiente'] ?? 0)) ?></strong>
+                    <small><?= e($portal['orders']['aprobado'] ?? 0) ?> aprobados, <?= e($portal['orders']['rechazado'] ?? 0) ?> rechazados</small>
+                </div>
+                <div>
+                    <span>Ventas confirmadas</span>
+                    <strong>S/ <?= e(number_format((float)($portal['sales']['revenue_month'] ?? 0), 2)) ?></strong>
+                    <small><?= e($portal['sales']['confirmed_month'] ?? 0) ?> ventas este mes</small>
+                </div>
+                <div>
+                    <span>Stock bajo o agotado</span>
+                    <strong><?= e($portal['inventory']['low_stock'] ?? 0) ?></strong>
+                    <small><?= e($portal['inventory']['out_of_stock'] ?? 0) ?> sin stock</small>
                 </div>
                 <div>
                     <span>Servicios activos</span>

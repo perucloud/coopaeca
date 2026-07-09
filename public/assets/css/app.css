@@ -250,6 +250,9 @@ a { color: inherit; text-decoration: none; }
 .admin-stats-grid .stat-icon { background: rgba(255,255,255,.14); color: #fff; }
 .stat-color-noticias { background: linear-gradient(135deg, #27439f, #4968c7); }
 .stat-color-productos { background: linear-gradient(135deg, #0f766e, #349984); }
+.stat-color-pedidos { background: linear-gradient(135deg, #4338ca, #6366f1); }
+.stat-color-ventas { background: linear-gradient(135deg, #047857, #10b981); }
+.stat-color-inventario { background: linear-gradient(135deg, #b91c1c, #ef4444); }
 .stat-color-servicios { background: linear-gradient(135deg, #6d28d9, #8b5cf6); }
 .stat-color-contactos { background: linear-gradient(135deg, #be185d, #db2777); }
 .stat-color-media { background: linear-gradient(135deg, #0369a1, #2f8ec7); }
@@ -2889,7 +2892,7 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
 }
 .dashboard-kpi-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 12px;
 }
 .dashboard-kpi {

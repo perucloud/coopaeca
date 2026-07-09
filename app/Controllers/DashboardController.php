@@ -9,6 +9,9 @@ final class DashboardController extends Controller
         $stats = [
             'noticias' => (int)$pdo->query('SELECT COUNT(*) FROM posts')->fetchColumn(),
             'productos' => (int)$pdo->query('SELECT COUNT(*) FROM products')->fetchColumn(),
+            'pedidos' => (int)$pdo->query("SELECT COUNT(*) FROM orders WHERE status IN ('pendiente','voucher_enviado','en_revision')")->fetchColumn(),
+            'ventas' => (int)$pdo->query("SELECT COUNT(*) FROM sales WHERE status = 'confirmada' AND MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())")->fetchColumn(),
+            'inventario' => (int)$pdo->query('SELECT COUNT(*) FROM products WHERE stock IS NOT NULL AND stock <= 5')->fetchColumn(),
             'servicios' => (int)$pdo->query('SELECT COUNT(*) FROM services')->fetchColumn(),
             'contactos' => (int)$pdo->query("SELECT COUNT(*) FROM contact_messages WHERE status = 'new'")->fetchColumn(),
             'media' => (int)$pdo->query('SELECT COUNT(*) FROM files')->fetchColumn(),
@@ -18,6 +21,15 @@ final class DashboardController extends Controller
         $portal = [
             'posts' => $this->groupCount($pdo, 'SELECT status, COUNT(*) total FROM posts GROUP BY status', 'status'),
             'products' => $this->groupCount($pdo, 'SELECT status, COUNT(*) total FROM products GROUP BY status', 'status'),
+            'orders' => $this->groupCount($pdo, 'SELECT status, COUNT(*) total FROM orders GROUP BY status', 'status'),
+            'sales' => [
+                'confirmed_month' => (int)$pdo->query("SELECT COUNT(*) FROM sales WHERE status = 'confirmada' AND MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())")->fetchColumn(),
+                'revenue_month' => (float)$pdo->query("SELECT COALESCE(SUM(total), 0) FROM sales WHERE status = 'confirmada' AND MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())")->fetchColumn(),
+            ],
+            'inventory' => [
+                'low_stock' => (int)$pdo->query('SELECT COUNT(*) FROM products WHERE stock IS NOT NULL AND stock <= 5')->fetchColumn(),
+                'out_of_stock' => (int)$pdo->query('SELECT COUNT(*) FROM products WHERE stock = 0')->fetchColumn(),
+            ],
             'services' => [
                 'active' => (int)$pdo->query('SELECT COUNT(*) FROM services WHERE is_active = 1')->fetchColumn(),
                 'inactive' => (int)$pdo->query('SELECT COUNT(*) FROM services WHERE is_active = 0')->fetchColumn(),
@@ -61,6 +73,8 @@ final class DashboardController extends Controller
         $sources = [
             'posts',
             'products',
+            'orders',
+            'sales',
             'services',
             'files',
             'galleries',
@@ -103,6 +117,20 @@ final class DashboardController extends Controller
                 'icon' => 'package',
                 'url' => '/products/edit?id=',
                 'sql' => "SELECT id, name, status, COALESCE(updated_at, created_at) AS changed_at FROM products ORDER BY changed_at DESC LIMIT 8",
+            ],
+            'orders' => [
+                'module' => 'Pedidos',
+                'permission' => 'orders',
+                'icon' => 'clipboard-list',
+                'url' => '/orders/show?id=',
+                'sql' => "SELECT id, code AS name, status, COALESCE(updated_at, created_at) AS changed_at FROM orders ORDER BY changed_at DESC LIMIT 8",
+            ],
+            'sales' => [
+                'module' => 'Ventas',
+                'permission' => 'sales',
+                'icon' => 'shopping-bag',
+                'url' => '/sales/show?id=',
+                'sql' => "SELECT id, code AS name, status, COALESCE(updated_at, created_at) AS changed_at FROM sales ORDER BY changed_at DESC LIMIT 8",
             ],
             'services' => [
                 'module' => 'Servicios',
