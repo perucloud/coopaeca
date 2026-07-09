@@ -243,3 +243,37 @@ document.addEventListener('keydown', (event) => {
   });
   addRow();
 })();
+
+// Inventario: ingreso masivo de stock con lineas dinamicas
+(function () {
+  const form = document.getElementById('bulkStockForm');
+  const list = document.getElementById('bulkStockItems');
+  const template = document.getElementById('bulkStockItemTemplate');
+  const addBtn = document.getElementById('addBulkStockItem');
+  if (!form || !list || !template) return;
+
+  function addRow() {
+    const row = template.content.firstElementChild.cloneNode(true);
+    row.querySelector('.bulk-stock-remove').addEventListener('click', () => {
+      if (list.children.length > 1) {
+        row.remove();
+      }
+    });
+    list.appendChild(row);
+  }
+
+  addBtn?.addEventListener('click', addRow);
+  form.addEventListener('submit', (event) => {
+    const rows = Array.from(list.querySelectorAll('.manual-sale-item'));
+    const hasValidRow = rows.some((row) => {
+      const product = row.querySelector('.bulk-stock-product');
+      const quantity = row.querySelector('.bulk-stock-quantity');
+      return product.value && Number(quantity.value) > 0;
+    });
+    if (!hasValidRow) {
+      event.preventDefault();
+      alert('Agrega al menos un producto con cantidad valida.');
+    }
+  });
+  addRow();
+})();

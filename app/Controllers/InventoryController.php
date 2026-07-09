@@ -65,6 +65,64 @@ final class InventoryController extends Controller
         ]);
     }
 
+    public function bulkForm(): void
+    {
+        $stmt = Database::connection()->query(
+            "SELECT id, name, sku, presentation, stock
+             FROM products
+             WHERE status IN ('draft','published')
+             ORDER BY name ASC"
+        );
+
+        render('inventory/bulk', [
+            'title' => 'Ingreso masivo de stock',
+            'products' => $stmt->fetchAll(),
+        ]);
+    }
+
+    public function bulkStore(): void
+    {
+        $notes = trim((string)($_POST['notes'] ?? ''));
+        $productIds = $_POST['product_id'] ?? [];
+        $quantities = $_POST['quantity'] ?? [];
+
+        try {
+            if ($notes === '') {
+                throw new RuntimeException('Ingresa una observacion para el ingreso.');
+            }
+
+            $lines = [];
+            foreach ($productIds as $index => $productId) {
+                $productId = (int)$productId;
+                $quantity = (int)($quantities[$index] ?? 0);
+                if ($productId <= 0 || $quantity <= 0) {
+                    continue;
+                }
+                $lines[$productId] = ($lines[$productId] ?? 0) + $quantity;
+            }
+
+            if (!$lines) {
+                throw new RuntimeException('Agrega al menos un producto con cantidad valida.');
+            }
+
+            $pdo = Database::connection();
+            $pdo->beginTransaction();
+            foreach ($lines as $productId => $quantity) {
+                InventoryService::adjust($productId, $quantity, $notes, (int)user()['id']);
+            }
+            $pdo->commit();
+
+            activity('Ingreso masivo de inventario (' . count($lines) . ' productos)', 'inventory');
+            flash('status', 'Stock actualizado para ' . count($lines) . ' producto(s).');
+            Response::redirect('/inventory');
+        } catch (Throwable $e) {
+            if (Database::connection()->inTransaction()) {
+                Database::connection()->rollBack();
+            }
+            back_with_errors([$e->getMessage()], []);
+        }
+    }
+
     public function adjust(): void
     {
         $productId = (int)($_POST['product_id'] ?? 0);

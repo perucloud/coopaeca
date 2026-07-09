@@ -4,6 +4,7 @@
             <h2>Inventario</h2>
             <span>Stock actual de productos y ultimo movimiento auditado.</span>
         </div>
+        <a class="button primary" href="<?= e(url('/inventory/bulk')) ?>"><?= icon('plus') ?> Ingreso masivo</a>
     </div>
 
     <form method="get" action="<?= e(url('/inventory')) ?>" class="filters-bar">
