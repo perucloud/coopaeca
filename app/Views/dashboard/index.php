@@ -30,6 +30,24 @@ $quickLinks = [
 $quickLinks = array_values(array_filter($quickLinks, fn ($link) => can($link['perm'])));
 $visibleLatestContents = array_values(array_filter($latestContents ?? [], fn ($item) => can($item['permission'])));
 
+// En escritorio, "Accesos rapidos" solo debe listar modulos que NO ya tienen su propia
+// tarjeta KPI arriba, para no duplicar el mismo acceso dos veces en la misma pantalla.
+// En movil no aplica: ahi el panel rapido es la unica navegacion (no hay tarjetas KPI).
+$kpiPerms = array_column($modules, 'perm');
+$desktopQuickLinks = array_values(array_filter($quickLinks, fn ($link) => !in_array($link['perm'], $kpiPerms, true)));
+
+$orderStatusLabels = [
+    'pendiente' => 'Pendiente',
+    'voucher_enviado' => 'Voucher enviado',
+    'en_revision' => 'En revision',
+    'aprobado' => 'Aprobado',
+    'rechazado' => 'Rechazado',
+    'cancelado' => 'Cancelado',
+];
+$maxOrderStatus = max(1, ...array_map(fn ($k) => (int)($portal['orders'][$k] ?? 0), array_keys($orderStatusLabels)));
+$maxTopProduct = max(1, ...array_map(fn ($p) => (int)$p['qty'], $topProducts ?: [['qty' => 0]]));
+$maxPaymentMethod = max(1, ...array_map(fn ($p) => (int)$p['total'], $paymentMethodsBreakdown ?: [['total' => 0]]));
+
 $maxActivity = max(1, ...array_map(fn ($point) => (int)$point['total'], $activityChart ?? []));
 
 $bytes = function (int $value): string {
@@ -175,6 +193,88 @@ $statusClass = function (?string $status): string {
         </section>
     </div>
 
+    <?php if (can('orders') || can('sales')): ?>
+    <div class="dashboard-charts-grid">
+        <?php if (can('orders')): ?>
+        <section class="dashboard-panel">
+            <div class="dashboard-panel-head">
+                <div>
+                    <h3>Pedidos por estado</h3>
+                    <span>Distribucion actual de todos los pedidos.</span>
+                </div>
+                <?= icon('clipboard-list') ?>
+            </div>
+            <div class="dashboard-bar-list">
+                <?php foreach ($orderStatusLabels as $key => $label):
+                    $count = (int)($portal['orders'][$key] ?? 0);
+                    $width = max(3, round(($count / $maxOrderStatus) * 100));
+                ?>
+                <div class="dashboard-bar-row">
+                    <span class="bar-label"><?= e($label) ?></span>
+                    <span class="dashboard-bar-track"><span class="dashboard-bar-fill <?= e($statusClass($key)) ?>" style="width: <?= e($width) ?>%"></span></span>
+                    <strong class="bar-value"><?= e($count) ?></strong>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+        <?php endif; ?>
+
+        <?php if (can('sales')): ?>
+        <section class="dashboard-panel">
+            <div class="dashboard-panel-head">
+                <div>
+                    <h3>Productos mas vendidos</h3>
+                    <span>Unidades en ventas confirmadas.</span>
+                </div>
+                <?= icon('package') ?>
+            </div>
+            <div class="dashboard-bar-list">
+                <?php if ($topProducts): ?>
+                    <?php foreach ($topProducts as $product):
+                        $qty = (int)$product['qty'];
+                        $width = max(3, round(($qty / $maxTopProduct) * 100));
+                    ?>
+                    <div class="dashboard-bar-row">
+                        <span class="bar-label" title="<?= e($product['product_name']) ?>"><?= e($product['product_name']) ?></span>
+                        <span class="dashboard-bar-track"><span class="dashboard-bar-fill accent" style="width: <?= e($width) ?>%"></span></span>
+                        <strong class="bar-value"><?= e($qty) ?></strong>
+                    </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="text-muted">Aun no hay ventas confirmadas con productos.</p>
+                <?php endif; ?>
+            </div>
+        </section>
+
+        <section class="dashboard-panel">
+            <div class="dashboard-panel-head">
+                <div>
+                    <h3>Metodos de pago</h3>
+                    <span>Ventas confirmadas por metodo.</span>
+                </div>
+                <?= icon('credit-card') ?>
+            </div>
+            <div class="dashboard-bar-list">
+                <?php if ($paymentMethodsBreakdown): ?>
+                    <?php foreach ($paymentMethodsBreakdown as $method):
+                        $total = (int)$method['total'];
+                        $width = max(3, round(($total / $maxPaymentMethod) * 100));
+                    ?>
+                    <div class="dashboard-bar-row">
+                        <span class="bar-label"><?= e($method['payment_method']) ?></span>
+                        <span class="dashboard-bar-track"><span class="dashboard-bar-fill accent" style="width: <?= e($width) ?>%"></span></span>
+                        <strong class="bar-value"><?= e($total) ?></strong>
+                    </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="text-muted">Aun no hay ventas confirmadas.</p>
+                <?php endif; ?>
+            </div>
+        </section>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+
     <div class="dashboard-bottom-grid">
         <section class="dashboard-panel">
             <div class="dashboard-panel-head">
@@ -225,12 +325,12 @@ $statusClass = function (?string $status): string {
             <div class="dashboard-panel-head">
                 <div>
                     <h3>Accesos rapidos</h3>
-                    <span>Modulos principales del panel.</span>
+                    <span>Otros modulos, sin tarjeta propia arriba.</span>
                 </div>
                 <?= icon('chevron-right') ?>
             </div>
             <div class="dashboard-quick-grid">
-                <?php foreach ($quickLinks as $link): ?>
+                <?php foreach ($desktopQuickLinks as $link): ?>
                     <a class="dashboard-quick-link" href="<?= e(url($link['url'])) ?>">
                         <?= icon($link['icon']) ?>
                         <span>
@@ -239,6 +339,9 @@ $statusClass = function (?string $status): string {
                         </span>
                     </a>
                 <?php endforeach; ?>
+                <?php if (!$desktopQuickLinks): ?>
+                    <p class="text-muted">Todos los modulos disponibles ya tienen tarjeta arriba.</p>
+                <?php endif; ?>
             </div>
         </section>
     </div>

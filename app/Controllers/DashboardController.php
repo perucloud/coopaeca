@@ -45,7 +45,34 @@ final class DashboardController extends Controller
             'portal' => $portal,
             'activityChart' => $this->activityChart($pdo),
             'latestContents' => $this->latestContents($pdo),
+            'topProducts' => $this->topProducts($pdo),
+            'paymentMethodsBreakdown' => $this->paymentMethodsBreakdown($pdo),
         ]);
+    }
+
+    private function topProducts(PDO $pdo): array
+    {
+        return $pdo->query(
+            "SELECT si.product_name, SUM(si.quantity) AS qty
+             FROM sale_items si
+             JOIN sales s ON s.id = si.sale_id
+             WHERE s.status = 'confirmada'
+             GROUP BY si.product_name
+             ORDER BY qty DESC
+             LIMIT 5"
+        )->fetchAll();
+    }
+
+    private function paymentMethodsBreakdown(PDO $pdo): array
+    {
+        return $pdo->query(
+            "SELECT payment_method, COUNT(*) AS total
+             FROM sales
+             WHERE status = 'confirmada'
+             GROUP BY payment_method
+             ORDER BY total DESC
+             LIMIT 6"
+        )->fetchAll();
     }
 
     private function groupCount(PDO $pdo, string $sql, string $keyColumn): array
