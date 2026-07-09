@@ -44,47 +44,62 @@ final class ProductController extends Controller
     public function store(): void
     {
         $data = $this->validated();
+        $initialStock = $data['stock'];
         $pdo = Database::connection();
-        $pdo->prepare(
-            'INSERT INTO products (sku, name, name_en, slug, short_description, short_description_en, description, description_en, origin, origin_en, variety, variety_en, fermentation, fermentation_en, humidity, altitude, altitude_en, grain_count, grain_index, certification, certification_en, presentation, presentation_en, price, sale_price, stock, cover_image_id, is_featured, status, meta_title, meta_title_en, meta_description, meta_description_en)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-        )->execute([
-            $data['sku'],
-            $data['name'],
-            $data['name_en'],
-            $this->uniqueSlug($data['name']),
-            $data['short_description'],
-            $data['short_description_en'],
-            $data['description'],
-            $data['description_en'],
-            $data['origin'],
-            $data['origin_en'],
-            $data['variety'],
-            $data['variety_en'],
-            $data['fermentation'],
-            $data['fermentation_en'],
-            $data['humidity'],
-            $data['altitude'],
-            $data['altitude_en'],
-            $data['grain_count'],
-            $data['grain_index'],
-            $data['certification'],
-            $data['certification_en'],
-            $data['presentation'],
-            $data['presentation_en'],
-            $data['price'],
-            $data['sale_price'],
-            $data['stock'],
-            $data['cover_image_id'],
-            $data['is_featured'],
-            $data['status'],
-            $data['meta_title'],
-            $data['meta_title_en'],
-            $data['meta_description'],
-            $data['meta_description_en'],
-        ]);
-        $productId = (int)$pdo->lastInsertId();
-        $this->syncCategories($productId, $data['category_ids']);
+        $pdo->beginTransaction();
+        try {
+            $pdo->prepare(
+                'INSERT INTO products (sku, name, name_en, slug, short_description, short_description_en, description, description_en, origin, origin_en, variety, variety_en, fermentation, fermentation_en, humidity, altitude, altitude_en, grain_count, grain_index, certification, certification_en, presentation, presentation_en, price, sale_price, stock, cover_image_id, is_featured, status, meta_title, meta_title_en, meta_description, meta_description_en)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            )->execute([
+                $data['sku'],
+                $data['name'],
+                $data['name_en'],
+                $this->uniqueSlug($data['name']),
+                $data['short_description'],
+                $data['short_description_en'],
+                $data['description'],
+                $data['description_en'],
+                $data['origin'],
+                $data['origin_en'],
+                $data['variety'],
+                $data['variety_en'],
+                $data['fermentation'],
+                $data['fermentation_en'],
+                $data['humidity'],
+                $data['altitude'],
+                $data['altitude_en'],
+                $data['grain_count'],
+                $data['grain_index'],
+                $data['certification'],
+                $data['certification_en'],
+                $data['presentation'],
+                $data['presentation_en'],
+                $data['price'],
+                $data['sale_price'],
+                $initialStock !== null ? 0 : null,
+                $data['cover_image_id'],
+                $data['is_featured'],
+                $data['status'],
+                $data['meta_title'],
+                $data['meta_title_en'],
+                $data['meta_description'],
+                $data['meta_description_en'],
+            ]);
+            $productId = (int)$pdo->lastInsertId();
+            $this->syncCategories($productId, $data['category_ids']);
+
+            if ($initialStock !== null && $initialStock > 0) {
+                InventoryService::setInitialStock($productId, $initialStock, (int)user()['id']);
+            }
+
+            $pdo->commit();
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            back_with_errors([$e->getMessage()], $_POST);
+        }
 
         activity('Creo producto ' . $data['name'], 'products');
         flash('status', 'Producto creado.');
@@ -120,7 +135,7 @@ final class ProductController extends Controller
         $this->find($id);
         $data = $this->validated($id);
         Database::connection()->prepare(
-            'UPDATE products SET sku = ?, name = ?, name_en = ?, short_description = ?, short_description_en = ?, description = ?, description_en = ?, origin = ?, origin_en = ?, variety = ?, variety_en = ?, fermentation = ?, fermentation_en = ?, humidity = ?, altitude = ?, altitude_en = ?, grain_count = ?, grain_index = ?, certification = ?, certification_en = ?, presentation = ?, presentation_en = ?, price = ?, sale_price = ?, stock = ?, cover_image_id = ?, is_featured = ?, status = ?, meta_title = ?, meta_title_en = ?, meta_description = ?, meta_description_en = ?, updated_at = NOW() WHERE id = ?'
+            'UPDATE products SET sku = ?, name = ?, name_en = ?, short_description = ?, short_description_en = ?, description = ?, description_en = ?, origin = ?, origin_en = ?, variety = ?, variety_en = ?, fermentation = ?, fermentation_en = ?, humidity = ?, altitude = ?, altitude_en = ?, grain_count = ?, grain_index = ?, certification = ?, certification_en = ?, presentation = ?, presentation_en = ?, price = ?, sale_price = ?, cover_image_id = ?, is_featured = ?, status = ?, meta_title = ?, meta_title_en = ?, meta_description = ?, meta_description_en = ?, updated_at = NOW() WHERE id = ?'
         )->execute([
             $data['sku'],
             $data['name'],
@@ -146,7 +161,6 @@ final class ProductController extends Controller
             $data['presentation_en'],
             $data['price'],
             $data['sale_price'],
-            $data['stock'],
             $data['cover_image_id'],
             $data['is_featured'],
             $data['status'],

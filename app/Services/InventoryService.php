@@ -58,6 +58,18 @@ final class InventoryService
         self::record($productId, 'anulacion_venta', $quantity, $before, $after, 'sale', $saleId, 'Reversion por venta anulada.', $userId);
     }
 
+    public static function setInitialStock(int $productId, int $quantity, ?int $userId): void
+    {
+        if ($quantity <= 0) {
+            throw new RuntimeException('El stock inicial debe ser mayor a cero.');
+        }
+
+        Database::connection()->prepare('UPDATE products SET stock = ?, updated_at = NOW() WHERE id = ?')
+            ->execute([$quantity, $productId]);
+
+        self::record($productId, 'entrada_inicial', $quantity, 0, $quantity, 'manual', null, 'Stock inicial al crear el producto.', $userId);
+    }
+
     public static function adjust(int $productId, int $delta, string $notes, ?int $userId): void
     {
         if ($delta === 0) {

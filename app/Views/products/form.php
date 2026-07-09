@@ -129,8 +129,17 @@ $productFeatured = (int)old('is_featured', $item['is_featured'] ?? 0);
                             <span class="prod-hint">Si se deja vacío, solo se muestra el precio normal.</span>
                         </div>
                         <div class="prod-field">
-                            <label class="prod-label">Stock</label>
-                            <input class="prod-input" type="number" min="0" name="stock" value="<?= e(old('stock', $item['stock'] ?? '')) ?>" placeholder="Sin límite">
+                            <label class="prod-label">Stock inicial</label>
+                            <?php if ($item === null): ?>
+                                <input class="prod-input" type="number" min="0" name="stock" value="<?= e(old('stock')) ?>" placeholder="Sin límite">
+                                <span class="prod-hint">Solo se define al crear el producto. Luego se administra desde Inventario.</span>
+                            <?php else: ?>
+                                <input class="prod-input" type="text" value="<?= e($item['stock'] ?? 'Sin límite') ?>" disabled>
+                                <span class="prod-hint">
+                                    Para aumentar, disminuir o corregir el stock, hazlo desde
+                                    <a href="<?= e(url('/inventory/movements?product_id=' . (int)$item['id'])) ?>">Inventario &rarr; Movimientos</a>.
+                                </span>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="prod-row-2">
