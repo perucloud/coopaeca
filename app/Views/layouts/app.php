@@ -79,24 +79,29 @@
             </a>
             <?php endif; ?>
 
-            <?php if (can('social_networks')): ?>
-            <a href="<?= e(url('/social-networks')) ?>" class="nav-link <?= is_active('/social-networks') ?>">
-                <?= icon('share') ?><span>Redes sociales</span>
-            </a>
-            <?php endif; ?>
-
-            <?php if (can('pages')): ?>
-            <a href="<?= e(url('/about')) ?>" class="nav-link <?= is_active('/about') ?>">
-                <?= icon('users') ?><span>Nosotros</span>
-            </a>
-            <?php endif; ?>
-
-            <?php if (can('contacts')): ?>
-            <?php $unread = (int)Database::connection()->query("SELECT COUNT(*) FROM contact_messages WHERE status='new'")->fetchColumn(); ?>
-            <a href="<?= e(url('/contacts')) ?>" class="nav-link <?= is_active('/contacts') ?>">
-                <?= icon('mail') ?><span>Contáctenos</span>
-                <?php if ($unread > 0): ?><em class="nav-badge"><?= $unread ?></em><?php endif; ?>
-            </a>
+            <?php if (can('social_networks') || can('pages') || can('contacts')): ?>
+            <?php $unread = can('contacts') ? (int)Database::connection()->query("SELECT COUNT(*) FROM contact_messages WHERE status='new'")->fetchColumn() : 0; ?>
+            <div class="nav-group <?= is_active('/social-networks', '/about', '/contacts') ? 'open' : '' ?>">
+                <button type="button" class="nav-link nav-group-toggle" data-submenu-toggle>
+                    <?= icon('layout') ?><span>Landing page</span>
+                    <?php if ($unread > 0): ?><em class="nav-badge nav-badge-inline"><?= $unread ?></em><?php endif; ?>
+                    <?= icon('chevron-down', 'nav-chevron') ?>
+                </button>
+                <div class="nav-submenu">
+                    <?php if (can('social_networks')): ?>
+                    <a href="<?= e(url('/social-networks')) ?>" class="<?= is_active('/social-networks') ?>"><?= icon('share') ?><span>Redes sociales</span></a>
+                    <?php endif; ?>
+                    <?php if (can('pages')): ?>
+                    <a href="<?= e(url('/about')) ?>" class="<?= is_active('/about') ?>"><?= icon('users') ?><span>Nosotros</span></a>
+                    <?php endif; ?>
+                    <?php if (can('contacts')): ?>
+                    <a href="<?= e(url('/contacts')) ?>" class="<?= is_active('/contacts') ?>">
+                        <?= icon('mail') ?><span>Contáctenos</span>
+                        <?php if ($unread > 0): ?><em class="nav-badge"><?= $unread ?></em><?php endif; ?>
+                    </a>
+                    <?php endif; ?>
+                </div>
+            </div>
             <?php endif; ?>
 
             <?php if (can('files')): ?>

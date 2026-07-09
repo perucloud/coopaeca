@@ -12,6 +12,19 @@ document.querySelectorAll('form[data-confirm]').forEach((form) => {
   });
 });
 
+function positionNavSubmenu(group) {
+  const button = group.querySelector('[data-submenu-toggle]');
+  const submenu = group.querySelector('.nav-submenu');
+  if (!button || !submenu) return;
+  const rect = button.getBoundingClientRect();
+  submenu.style.top = Math.round(rect.top - 4) + 'px';
+  submenu.style.left = Math.round(rect.right + 10) + 'px';
+}
+
+document.querySelectorAll('.nav-group').forEach((group) => {
+  group.addEventListener('mouseenter', () => positionNavSubmenu(group));
+});
+
 document.querySelectorAll('[data-submenu-toggle]').forEach((button) => {
   const group = button.closest('.nav-group');
   button.addEventListener('click', () => {
@@ -19,6 +32,7 @@ document.querySelectorAll('[data-submenu-toggle]').forEach((button) => {
     document.querySelectorAll('.nav-group.open').forEach((open) => {
       if (open !== group) open.classList.remove('open');
     });
+    positionNavSubmenu(group);
     group.classList.toggle('open', !isOpen);
   });
 });
@@ -30,6 +44,13 @@ document.addEventListener('click', (event) => {
     }
   });
 });
+
+const sidebarNavEl = document.getElementById('sidebarNav');
+if (sidebarNavEl) {
+  sidebarNavEl.addEventListener('scroll', () => {
+    document.querySelectorAll('.nav-group.open').forEach((group) => group.classList.remove('open'));
+  });
+}
 
 // Colapsar sidebar
 const collapseBtn = document.getElementById('collapseBtn');
