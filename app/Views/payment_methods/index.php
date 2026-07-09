@@ -19,7 +19,7 @@
                 <p>Usa nombres claros: Transferencia bancaria, Yape, Plin u otro.</p>
             </div>
         </div>
-        <form action="<?= e(url('/payment-methods/store')) ?>" method="post" class="payment-method-form">
+        <form action="<?= e(url('/payment-methods/store')) ?>" method="post" enctype="multipart/form-data" class="payment-method-form">
             <?= csrf_field() ?>
             <label>Nombre
                 <input type="text" name="name" value="<?= e(old('name')) ?>" required>
@@ -42,6 +42,10 @@
             </label>
             <label>Orden
                 <input type="number" name="position" value="<?= e(old('position', 0)) ?>">
+            </label>
+            <label class="span-2">QR de pago
+                <input type="file" name="qr_image" accept="image/jpeg,image/png,image/webp">
+                <small>Opcional. Recomendado para Yape, Plin u otra billetera digital.</small>
             </label>
             <label class="span-2">Instrucciones
                 <textarea name="instructions" rows="4"><?= e(old('instructions')) ?></textarea>
@@ -72,7 +76,17 @@
                     <em class="badge <?= (int)$method['is_active'] === 1 ? 'ok' : 'muted' ?>"><?= (int)$method['is_active'] === 1 ? 'Activo' : 'Inactivo' ?></em>
                 </header>
 
-                <form action="<?= e(url('/payment-methods/update')) ?>" method="post" class="payment-method-form compact">
+                <?php if (!empty($method['qr_path'])): ?>
+                    <div class="payment-method-qr">
+                        <img src="<?= e(url('/' . $method['qr_path'])) ?>" alt="QR <?= e($method['name']) ?>">
+                        <div>
+                            <strong>QR activo</strong>
+                            <span><?= e($method['qr_name'] ?? 'Imagen QR') ?></span>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <form action="<?= e(url('/payment-methods/update')) ?>" method="post" enctype="multipart/form-data" class="payment-method-form compact">
                     <?= csrf_field() ?>
                     <input type="hidden" name="id" value="<?= (int)$method['id'] ?>">
                     <label>Nombre
@@ -96,6 +110,10 @@
                     </label>
                     <label>Orden
                         <input type="number" name="position" value="<?= (int)$method['position'] ?>">
+                    </label>
+                    <label class="span-2">Reemplazar QR
+                        <input type="file" name="qr_image" accept="image/jpeg,image/png,image/webp">
+                        <small>Si no seleccionas archivo, se conserva el QR actual.</small>
                     </label>
                     <label class="span-2">Instrucciones
                         <textarea name="instructions" rows="3"><?= e($method['instructions']) ?></textarea>

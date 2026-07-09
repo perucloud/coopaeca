@@ -122,7 +122,14 @@ $oldItems = old('items', '');
                             <input type="radio" name="payment_method" value="<?= e($name) ?>" <?= old('payment_method', $index === 0 ? $name : '') === $name ? 'checked' : '' ?> required>
                             <span>
                                 <strong><?= e($name) ?></strong>
+                                <?php if (!empty($method['account_label']) || !empty($method['account_number'])): ?>
+                                    <small><?= e(trim(($method['account_label'] ?? '') . ' ' . ($method['account_number'] ?? ''))) ?></small>
+                                <?php endif; ?>
+                                <?php if (!empty($method['holder_name'])): ?><small><?= e($method['holder_name']) ?></small><?php endif; ?>
                                 <?php if (!empty($method['instructions'])): ?><small><?= e($method['instructions']) ?></small><?php endif; ?>
+                                <?php if (!empty($method['qr_path'])): ?>
+                                    <img class="payment-option-qr" src="<?= e(url('/' . $method['qr_path'])) ?>" alt="QR <?= e($name) ?>">
+                                <?php endif; ?>
                             </span>
                         </label>
                     <?php endforeach; ?>

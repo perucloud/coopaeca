@@ -20,6 +20,7 @@
 /public/uploads/posts/*
 /public/uploads/settings/*
 /public/uploads/vouchers/*
+/public/uploads/payment-methods/*
 !/public/uploads/**/.gitkeep
 
 # Local tool/cache folders

@@ -3261,6 +3261,38 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
 .payment-method-card .badge {
   margin-left: auto;
 }
+.payment-method-qr {
+  margin: 16px 20px 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #f8fafc;
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+.payment-method-qr img {
+  width: 82px;
+  height: 82px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #fff;
+  border: 1px solid var(--line);
+}
+.payment-method-qr strong {
+  display: block;
+  color: var(--text);
+  font-size: 14px;
+}
+.payment-method-qr span,
+.payment-method-form small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  text-transform: none;
+  letter-spacing: 0;
+}
 .badge.muted {
   background: #eef2f7;
   color: #64748b;

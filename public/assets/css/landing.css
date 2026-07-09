@@ -2480,6 +2480,15 @@ body.has-cart-items .lp-cart-float {
   font-size: 12px;
   line-height: 1.4;
 }
+.payment-option-qr {
+  width: 112px;
+  height: 112px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1px solid var(--lp-line);
+  background: #fff;
+  margin-top: 4px;
+}
 .checkout-actions,
 .checkout-modal-actions,
 .success-actions {

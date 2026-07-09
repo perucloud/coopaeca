@@ -14,7 +14,7 @@ Implementar el plan `PLAN_ECOMMERCE_PEDIDOS_VENTAS_INVENTARIO.md` usando la arqu
 - Completado: Fase 6 aprobacion de pedido, venta y descuento de stock.
 - Completado: Fase 7 inicial modulo Ventas.
 - Completado: Fase 8 inicial modulo Inventario.
-- Completado: Fase 9 inicial gestion administrativa de metodos de pago.
+- Completado: Fase 9 gestion administrativa de metodos de pago con QR.
 - Pendiente: ventas manuales.
 - Pendiente: integraciones DNI/RUC y ubigeo local.
 - Bloqueado: no.
@@ -181,6 +181,8 @@ HANDOFF aceptado por ORCHESTRATOR:
 - Modulo `/payment-methods` creado en dashboard.
 - Administrador puede crear y actualizar nombre, tipo, cuenta/contacto, titular, instrucciones, estado y orden.
 - Checkout publico solo acepta metodos activos.
+- Administrador puede subir/reemplazar QR de pago JPG, PNG o WebP hasta 3 MB.
+- Checkout publico muestra QR, cuenta/contacto, titular e instrucciones cuando estan configurados.
 
 ## Archivos modificados
 
@@ -230,6 +232,9 @@ HANDOFF aceptado por ORCHESTRATOR:
 - `php -l app\Controllers\InventoryController.php`
 - `php -l app\Controllers\PaymentMethodController.php`
 - `php -l app\Views\payment_methods\index.php`
+- `php -l app\Controllers\CheckoutController.php` despues de conectar QR de metodos de pago.
+- `php -l app\Views\landing\checkout.php` despues de mostrar QR en checkout.
+- Render HTTP local `/checkout?lang=es` despues de conectar QR: HTTP 200.
 - `node --check public\assets\js\landing.js`
 - `php -l app\Services\OrderService.php` despues de hardening de metodo de pago.
 - `node --check public\assets\js\landing.js` despues de hardening de escape frontend.

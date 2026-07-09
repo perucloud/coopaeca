@@ -11,7 +11,11 @@ final class CheckoutController extends Controller
         $paymentMethods = [];
         try {
             $paymentMethods = Database::connection()->query(
-                'SELECT * FROM payment_methods WHERE is_active = 1 ORDER BY position ASC, id ASC'
+                'SELECT pm.*, f.disk_path AS qr_path
+                 FROM payment_methods pm
+                 LEFT JOIN files f ON f.id = pm.qr_image_id
+                 WHERE pm.is_active = 1
+                 ORDER BY pm.position ASC, pm.id ASC'
             )->fetchAll();
         } catch (Throwable) {
             $paymentMethods = [
