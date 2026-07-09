@@ -62,6 +62,7 @@ function icon(string $name, string $class = ''): string
         'slash'         => '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-7 7"/>',
         'printer'       => '<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/>',
         'download'      => '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+        'history'       => '<path d="M3 12a9 9 0 1 0 2.6-6.3"/><path d="M3 5v5h5"/><path d="M12 7v5l4 2"/>',
     ];
 
     $body  = $paths[$name] ?? $paths['slash'];

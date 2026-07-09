@@ -128,6 +128,6 @@ final class InventoryController extends Controller
             }
             back_with_errors([$e->getMessage()], []);
         }
-        Response::redirect('/inventory/movements?product_id=' . $productId);
+        Response::redirect('/inventory');
     }
 }

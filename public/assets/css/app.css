@@ -3562,6 +3562,28 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
 .stock-edit-current { font-size: 11px; color: var(--muted); }
 .bulk-stock-input { width: 90px; }
 
+/* Inventario: botones de accion grandes y de color por fila */
+.inventory-table td.actions { flex-wrap: nowrap; }
+.inventory-table .actions .button {
+  border: none;
+  border-radius: 10px;
+  font-weight: 800;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .12);
+}
+.inventory-table .actions .action-add { background: #22c55e; color: #fff; flex: 0 0 auto; }
+.inventory-table .actions .action-add:hover { background: #16a34a; }
+.inventory-table .actions .action-movements {
+  background: #0e7490;
+  color: #fff;
+  flex: 1 1 auto;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.inventory-table .actions .action-movements:hover { background: #0b5c73; }
+.inventory-table .actions .action-edit { background: #f59e0b; color: #fff; flex: 0 0 auto; }
+.inventory-table .actions .action-edit:hover { background: #d97706; }
+
 /* PDF: modal de previsualizacion */
 .pdf-modal-body { padding: 0; display: flex; }
 .pdf-frame { width: 100%; height: 72vh; border: 0; }

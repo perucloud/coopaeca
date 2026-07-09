@@ -59,14 +59,14 @@
                         <?php if (!empty($product['last_movement_at'])): ?><br><span class="text-muted"><?= e(date('d/m/Y H:i', strtotime($product['last_movement_at']))) ?></span><?php endif; ?>
                     </td>
                     <td class="actions">
-                        <button type="button" class="button small icon-only adjust-open"
+                        <button type="button" class="button small icon-only action-add adjust-open"
                                 data-id="<?= (int)$product['id'] ?>"
                                 data-name="<?= e($product['name']) ?>"
                                 data-stock="<?= $product['stock'] === null ? 'Sin control' : (int)$product['stock'] . ' und.' ?>"
                                 title="Ajustar stock"><?= icon('plus') ?></button>
-                        <a class="button small" href="<?= e(url('/inventory/movements?product_id=' . (int)$product['id'])) ?>">Movimientos</a>
+                        <a class="button small action-movements" href="<?= e(url('/inventory/movements?product_id=' . (int)$product['id'])) ?>"><?= icon('history') ?> Movimientos</a>
                         <?php if (can('products', 'edit')): ?>
-                        <a class="button small info icon-only" href="<?= e(url('/products/edit?id=' . (int)$product['id'])) ?>" title="Editar producto"><?= icon('edit') ?></a>
+                        <a class="button small icon-only action-edit" href="<?= e(url('/products/edit?id=' . (int)$product['id'])) ?>" title="Editar producto"><?= icon('edit') ?></a>
                         <?php endif; ?>
                     </td>
                 </tr>
