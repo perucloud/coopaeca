@@ -415,9 +415,42 @@ Validado por QA_ENGINEER:
 - `/checkout?lang=es` HTTP 200 con el select de region mostrando las 25 opciones (verificado AMAZONAS...UCAYALI en el HTML renderizado).
 - `php -l` sin errores en `import_ubigeo.php`.
 
+### ORCHESTRATOR -> BACKEND_ENGINEER + FRONTEND_ENGINEER + UI_UX_ENGINEER
+
+Fecha: 2026-07-09
+
+Tarea:
+
+- Rediseñar la forma de ajustar stock en Inventario: modal rapido por producto (permitiendo sumar o restar) y modo de ingreso masivo editando directamente la columna Stock de la tabla, en vez de una pagina aparte con selector de producto.
+- Agregar acceso directo para editar un producto desde Inventario, reutilizando el formulario real de Productos (sin duplicar logica).
+- En Productos: boton para ir a Inventario, boton para imprimir/descargar PDF del listado con previsualizacion en modal, y botones Editar/Eliminar con color distintivo.
+- Instalar una libreria PDF real (no solo impresion del navegador) y generar el PDF en servidor.
+
+Estado: completado.
+
+HANDOFF aceptado por ORCHESTRATOR:
+
+- Se instalo `dompdf/dompdf` (v3.1.5) via Composer. `composer.json`/`composer.lock` actualizados; `vendor/` sigue ignorado por git como ya estaba (`/vendor/` en `.gitignore`), asi que **hay que correr `composer install` en cualquier entorno donde se despliegue este cambio**.
+- `InventoryController`: se elimino `bulkForm()` (pagina `/inventory/bulk` ya no existe); `bulkStore()` ahora lee `quantity[product_id]` como arreglo asociativo (antes usaba arreglos paralelos `product_id[]`/`quantity[]`), acorde a la edicion inline de la tabla. El endpoint `adjust()` no cambio (ya soportaba delta positivo o negativo).
+- `app/Views/inventory/index.php`: cada fila tiene un boton `+` que abre un modal (reutilizando el patron `.modal-overlay`/`.modal-box` ya usado en el picker de imagenes de Productos) para ajustar stock con cantidad con signo y motivo obligatorio, contra el endpoint `/inventory/adjust` existente. El boton "Ingreso masivo" ahora alterna un modo inline: la columna Stock se vuelve editable fila por fila dentro de un unico formulario que envia a `/inventory/bulk/store`, con un campo de motivo compartido. Se agrego un icono "Editar" por fila que enlaza a `/products/edit?id=X`, visible solo si el usuario tiene permiso `products.edit`.
+- `app/Views/products/index.php`: boton "Actualizar inventario" (enlaza a `/inventory`, visible solo con permiso `inventory.view`), boton "Imprimir PDF" que abre un modal con un `<iframe>` apuntando a `/products/pdf` mas botones Descargar e Imprimir (usa `iframe.contentWindow.print()`), y los botones Editar/Eliminar ahora usan las clases `.button.info` (azul) y `.button.danger` (rojo).
+- `ProductController::pdf()` genera un PDF real en servidor con Dompdf (tabla de productos: nombre, SKU, categoria, precio, stock, estado) y lo devuelve inline (`Content-Disposition: inline`) para que el iframe lo pueda previsualizar.
+- Iconos nuevos agregados a `app/Helpers/icons.php`: `printer`, `download`.
+- CSS nuevo en `public/assets/css/app.css`: `.button.info`, `.modal-sm`, `.modal-xl`, `.header-actions`, `.bulk-stock-bar`, `.inventory-table.bulk-mode`, `.pdf-frame`, con soporte responsive.
+
+Validado por QA_ENGINEER:
+
+- `php -l` sin errores en `InventoryController.php`, `ProductController.php`, `icons.php`, `inventory/index.php`, `products/index.php`, `public/index.php`.
+- `GET /products/pdf` devuelve HTTP 200, `Content-Type: application/pdf`, PDF valido (verificado con `pdftotext`: 6 productos con nombre, SKU, categoria, precio y stock correctos).
+- Capturas con Playwright (sesion real, no simulada) confirmando: modo ingreso masivo con inputs `+0` por fila y campo Motivo oculto por defecto (se detecto y corrigio un bug donde la barra de motivo aparecia visible desde el inicio por una regla CSS que pisaba el atributo `hidden`); modal de ajuste individual con producto, stock actual, cantidad y motivo; pantalla Productos con botones de color correctos.
+- Prueba funcional end-to-end contra Apache real (no CLI): ajuste individual `-2` sobre un producto (19 -> 17, movimiento `ajuste_manual` auditado) e ingreso masivo sobre dos productos a la vez (`quantity[1]=5`, `quantity[2]=3`, ambos productos actualizados y auditados en una sola escritura). Datos de prueba limpiados y stock restaurado despues.
+- El iframe de previsualizacion de PDF aparece en blanco en capturas de Chromium headless (Playwright); se confirmo que la causa es una limitacion del visor de PDF en modo headless y no un fallo real: el iframe solicita `/products/pdf`, recibe `200` con `content-type: application/pdf` y el `src` queda correctamente asignado. Pendiente de una revision visual del usuario en un navegador de escritorio normal.
+
 ## Siguiente paso
 
 - SECURITY_ENGINEER debe revisar carga de voucher, CSRF publico, validaciones y superficie de carrito.
 - QA_ENGINEER debe ejecutar prueba funcional manual/end-to-end en navegador real: agregar producto, checkout con voucher (incluyendo el nuevo selector de ubigeo), pedido en dashboard, aprobacion, venta y stock.
 - Aplicar `database/migrations/0028_expand_ubigeo_catalog.sql` y `database/seeders/import_ubigeo.php` en el servidor de produccion cuando se despliegue (en local ya estan aplicados y verificados).
 - Eliminar `ubigeo_backup_pre0028` de la base local una vez confirmado que la cobertura nacional no rompio nada (se dejo como respaldo temporal).
+- Correr `composer install` en cualquier entorno (staging/produccion) antes de desplegar el modulo de Inventario/Productos, para que se instale `dompdf/dompdf`.
+- El usuario debe confirmar visualmente en un navegador de escritorio (no headless) que el PDF se previsualiza correctamente dentro del modal de Productos.

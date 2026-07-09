@@ -65,25 +65,9 @@ final class InventoryController extends Controller
         ]);
     }
 
-    public function bulkForm(): void
-    {
-        $stmt = Database::connection()->query(
-            "SELECT id, name, sku, presentation, stock
-             FROM products
-             WHERE status IN ('draft','published')
-             ORDER BY name ASC"
-        );
-
-        render('inventory/bulk', [
-            'title' => 'Ingreso masivo de stock',
-            'products' => $stmt->fetchAll(),
-        ]);
-    }
-
     public function bulkStore(): void
     {
         $notes = trim((string)($_POST['notes'] ?? ''));
-        $productIds = $_POST['product_id'] ?? [];
         $quantities = $_POST['quantity'] ?? [];
 
         try {
@@ -92,17 +76,17 @@ final class InventoryController extends Controller
             }
 
             $lines = [];
-            foreach ($productIds as $index => $productId) {
+            foreach ($quantities as $productId => $quantity) {
                 $productId = (int)$productId;
-                $quantity = (int)($quantities[$index] ?? 0);
+                $quantity = (int)$quantity;
                 if ($productId <= 0 || $quantity <= 0) {
                     continue;
                 }
-                $lines[$productId] = ($lines[$productId] ?? 0) + $quantity;
+                $lines[$productId] = $quantity;
             }
 
             if (!$lines) {
-                throw new RuntimeException('Agrega al menos un producto con cantidad valida.');
+                throw new RuntimeException('Ingresa una cantidad valida en al menos un producto.');
             }
 
             $pdo = Database::connection();
@@ -114,13 +98,13 @@ final class InventoryController extends Controller
 
             activity('Ingreso masivo de inventario (' . count($lines) . ' productos)', 'inventory');
             flash('status', 'Stock actualizado para ' . count($lines) . ' producto(s).');
-            Response::redirect('/inventory');
         } catch (Throwable $e) {
             if (Database::connection()->inTransaction()) {
                 Database::connection()->rollBack();
             }
             back_with_errors([$e->getMessage()], []);
         }
+        Response::redirect('/inventory');
     }
 
     public function adjust(): void

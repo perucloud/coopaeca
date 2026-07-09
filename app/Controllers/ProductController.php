@@ -1,5 +1,8 @@
 <?php
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 final class ProductController extends Controller
 {
     public function index(): void
@@ -23,6 +26,96 @@ final class ProductController extends Controller
             'items' => $items,
             'categories' => $categories,
         ]);
+    }
+
+    public function pdf(): void
+    {
+        $items = Database::connection()->query(
+            'SELECT p.*, f.disk_path AS cover_path
+             FROM products p
+             LEFT JOIN files f ON f.id = p.cover_image_id
+             ORDER BY p.is_featured DESC, p.name ASC'
+        )->fetchAll();
+
+        $categories = Database::connection()->query(
+            "SELECT pc.product_id, c.name AS cat_name
+             FROM product_category pc
+             JOIN categories c ON c.id = pc.category_id
+             WHERE c.type = 'product'"
+        )->fetchAll(PDO::FETCH_GROUP);
+
+        $settings = Database::connection()
+            ->query('SELECT setting_key, setting_value FROM settings')
+            ->fetchAll(PDO::FETCH_KEY_PAIR);
+
+        $rows = '';
+        foreach ($items as $item) {
+            $catNames = array_map(fn ($c) => $c['cat_name'], $categories[(int)$item['id']] ?? []);
+            $priceHtml = $item['sale_price'] !== null
+                ? '<span style="text-decoration:line-through;color:#94a3b8">S/ ' . number_format((float)$item['price'], 2) . '</span> S/ ' . number_format((float)$item['sale_price'], 2)
+                : 'S/ ' . number_format((float)$item['price'], 2);
+            $stockLabel = $item['stock'] === null ? 'Sin control' : (int)$item['stock'] . ' und.';
+            $statusLabel = $item['status'] === 'published' ? 'Publicado' : 'Borrador';
+
+            $rows .= '<tr>'
+                . '<td>' . e((string)$item['name']) . '<br><span class="muted">' . e((string)($item['sku'] ?: 'Sin SKU')) . '</span></td>'
+                . '<td>' . e($catNames ? implode(', ', $catNames) : '-') . '</td>'
+                . '<td>' . $priceHtml . '</td>'
+                . '<td>' . e($stockLabel) . '</td>'
+                . '<td>' . e($statusLabel) . '</td>'
+                . '</tr>';
+        }
+
+        $siteName = e((string)($settings['site_name'] ?? 'COOPAECA'));
+        $generatedAt = date('d/m/Y H:i');
+        $total = count($items);
+
+        $html = <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    body { font-family: 'Helvetica', sans-serif; color: #1e293b; font-size: 12px; }
+    h1 { font-size: 18px; margin: 0 0 4px; color: #14532d; }
+    .subtitle { color: #64748b; margin: 0 0 18px; font-size: 11px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #14532d; color: #fff; text-align: left; padding: 8px 10px; font-size: 11px; }
+    td { padding: 7px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+    tr:nth-child(even) td { background: #f8fafc; }
+    .muted { color: #94a3b8; font-size: 10px; }
+    .footer { margin-top: 16px; color: #94a3b8; font-size: 10px; }
+</style>
+</head>
+<body>
+    <h1>{$siteName} - Listado de productos</h1>
+    <p class="subtitle">Generado el {$generatedAt} - {$total} producto(s)</p>
+    <table>
+        <thead>
+            <tr><th>Producto</th><th>Categoria</th><th>Precio</th><th>Stock</th><th>Estado</th></tr>
+        </thead>
+        <tbody>
+            {$rows}
+        </tbody>
+    </table>
+    <p class="footer">Documento generado automaticamente desde el panel administrativo de {$siteName}.</p>
+</body>
+</html>
+HTML;
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', false);
+        $options->set('defaultFont', 'Helvetica');
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="productos-' . date('Y-m-d') . '.pdf"');
+        echo $dompdf->output();
+        exit;
     }
 
     public function create(): void

@@ -4,7 +4,13 @@
             <h2>Productos</h2>
             <span>Gestiona los productos mostrados en el landing page.</span>
         </div>
-        <a class="button primary" href="<?= e(url('/products/create')) ?>"><?= icon('package') ?> Nuevo producto</a>
+        <div class="header-actions">
+            <a class="button primary" href="<?= e(url('/products/create')) ?>"><?= icon('package') ?> Nuevo producto</a>
+            <?php if (can('inventory')): ?>
+            <a class="button ghost" href="<?= e(url('/inventory')) ?>"><?= icon('boxes') ?> Actualizar inventario</a>
+            <?php endif; ?>
+            <button type="button" class="button ghost" id="openPdfModal"><?= icon('printer') ?> Imprimir PDF</button>
+        </div>
     </div>
     <div class="table-wrap">
         <table>
@@ -56,10 +62,10 @@
                     <td data-label="Estado"><span class="badge <?= $item['status'] === 'published' ? 'ok' : 'off' ?>"><?= $item['status'] === 'published' ? 'Publicado' : 'Borrador' ?></span></td>
                     <td data-label="Destacado"><?= $item['is_featured'] ? '<span class="badge accent">★ Destacado</span>' : '<span class="text-muted">—</span>' ?></td>
                     <td class="actions">
-                        <a class="button small" href="<?= e(url('/products/edit?id=' . $item['id'])) ?>">Editar</a>
+                        <a class="button small info" href="<?= e(url('/products/edit?id=' . $item['id'])) ?>"><?= icon('edit') ?> Editar</a>
                         <form method="post" action="<?= e(url('/products/delete')) ?>" data-confirm="¿Eliminar este producto?">
                             <?= csrf_field() ?><input type="hidden" name="id" value="<?= e($item['id']) ?>">
-                            <button class="button small ghost" type="submit">Eliminar</button>
+                            <button class="button small danger" type="submit"><?= icon('trash') ?> Eliminar</button>
                         </form>
                     </td>
                 </tr>
@@ -75,3 +81,52 @@
         </table>
     </div>
 </section>
+
+<!-- Modal de previsualizacion e impresion de PDF -->
+<div class="modal-overlay" id="pdfModal" style="display:none">
+    <div class="modal-box modal-xl">
+        <div class="modal-header">
+            <h3>Listado de productos en PDF</h3>
+            <button type="button" class="modal-close" id="pdfModalClose">&times;</button>
+        </div>
+        <div class="modal-body pdf-modal-body">
+            <iframe id="pdfFrame" class="pdf-frame" title="Previsualizacion PDF"></iframe>
+        </div>
+        <div class="modal-footer">
+            <a class="button ghost" id="pdfDownload" href="<?= e(url('/products/pdf')) ?>" download="productos.pdf"><?= icon('download') ?> Descargar</a>
+            <button type="button" class="button primary" id="pdfPrint"><?= icon('printer') ?> Imprimir</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var modal = document.getElementById('pdfModal');
+    var frame = document.getElementById('pdfFrame');
+    var openBtn = document.getElementById('openPdfModal');
+    var closeBtn = document.getElementById('pdfModalClose');
+    var printBtn = document.getElementById('pdfPrint');
+    var pdfUrl = <?= json_encode(url('/products/pdf')) ?>;
+    var loaded = false;
+
+    openBtn.addEventListener('click', function () {
+        if (!loaded) {
+            frame.src = pdfUrl;
+            loaded = true;
+        }
+        modal.style.display = 'flex';
+    });
+    closeBtn.addEventListener('click', function () { modal.style.display = 'none'; });
+    modal.addEventListener('click', function (event) {
+        if (event.target === modal) modal.style.display = 'none';
+    });
+    printBtn.addEventListener('click', function () {
+        try {
+            frame.contentWindow.focus();
+            frame.contentWindow.print();
+        } catch (error) {
+            window.open(pdfUrl, '_blank');
+        }
+    });
+})();
+</script>

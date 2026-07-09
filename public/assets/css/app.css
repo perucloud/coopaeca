@@ -3523,3 +3523,52 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
     grid-column: auto;
   }
 }
+
+/* Botones de color adicionales */
+.button.info { color: #1d4ed8; border-color: #bfdbfe; background: #eff6ff; }
+.button.info:hover { background: #dbeafe; }
+.button.small.icon-only { min-width: 34px; padding-left: 0; padding-right: 0; justify-content: center; }
+
+.header-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* Modal: tamanos adicionales */
+.modal-sm { width: min(440px, 92vw); }
+.modal-xl { width: min(1000px, 96vw); }
+
+/* Inventario: ajuste rapido individual */
+.adjust-product-name { font-weight: 800; font-size: 15px; margin: 0 0 2px; }
+#adjustModal .modal-body label { display: block; margin-top: 14px; font-size: 12.5px; font-weight: 700; color: var(--muted); }
+#adjustModal .modal-body input { margin-top: 6px; width: 100%; }
+
+/* Inventario: ingreso masivo inline */
+.bulk-stock-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 14px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.bulk-stock-bar[hidden] { display: none; }
+.bulk-stock-notes { flex: 1 1 280px; font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.bulk-stock-notes input { margin-top: 6px; width: 100%; }
+.bulk-stock-bar-actions { display: flex; gap: 10px; }
+.inventory-table .stock-edit { display: none; }
+.inventory-table.bulk-mode .stock-view { display: none; }
+.inventory-table.bulk-mode .stock-edit { display: flex; flex-direction: column; gap: 4px; }
+.stock-edit-current { font-size: 11px; color: var(--muted); }
+.bulk-stock-input { width: 90px; }
+
+/* PDF: modal de previsualizacion */
+.pdf-modal-body { padding: 0; display: flex; }
+.pdf-frame { width: 100%; height: 72vh; border: 0; }
+
+@media (max-width: 720px) {
+  .header-actions { width: 100%; }
+  .header-actions .button { flex: 1 1 auto; }
+  .bulk-stock-bar { flex-direction: column; align-items: stretch; }
+  .pdf-frame { height: 60vh; }
+}

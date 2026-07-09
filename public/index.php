@@ -74,6 +74,7 @@ $router->group(['middleware' => ['AuthMiddleware', 'CsrfMiddleware']], function 
     $r->get('/products/edit',   [ProductController::class, 'edit'],   ['PermissionMiddleware:products.edit']);
     $r->post('/products/update',[ProductController::class, 'update'], ['PermissionMiddleware:products.edit']);
     $r->post('/products/delete',[ProductController::class, 'delete'], ['PermissionMiddleware:products.delete']);
+    $r->get('/products/pdf',    [ProductController::class, 'pdf'],    ['PermissionMiddleware:products.view']);
 
     $r->get('/orders',       [OrderController::class, 'index'],      ['PermissionMiddleware:orders.view']);
     $r->get('/orders/show',  [OrderController::class, 'show'],       ['PermissionMiddleware:orders.view']);
@@ -90,7 +91,6 @@ $router->group(['middleware' => ['AuthMiddleware', 'CsrfMiddleware']], function 
     $r->get('/inventory',            [InventoryController::class, 'index'],     ['PermissionMiddleware:inventory.view']);
     $r->get('/inventory/movements',  [InventoryController::class, 'movements'], ['PermissionMiddleware:inventory.view']);
     $r->post('/inventory/adjust',    [InventoryController::class, 'adjust'],    ['PermissionMiddleware:inventory.adjust']);
-    $r->get('/inventory/bulk',       [InventoryController::class, 'bulkForm'],  ['PermissionMiddleware:inventory.adjust']);
     $r->post('/inventory/bulk/store',[InventoryController::class, 'bulkStore'], ['PermissionMiddleware:inventory.adjust']);
 
     $r->get('/payment-methods',         [PaymentMethodController::class, 'index'],  ['PermissionMiddleware:payment_methods.view']);
