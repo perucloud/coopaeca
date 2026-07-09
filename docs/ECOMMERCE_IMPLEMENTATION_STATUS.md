@@ -129,8 +129,9 @@ Fecha: 2026-07-08
 Tarea:
 
 - Ejecutar pruebas tecnicas iniciales.
+- Ejecutar QA funcional end-to-end del flujo ecommerce.
 
-Estado: completado inicial.
+Estado: completado.
 
 Resultado:
 
@@ -139,6 +140,13 @@ Resultado:
 - Migracion ecommerce aplicada en base local.
 - Seeder de permisos aplicado en base local.
 - Render publico verificado con servidor PHP temporal: `/checkout?lang=es` HTTP 200 y `/?lang=es` HTTP 200.
+- Checkout publico real verificado por HTTP con CSRF, cookie de sesion y voucher multipart.
+- Pedido QA generado correctamente: `PED-20260708-4F032B0D`.
+- Aprobacion administrativa verificada con `OrderService::approve`.
+- Venta confirmada creada: `VEN-20260708-D2A5AC98`.
+- Stock verificado: producto 6 bajo de 10 a 9 al aprobar pedido.
+- Movimiento de inventario verificado: 1 movimiento `salida_venta`.
+- Datos QA limpiados despues de la prueba y stock restaurado.
 
 ### ORCHESTRATOR -> SECURITY_ENGINEER
 
@@ -228,6 +236,11 @@ HANDOFF aceptado por ORCHESTRATOR:
 - Aplicacion local de `database/migrations/0026_create_ecommerce_orders_sales_inventory.sql`
 - Aplicacion local de `database/seeders/0001_permissions.sql`
 - Render HTTP local con servidor temporal: `/checkout?lang=es` y `/?lang=es`.
+- QA funcional end-to-end:
+  - Crear pedido publico con voucher por HTTP multipart.
+  - Aprobar pedido con `OrderService`.
+  - Verificar venta, stock y movimiento de inventario.
+  - Limpiar datos QA y restaurar stock.
 
 ## Siguiente paso
 
