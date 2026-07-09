@@ -2445,6 +2445,38 @@ body.has-cart-items .lp-cart-float {
   border-color: var(--lp-primary);
   box-shadow: 0 0 0 3px rgba(22,128,60,.11);
 }
+.identity-lookup-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: stretch;
+}
+.identity-lookup-btn {
+  border: 0;
+  border-radius: 12px;
+  padding: 0 16px;
+  background: #0a7c3f;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  box-shadow: 0 10px 18px rgba(10,124,63,.18);
+}
+.identity-lookup-btn:hover { background: #075f31; transform: translateY(-1px); }
+.identity-lookup-btn:disabled { opacity: .65; cursor: wait; transform: none; }
+.identity-lookup-status {
+  min-height: 18px;
+  color: var(--lp-muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.identity-lookup-status[data-state="success"] { color: #0a7c3f; }
+.identity-lookup-status[data-state="error"] { color: #b42323; }
+.identity-lookup-status[data-state="loading"] { color: #8a5a05; }
 .span-2 { grid-column: span 2; }
 .span-3 { grid-column: span 3; }
 .payment-options {
@@ -2688,6 +2720,12 @@ body.has-cart-items .lp-cart-float {
   }
   .checkout-fields.two {
     grid-template-columns: 1fr;
+  }
+  .identity-lookup-field {
+    grid-template-columns: 1fr;
+  }
+  .identity-lookup-btn {
+    min-height: 44px;
   }
   .span-2,
   .span-3 {

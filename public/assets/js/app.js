@@ -105,6 +105,64 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
+// Consulta DNI/RUC para formularios administrativos
+(function () {
+  const form = document.getElementById('manualSaleForm');
+  const button = document.getElementById('manualIdentityLookupBtn');
+  if (!form || !button) return;
+
+  const type = document.getElementById('manualDocumentType');
+  const number = document.getElementById('manualDocumentNumber');
+  const name = document.getElementById('manualCustomerName');
+  const status = document.getElementById('manualIdentityLookupStatus');
+
+  function setStatus(message, state) {
+    if (!status) return;
+    status.textContent = message || '';
+    status.dataset.state = state || '';
+  }
+
+  button.addEventListener('click', () => {
+    const docType = (type?.value || 'DNI').toUpperCase();
+    const docNumber = (number?.value || '').replace(/\D+/g, '');
+    const expected = docType === 'RUC' ? 11 : 8;
+    if (docNumber.length !== expected) {
+      setStatus('Ingresa un numero de documento valido.', 'error');
+      number?.focus();
+      return;
+    }
+
+    const csrf = form.querySelector('input[name="_csrf"]')?.value
+      || document.querySelector('meta[name="csrf-token"]')?.content
+      || '';
+    const body = new FormData();
+    body.append('_csrf', csrf);
+    body.append('document_type', docType);
+    body.append('document_number', docNumber);
+
+    button.disabled = true;
+    setStatus('Consultando documento...', 'loading');
+    fetch(form.dataset.identityUrl || '/identity/lookup', {
+      method: 'POST',
+      body,
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    })
+      .then((response) => response.json().then((payload) => ({ response, payload })))
+      .then(({ response, payload }) => {
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || 'No se pudo consultar el documento.');
+        }
+        const data = payload.data || {};
+        if (data.customer_name && name) name.value = data.customer_name;
+        setStatus('Datos cargados. Verifica antes de guardar.', 'success');
+      })
+      .catch((error) => setStatus(error.message || 'No se pudo consultar el documento.', 'error'))
+      .finally(() => {
+        button.disabled = false;
+      });
+  });
+})();
+
 // Venta manual: productos dinamicos y total en vivo
 (function () {
   const form = document.getElementById('manualSaleForm');

@@ -16,7 +16,8 @@ Implementar el plan `PLAN_ECOMMERCE_PEDIDOS_VENTAS_INVENTARIO.md` usando la arqu
 - Completado: Fase 8 inicial modulo Inventario.
 - Completado: Fase 9 gestion administrativa de metodos de pago con QR.
 - Completado: ventas manuales desde dashboard con voucher e inventario sincronizado.
-- Pendiente: integraciones DNI/RUC y ubigeo local.
+- Completado: integracion DNI/RUC preparada con API Peru mediante token de entorno.
+- Pendiente: ubigeo local.
 - Bloqueado: no.
 
 ## Decisiones tecnicas iniciales
@@ -28,6 +29,7 @@ Implementar el plan `PLAN_ECOMMERCE_PEDIDOS_VENTAS_INVENTARIO.md` usando la arqu
 - Los vouchers usaran almacenamiento controlado y registro en `files`.
 - Las ventas confirmadas tendran `sales` y `sale_items` reales, no solo union de consultas.
 - Inventario se auditara con `stock_movements`; `products.stock` queda como stock actual visible.
+- El token de API Peru no se versiona ni se expone al navegador; se debe configurar como `API_PERU_TOKEN` en el entorno.
 
 ## Referencia externa analizada
 
@@ -207,6 +209,30 @@ HANDOFF aceptado por ORCHESTRATOR:
 - Listado de ventas incorpora acceso rapido a `Nueva venta`.
 - UI con resumen lateral, totales en vivo, filas dinamicas y advertencia visual si una cantidad supera stock.
 
+### ORCHESTRATOR -> BACKEND_ENGINEER + LANDING_UI_UX_ENGINEER + DASHBOARD_UI_UX_ENGINEER + SECURITY_ENGINEER
+
+Fecha: 2026-07-08
+
+Tarea:
+
+- Integrar consulta DNI/RUC usando API Peru sin exponer el token en frontend ni versionarlo.
+- Permitir autocompletar datos del comprador en checkout publico y venta manual administrativa.
+- Mantener la carga manual como fallback cuando la API no este configurada o no responda.
+
+Estado: completado tecnico.
+
+HANDOFF aceptado por ORCHESTRATOR:
+
+- Servicio `ApiPeruIdentityService` creado para consultar `/dni` y `/ruc`.
+- Token leido desde `API_PERU_TOKEN`; base URL y verificacion SSL configurables desde entorno.
+- Controlador `IdentityController` expone `POST /identity/lookup` con CSRF y rate-limit.
+- Checkout publico incorpora boton `Buscar` para DNI/RUC.
+- DNI autocompleta nombre del comprador.
+- RUC autocompleta razon social, region, provincia, distrito y direccion cuando la API los devuelve.
+- Venta manual administrativa incorpora consulta DNI/RUC y autocompleta comprador.
+- Frontend muestra estados visuales de carga, exito y error.
+- `.env.example` documenta variables necesarias sin incluir credenciales reales.
+
 ## Archivos modificados
 
 - `docs/ECOMMERCE_IMPLEMENTATION_STATUS.md`
@@ -220,6 +246,8 @@ HANDOFF aceptado por ORCHESTRATOR:
 - `app/Controllers/InventoryController.php`
 - `app/Controllers/CheckoutController.php`
 - `app/Controllers/PaymentMethodController.php`
+- `app/Controllers/IdentityController.php`
+- `app/Services/ApiPeruIdentityService.php`
 - `app/Services/VoucherStorageService.php`
 - `app/Services/InventoryService.php`
 - `app/Services/OrderService.php`
@@ -241,6 +269,7 @@ HANDOFF aceptado por ORCHESTRATOR:
 - `public/assets/css/app.css`
 - `public/assets/css/landing.css`
 - `public/assets/js/landing.js`
+- `.env.example`
 
 ## Pruebas ejecutadas
 
@@ -271,6 +300,14 @@ HANDOFF aceptado por ORCHESTRATOR:
 - Operacion QA: `QAMAN20260709031330`.
 - Verificado descuento de stock y movimiento `salida_venta` durante la prueba.
 - Datos QA limpiados despues de la prueba; producto 6 verificado nuevamente con stock 10.
+- `php -l app\Services\ApiPeruIdentityService.php`.
+- `php -l app\Controllers\IdentityController.php`.
+- `php -l app\Views\landing\checkout.php` despues de conectar consulta DNI/RUC.
+- `php -l app\Views\sales\create.php` despues de conectar consulta DNI/RUC.
+- `php -l public\index.php` despues de registrar ruta `/identity/lookup`.
+- `node --check public\assets\js\landing.js` despues de conectar consulta DNI/RUC.
+- `node --check public\assets\js\app.js` despues de conectar consulta DNI/RUC en venta manual.
+- Verificacion local sin token: `ApiPeruIdentityService` responde de forma controlada con `Consulta DNI/RUC no configurada`.
 - Aplicacion local de `database/migrations/0026_create_ecommerce_orders_sales_inventory.sql`
 - Aplicacion local de `database/seeders/0001_permissions.sql`
 - Render HTTP local con servidor temporal: `/checkout?lang=es` y `/?lang=es`.

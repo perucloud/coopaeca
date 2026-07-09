@@ -294,6 +294,11 @@ if (hasGsap) {
       ? 'To register the purchase, complete the cart and upload the payment voucher. Then send the order summary by WhatsApp.'
       : 'Para registrar la compra, completa el carrito y adjunta el voucher de pago. Luego envia el resumen del pedido por WhatsApp.',
     continueShopping: isEn ? 'Continue shopping' : 'Seguir comprando',
+    lookupIdle: isEn ? 'Search DNI/RUC data' : 'Consulta datos DNI/RUC',
+    lookupLoading: isEn ? 'Searching document...' : 'Consultando documento...',
+    lookupSuccess: isEn ? 'Data loaded. Please verify it.' : 'Datos cargados. Verificalos antes de continuar.',
+    lookupMissing: isEn ? 'Enter a valid document number.' : 'Ingresa un numero de documento valido.',
+    lookupError: isEn ? 'Document could not be checked.' : 'No se pudo consultar el documento.',
     total: 'Total',
   };
 
@@ -567,6 +572,73 @@ if (hasGsap) {
     paint();
   }
 
+  function setupIdentityLookup() {
+    const form = document.getElementById('checkoutForm');
+    const button = document.getElementById('identityLookupBtn');
+    if (!form || !button) return;
+
+    const type = document.getElementById('documentType');
+    const number = document.getElementById('documentNumber');
+    const name = document.getElementById('customerName');
+    const status = document.getElementById('identityLookupStatus');
+    const region = document.getElementById('checkoutRegion');
+    const province = document.getElementById('checkoutProvince');
+    const district = document.getElementById('checkoutDistrict');
+    const address = document.getElementById('checkoutAddress');
+
+    function setStatus(message, state) {
+      if (!status) return;
+      status.textContent = message || '';
+      status.dataset.state = state || '';
+    }
+
+    button.addEventListener('click', () => {
+      const docType = (type?.value || 'DNI').toUpperCase();
+      const docNumber = (number?.value || '').replace(/\D+/g, '');
+      const expected = docType === 'RUC' ? 11 : 8;
+      if (docNumber.length !== expected) {
+        setStatus(text.lookupMissing, 'error');
+        number?.focus();
+        return;
+      }
+
+      const csrf = form.querySelector('input[name="_csrf"]')?.value || '';
+      const body = new FormData();
+      body.append('_csrf', csrf);
+      body.append('document_type', docType);
+      body.append('document_number', docNumber);
+
+      button.disabled = true;
+      setStatus(text.lookupLoading, 'loading');
+      fetch(form.dataset.identityUrl || '/identity/lookup', {
+        method: 'POST',
+        body,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      })
+        .then((response) => response.json().then((payload) => ({ response, payload })))
+        .then(({ response, payload }) => {
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || text.lookupError);
+          }
+          const data = payload.data || {};
+          if (data.customer_name && name) name.value = data.customer_name;
+          if (docType === 'RUC') {
+            if (data.region && region) region.value = data.region;
+            if (data.province && province) province.value = data.province;
+            if (data.district && district) district.value = data.district;
+            if (data.address && address && !address.value.trim()) address.value = data.address;
+          }
+          setStatus(text.lookupSuccess, 'success');
+        })
+        .catch((error) => setStatus(error.message || text.lookupError, 'error'))
+        .finally(() => {
+          button.disabled = false;
+        });
+    });
+
+    type?.addEventListener('change', () => setStatus(text.lookupIdle, ''));
+  }
+
   if (document.querySelector('[data-clear-cart]')) {
     localStorage.removeItem(KEY);
   }
@@ -574,4 +646,5 @@ if (hasGsap) {
   renderCart();
   renderCheckout();
   setupCheckoutSteps();
+  setupIdentityLookup();
 })();

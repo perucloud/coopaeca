@@ -3339,6 +3339,27 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(37,99,235,.1);
 }
+.identity-lookup-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: stretch;
+}
+.identity-lookup-field .identity-lookup-btn {
+  min-height: 42px;
+  align-self: end;
+}
+.identity-lookup-status {
+  min-height: 17px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.identity-lookup-status[data-state="success"] { color: #15803d; }
+.identity-lookup-status[data-state="error"] { color: #b42318; }
+.identity-lookup-status[data-state="loading"] { color: #a16207; }
 .payment-method-form .span-2 {
   grid-column: span 2;
 }
@@ -3363,6 +3384,9 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
 }
 @media (max-width: 620px) {
   .payment-method-form {
+    grid-template-columns: 1fr;
+  }
+  .identity-lookup-field {
     grid-template-columns: 1fr;
   }
   .payment-method-form .span-2 {

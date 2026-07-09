@@ -24,7 +24,7 @@ $productsJson = json_encode(array_map(fn ($p) => [
         <div class="alert alert-error"><?php foreach ($errors as $error): ?><p><?= e($error) ?></p><?php endforeach; ?></div>
     <?php endif; ?>
 
-    <form action="<?= e(url('/sales/store')) ?>" method="post" enctype="multipart/form-data" class="manual-sale-form" id="manualSaleForm">
+    <form action="<?= e(url('/sales/store')) ?>" method="post" enctype="multipart/form-data" class="manual-sale-form" id="manualSaleForm" data-identity-url="<?= e(url('/identity/lookup')) ?>">
         <?= csrf_field() ?>
         <div class="manual-sale-grid">
             <div class="manual-sale-main">
@@ -39,16 +39,20 @@ $productsJson = json_encode(array_map(fn ($p) => [
                             </select>
                         </label>
                         <label>Documento
-                            <select name="document_type" required>
+                            <select name="document_type" id="manualDocumentType" required>
                                 <option value="DNI" <?= old('document_type', 'DNI') === 'DNI' ? 'selected' : '' ?>>DNI</option>
                                 <option value="RUC" <?= old('document_type') === 'RUC' ? 'selected' : '' ?>>RUC</option>
                             </select>
                         </label>
                         <label>Numero documento
-                            <input type="text" name="document_number" value="<?= e(old('document_number')) ?>" required inputmode="numeric">
+                            <span class="identity-lookup-field">
+                                <input type="text" name="document_number" id="manualDocumentNumber" value="<?= e(old('document_number')) ?>" required inputmode="numeric">
+                                <button type="button" class="button small identity-lookup-btn" id="manualIdentityLookupBtn">Buscar</button>
+                            </span>
+                            <small class="identity-lookup-status" id="manualIdentityLookupStatus" aria-live="polite"></small>
                         </label>
                         <label>Nombre / razon social
-                            <input type="text" name="customer_name" value="<?= e(old('customer_name')) ?>" required>
+                            <input type="text" name="customer_name" id="manualCustomerName" value="<?= e(old('customer_name')) ?>" required>
                         </label>
                         <label>Celular
                             <input type="tel" name="phone" value="<?= e(old('phone')) ?>">

@@ -21,6 +21,7 @@ require dirname(__DIR__) . '/app/Controllers/ContactController.php';
 require dirname(__DIR__) . '/app/Controllers/MediaController.php';
 require dirname(__DIR__) . '/app/Controllers/LandingController.php';
 require dirname(__DIR__) . '/app/Controllers/CheckoutController.php';
+require dirname(__DIR__) . '/app/Controllers/IdentityController.php';
 require dirname(__DIR__) . '/app/Controllers/Mail/MailboxController.php';
 require dirname(__DIR__) . '/app/Controllers/Mail/MailAccountController.php';
 require dirname(__DIR__) . '/app/Controllers/Mail/MailComposeController.php';
@@ -36,6 +37,7 @@ $router->get('/galeria', [LandingController::class, 'gallery']);
 $router->get('/buscar', [LandingController::class, 'search']);
 $router->get('/checkout', [CheckoutController::class, 'cart']);
 $router->get('/checkout/success', [CheckoutController::class, 'success']);
+$router->post('/identity/lookup', [IdentityController::class, 'lookup'], ['CsrfMiddleware', 'RateLimitMiddleware:identity,20,60']);
 $router->post('/contact', [LandingController::class, 'contact'], ['CsrfMiddleware']);
 $router->post('/checkout', [CheckoutController::class, 'store'], ['CsrfMiddleware']);
 

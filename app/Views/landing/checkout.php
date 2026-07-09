@@ -17,7 +17,7 @@ $oldItems = old('items', '');
 
 <section class="checkout-page">
     <div class="lp-container checkout-grid">
-        <form class="checkout-form" id="checkoutForm" action="<?= e(lurl('/checkout')) ?>" method="post" enctype="multipart/form-data">
+        <form class="checkout-form" id="checkoutForm" action="<?= e(lurl('/checkout')) ?>" method="post" enctype="multipart/form-data" data-identity-url="<?= e(lurl('/identity/lookup')) ?>">
             <?= csrf_field() ?>
             <input type="hidden" name="items" id="checkoutItems" value="<?= e((string)$oldItems) ?>">
 
@@ -65,10 +65,14 @@ $oldItems = old('items', '');
                         </select>
                     </label>
                     <label><?= e($isEn ? 'Document number' : 'Numero de documento') ?>
-                        <input type="text" name="document_number" id="documentNumber" value="<?= e(old('document_number')) ?>" required inputmode="numeric" autocomplete="off">
+                        <span class="identity-lookup-field">
+                            <input type="text" name="document_number" id="documentNumber" value="<?= e(old('document_number')) ?>" required inputmode="numeric" autocomplete="off">
+                            <button type="button" class="identity-lookup-btn" id="identityLookupBtn"><?= e($isEn ? 'Search' : 'Buscar') ?></button>
+                        </span>
+                        <small class="identity-lookup-status" id="identityLookupStatus" aria-live="polite"></small>
                     </label>
                     <label class="span-2"><?= e($isEn ? 'Full name or business name' : 'Nombres completos o razon social') ?>
-                        <input type="text" name="customer_name" value="<?= e(old('customer_name')) ?>" required autocomplete="name">
+                        <input type="text" name="customer_name" id="customerName" value="<?= e(old('customer_name')) ?>" required autocomplete="name">
                     </label>
                     <label><?= e($isEn ? 'Phone' : 'Celular') ?>
                         <input type="tel" name="phone" value="<?= e(old('phone')) ?>" autocomplete="tel">
@@ -91,16 +95,16 @@ $oldItems = old('items', '');
                 </div>
                 <div class="checkout-fields three">
                     <label><?= e($isEn ? 'Region' : 'Region') ?>
-                        <input type="text" name="region" value="<?= e(old('region')) ?>" required>
+                        <input type="text" name="region" id="checkoutRegion" value="<?= e(old('region')) ?>" required>
                     </label>
                     <label><?= e($isEn ? 'Province' : 'Provincia') ?>
-                        <input type="text" name="province" value="<?= e(old('province')) ?>" required>
+                        <input type="text" name="province" id="checkoutProvince" value="<?= e(old('province')) ?>" required>
                     </label>
                     <label><?= e($isEn ? 'District' : 'Distrito') ?>
-                        <input type="text" name="district" value="<?= e(old('district')) ?>" required>
+                        <input type="text" name="district" id="checkoutDistrict" value="<?= e(old('district')) ?>" required>
                     </label>
                     <label class="span-3"><?= e($isEn ? 'Exact address' : 'Direccion exacta') ?>
-                        <input type="text" name="address" value="<?= e(old('address')) ?>" required>
+                        <input type="text" name="address" id="checkoutAddress" value="<?= e(old('address')) ?>" required>
                     </label>
                     <label class="span-3"><?= e($isEn ? 'Reference' : 'Referencia') ?>
                         <input type="text" name="address_reference" value="<?= e(old('address_reference')) ?>">
