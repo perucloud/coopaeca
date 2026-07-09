@@ -19,24 +19,51 @@ $statusLabels = ['confirmada' => 'Confirmada', 'anulada' => 'Anulada', 'entregad
         <div class="stat-card soft"><span>WhatsApp</span><strong>S/ <?= number_format((float)($stats['total_whatsapp'] ?? 0), 2) ?></strong></div>
     </div>
 
-    <form method="get" action="<?= e(url('/sales')) ?>" class="filters-bar">
-        <input class="form-control" type="text" name="q" value="<?= e($filters['q']) ?>" placeholder="Buscar venta, comprador, documento, WhatsApp u operacion">
-        <input class="form-control" type="date" name="from" value="<?= e($filters['from']) ?>">
-        <input class="form-control" type="date" name="to" value="<?= e($filters['to']) ?>">
-        <select class="form-control" name="source">
-            <option value="">Todos los origenes</option>
-            <?php foreach ($sourceLabels as $key => $label): ?>
-            <option value="<?= e($key) ?>" <?= $filters['source'] === $key ? 'selected' : '' ?>><?= e($label) ?></option>
-            <?php endforeach; ?>
-        </select>
-        <select class="form-control" name="status">
-            <option value="">Todos los estados</option>
-            <?php foreach ($statusLabels as $key => $label): ?>
-            <option value="<?= e($key) ?>" <?= $filters['status'] === $key ? 'selected' : '' ?>><?= e($label) ?></option>
-            <?php endforeach; ?>
-        </select>
-        <button class="button primary" type="submit"><?= icon('search') ?> Filtrar</button>
-    </form>
+    <div class="filter-panel">
+        <div class="filter-panel-head">
+            <span class="filter-panel-icon"><?= icon('search') ?></span>
+            <div>
+                <strong>Filtros de búsqueda</strong>
+                <span>Ubica ventas por código, comprador, origen, estado o fecha.</span>
+            </div>
+        </div>
+        <form method="get" action="<?= e(url('/sales')) ?>" class="filter-grid">
+            <label class="filter-field wide">
+                <span>Buscar</span>
+                <input class="form-control" type="text" name="q" value="<?= e($filters['q']) ?>" placeholder="Venta, comprador, documento, WhatsApp u operación">
+            </label>
+            <label class="filter-field">
+                <span>Origen</span>
+                <select class="form-control" name="source">
+                    <option value="">Todos</option>
+                    <?php foreach ($sourceLabels as $key => $label): ?>
+                    <option value="<?= e($key) ?>" <?= $filters['source'] === $key ? 'selected' : '' ?>><?= e($label) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label class="filter-field">
+                <span>Estado</span>
+                <select class="form-control" name="status">
+                    <option value="">Todos</option>
+                    <?php foreach ($statusLabels as $key => $label): ?>
+                    <option value="<?= e($key) ?>" <?= $filters['status'] === $key ? 'selected' : '' ?>><?= e($label) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label class="filter-field">
+                <span>Desde</span>
+                <input class="form-control" type="date" name="from" value="<?= e($filters['from']) ?>">
+            </label>
+            <label class="filter-field">
+                <span>Hasta</span>
+                <input class="form-control" type="date" name="to" value="<?= e($filters['to']) ?>">
+            </label>
+            <div class="filter-actions">
+                <button class="button primary" type="submit"><?= icon('search') ?> Filtrar</button>
+                <a class="button ghost" href="<?= e(url('/sales')) ?>">Limpiar</a>
+            </div>
+        </form>
+    </div>
 
     <div class="table-wrap">
         <table>

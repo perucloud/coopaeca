@@ -6,6 +6,8 @@ final class OrderController extends Controller
     {
         $status = trim((string)($_GET['status'] ?? ''));
         $q = trim((string)($_GET['q'] ?? ''));
+        $from = trim((string)($_GET['from'] ?? ''));
+        $to = trim((string)($_GET['to'] ?? ''));
         $where = ['1=1'];
         $params = [];
 
@@ -17,6 +19,14 @@ final class OrderController extends Controller
             $where[] = '(o.code LIKE ? OR o.customer_name LIKE ? OR o.document_number LIKE ? OR o.whatsapp LIKE ? OR o.payment_operation_number LIKE ?)';
             $like = '%' . $q . '%';
             array_push($params, $like, $like, $like, $like, $like);
+        }
+        if ($from !== '') {
+            $where[] = 'DATE(o.created_at) >= ?';
+            $params[] = $from;
+        }
+        if ($to !== '') {
+            $where[] = 'DATE(o.created_at) <= ?';
+            $params[] = $to;
         }
 
         $sql = 'SELECT o.*, f.disk_path AS voucher_path,
@@ -41,6 +51,7 @@ final class OrderController extends Controller
             'stats' => $stats,
             'status' => $status,
             'q' => $q,
+            'filters' => ['q' => $q, 'status' => $status, 'from' => $from, 'to' => $to],
         ]);
     }
 

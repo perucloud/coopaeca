@@ -10,11 +10,41 @@
         </button>
     </div>
 
-    <form method="get" action="<?= e(url('/inventory')) ?>" class="filters-bar">
-        <input class="form-control" type="text" name="q" value="<?= e($q) ?>" placeholder="Buscar producto o SKU">
-        <button class="button primary" type="submit"><?= icon('search') ?> Buscar</button>
-        <a class="button ghost" href="<?= e(url('/inventory')) ?>">Limpiar</a>
-    </form>
+    <div class="filter-panel">
+        <div class="filter-panel-head">
+            <span class="filter-panel-icon"><?= icon('search') ?></span>
+            <div>
+                <strong>Filtros de búsqueda</strong>
+                <span>Ubica productos por nombre, SKU, estado o nivel de stock.</span>
+            </div>
+        </div>
+        <form method="get" action="<?= e(url('/inventory')) ?>" class="filter-grid">
+            <label class="filter-field wide">
+                <span>Buscar</span>
+                <input class="form-control" type="text" name="q" value="<?= e($filters['q']) ?>" placeholder="Nombre o SKU">
+            </label>
+            <label class="filter-field">
+                <span>Estado</span>
+                <select class="form-control" name="status">
+                    <option value="">Todos</option>
+                    <option value="published" <?= $filters['status'] === 'published' ? 'selected' : '' ?>>Publicado</option>
+                    <option value="draft" <?= $filters['status'] === 'draft' ? 'selected' : '' ?>>Borrador</option>
+                </select>
+            </label>
+            <label class="filter-field">
+                <span>Nivel de stock</span>
+                <select class="form-control" name="stock_level">
+                    <option value="">Todos</option>
+                    <option value="low" <?= $filters['stock_level'] === 'low' ? 'selected' : '' ?>>Stock bajo (≤ 5)</option>
+                    <option value="out" <?= $filters['stock_level'] === 'out' ? 'selected' : '' ?>>Sin stock</option>
+                </select>
+            </label>
+            <div class="filter-actions">
+                <button class="button primary" type="submit"><?= icon('search') ?> Filtrar</button>
+                <a class="button ghost" href="<?= e(url('/inventory')) ?>">Limpiar</a>
+            </div>
+        </form>
+    </div>
 
     <form method="post" action="<?= e(url('/inventory/bulk/store')) ?>" id="bulkStockForm">
         <?= csrf_field() ?>

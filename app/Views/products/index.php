@@ -12,6 +12,51 @@
             <button type="button" class="button ghost" id="openPdfModal"><?= icon('printer') ?> Imprimir PDF</button>
         </div>
     </div>
+
+    <div class="filter-panel">
+        <div class="filter-panel-head">
+            <span class="filter-panel-icon"><?= icon('search') ?></span>
+            <div>
+                <strong>Filtros de búsqueda</strong>
+                <span>Refina el catálogo por nombre, categoría, estado o destacados.</span>
+            </div>
+        </div>
+        <form method="get" action="<?= e(url('/products')) ?>" class="filter-grid">
+            <label class="filter-field wide">
+                <span>Buscar</span>
+                <input class="form-control" type="text" name="q" value="<?= e($filters['q']) ?>" placeholder="Nombre o SKU">
+            </label>
+            <label class="filter-field">
+                <span>Categoría</span>
+                <select class="form-control" name="category_id">
+                    <option value="">Todas</option>
+                    <?php foreach ($allCategories as $cat): ?>
+                    <option value="<?= (int)$cat['id'] ?>" <?= $filters['category_id'] === (int)$cat['id'] ? 'selected' : '' ?>><?= e($cat['name']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label class="filter-field">
+                <span>Estado</span>
+                <select class="form-control" name="status">
+                    <option value="">Todos</option>
+                    <option value="published" <?= $filters['status'] === 'published' ? 'selected' : '' ?>>Publicado</option>
+                    <option value="draft" <?= $filters['status'] === 'draft' ? 'selected' : '' ?>>Borrador</option>
+                </select>
+            </label>
+            <label class="filter-field">
+                <span>Destacado</span>
+                <select class="form-control" name="featured">
+                    <option value="">Todos</option>
+                    <option value="1" <?= $filters['featured'] === '1' ? 'selected' : '' ?>>Solo destacados</option>
+                </select>
+            </label>
+            <div class="filter-actions">
+                <button class="button primary" type="submit"><?= icon('search') ?> Filtrar</button>
+                <a class="button ghost" href="<?= e(url('/products')) ?>">Limpiar</a>
+            </div>
+        </form>
+    </div>
+
     <div class="table-wrap">
         <table>
             <thead>
@@ -70,11 +115,17 @@
                     </td>
                 </tr>
             <?php endforeach; ?>
-            <?php if (!$items): ?>
+            <?php if (!$items && !array_filter($filters)): ?>
                 <tr><td colspan="7" class="empty-state">
                     <div class="empty-icon"><?= icon('package') ?></div>
                     <p>Sin productos registrados.</p>
                     <a class="button primary" href="<?= e(url('/products/create')) ?>">Crear primer producto</a>
+                </td></tr>
+            <?php elseif (!$items): ?>
+                <tr><td colspan="7" class="empty-state">
+                    <div class="empty-icon"><?= icon('search') ?></div>
+                    <p>Ningún producto coincide con los filtros aplicados.</p>
+                    <a class="button ghost" href="<?= e(url('/products')) ?>">Limpiar filtros</a>
                 </td></tr>
             <?php endif; ?>
             </tbody>

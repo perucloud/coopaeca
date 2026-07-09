@@ -7,12 +7,39 @@ final class ProductController extends Controller
 {
     public function index(): void
     {
-        $items = Database::connection()->query(
+        $q = trim((string)($_GET['q'] ?? ''));
+        $status = trim((string)($_GET['status'] ?? ''));
+        $categoryId = (int)($_GET['category_id'] ?? 0);
+        $featured = trim((string)($_GET['featured'] ?? ''));
+
+        $where = ['1=1'];
+        $params = [];
+        if ($q !== '') {
+            $where[] = '(p.name LIKE ? OR p.sku LIKE ?)';
+            $like = '%' . $q . '%';
+            array_push($params, $like, $like);
+        }
+        if ($status !== '' && in_array($status, ['draft', 'published'], true)) {
+            $where[] = 'p.status = ?';
+            $params[] = $status;
+        }
+        if ($featured === '1') {
+            $where[] = 'p.is_featured = 1';
+        }
+        if ($categoryId > 0) {
+            $where[] = 'EXISTS (SELECT 1 FROM product_category pc2 WHERE pc2.product_id = p.id AND pc2.category_id = ?)';
+            $params[] = $categoryId;
+        }
+
+        $stmt = Database::connection()->prepare(
             'SELECT p.*, f.disk_path AS cover_path, f.original_name AS cover_name
              FROM products p
              LEFT JOIN files f ON f.id = p.cover_image_id
+             WHERE ' . implode(' AND ', $where) . '
              ORDER BY p.is_featured DESC, p.id DESC'
-        )->fetchAll();
+        );
+        $stmt->execute($params);
+        $items = $stmt->fetchAll();
 
         $categories = Database::connection()->query(
             "SELECT pc.product_id, c.name AS cat_name, c.slug AS cat_slug
@@ -21,10 +48,16 @@ final class ProductController extends Controller
              WHERE c.type = 'product'"
         )->fetchAll(PDO::FETCH_GROUP);
 
+        $allCategories = Database::connection()->query(
+            "SELECT id, name FROM categories WHERE type = 'product' AND is_active = 1 ORDER BY position ASC"
+        )->fetchAll();
+
         render('products/index', [
             'title' => 'Productos',
             'items' => $items,
             'categories' => $categories,
+            'allCategories' => $allCategories,
+            'filters' => ['q' => $q, 'status' => $status, 'category_id' => $categoryId, 'featured' => $featured],
         ]);
     }
 

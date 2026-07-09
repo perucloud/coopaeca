@@ -34,17 +34,42 @@ $badgeClass = [
         <?php endforeach; ?>
     </div>
 
-    <form method="get" action="<?= e(url('/orders')) ?>" class="filters-bar">
-        <input class="form-control" type="text" name="q" value="<?= e($q) ?>" placeholder="Buscar codigo, comprador, DNI/RUC, WhatsApp u operacion">
-        <select class="form-control" name="status">
-            <option value="">Todos los estados</option>
-            <?php foreach ($statusLabels as $key => $label): ?>
-            <option value="<?= e($key) ?>" <?= $status === $key ? 'selected' : '' ?>><?= e($label) ?></option>
-            <?php endforeach; ?>
-        </select>
-        <button class="button primary" type="submit"><?= icon('search') ?> Filtrar</button>
-        <a class="button ghost" href="<?= e(url('/orders')) ?>">Limpiar</a>
-    </form>
+    <div class="filter-panel">
+        <div class="filter-panel-head">
+            <span class="filter-panel-icon"><?= icon('search') ?></span>
+            <div>
+                <strong>Filtros de búsqueda</strong>
+                <span>Ubica pedidos por código, comprador, estado o fecha.</span>
+            </div>
+        </div>
+        <form method="get" action="<?= e(url('/orders')) ?>" class="filter-grid">
+            <label class="filter-field wide">
+                <span>Buscar</span>
+                <input class="form-control" type="text" name="q" value="<?= e($filters['q']) ?>" placeholder="Código, comprador, DNI/RUC, WhatsApp u operación">
+            </label>
+            <label class="filter-field">
+                <span>Estado</span>
+                <select class="form-control" name="status">
+                    <option value="">Todos</option>
+                    <?php foreach ($statusLabels as $key => $label): ?>
+                    <option value="<?= e($key) ?>" <?= $filters['status'] === $key ? 'selected' : '' ?>><?= e($label) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label class="filter-field">
+                <span>Desde</span>
+                <input class="form-control" type="date" name="from" value="<?= e($filters['from']) ?>">
+            </label>
+            <label class="filter-field">
+                <span>Hasta</span>
+                <input class="form-control" type="date" name="to" value="<?= e($filters['to']) ?>">
+            </label>
+            <div class="filter-actions">
+                <button class="button primary" type="submit"><?= icon('search') ?> Filtrar</button>
+                <a class="button ghost" href="<?= e(url('/orders')) ?>">Limpiar</a>
+            </div>
+        </form>
+    </div>
 
     <div class="table-wrap">
         <table>

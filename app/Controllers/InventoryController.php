@@ -5,12 +5,24 @@ final class InventoryController extends Controller
     public function index(): void
     {
         $q = trim((string)($_GET['q'] ?? ''));
+        $status = trim((string)($_GET['status'] ?? ''));
+        $stockLevel = trim((string)($_GET['stock_level'] ?? ''));
+
         $where = ["p.status IN ('draft','published')"];
         $params = [];
         if ($q !== '') {
             $where[] = '(p.name LIKE ? OR p.sku LIKE ?)';
             $like = '%' . $q . '%';
             array_push($params, $like, $like);
+        }
+        if ($status !== '' && in_array($status, ['draft', 'published'], true)) {
+            $where[] = 'p.status = ?';
+            $params[] = $status;
+        }
+        if ($stockLevel === 'low') {
+            $where[] = 'p.stock IS NOT NULL AND p.stock <= 5';
+        } elseif ($stockLevel === 'out') {
+            $where[] = 'p.stock IS NOT NULL AND p.stock = 0';
         }
 
         $stmt = Database::connection()->prepare(
@@ -35,6 +47,7 @@ final class InventoryController extends Controller
             'title' => 'Inventario',
             'products' => $stmt->fetchAll(),
             'q' => $q,
+            'filters' => ['q' => $q, 'status' => $status, 'stock_level' => $stockLevel],
         ]);
     }
 
