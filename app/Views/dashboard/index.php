@@ -10,16 +10,16 @@ $modules = [
 $modules = array_values(array_filter($modules, fn ($module) => can($module['perm'])));
 
 $quickLinks = [
-    ['perm' => 'posts',           'url' => '/posts/create',       'icon' => 'edit',     'label' => 'Nueva noticia', 'hint' => 'Publicar contenido'],
-    ['perm' => 'products',        'url' => '/products',           'icon' => 'package',  'label' => 'Productos', 'hint' => 'Catalogo comercial'],
-    ['perm' => 'services',        'url' => '/services',           'icon' => 'layers',   'label' => 'Servicios', 'hint' => 'Landing page'],
-    ['perm' => 'galleries',       'url' => '/galleries',          'icon' => 'image',    'label' => 'Galeria', 'hint' => 'Imagenes publicas'],
-    ['perm' => 'social_networks', 'url' => '/social-networks',    'icon' => 'share',    'label' => 'Redes sociales', 'hint' => 'Canales activos'],
-    ['perm' => 'contacts',        'url' => '/contacts',           'icon' => 'mail',     'label' => 'Contactenos', 'hint' => 'Mensajes recibidos'],
-    ['perm' => 'files',           'url' => '/media',              'icon' => 'image',    'label' => 'Media', 'hint' => 'Biblioteca'],
-    ['perm' => 'pages',           'url' => '/about',              'icon' => 'layout',   'label' => 'Nosotros', 'hint' => 'Datos institucionales'],
-    ['perm' => 'users',           'url' => '/users',              'icon' => 'users',    'label' => 'Usuarios', 'hint' => 'Accesos del sistema'],
-    ['perm' => 'settings',        'url' => '/settings',           'icon' => 'settings', 'label' => 'Configuracion', 'hint' => 'Parametros generales'],
+    ['perm' => 'posts',           'url' => '/posts/create',       'icon' => 'edit',     'label' => 'Nueva noticia', 'hint' => 'Publicar contenido', 'color' => 'noticias'],
+    ['perm' => 'products',        'url' => '/products',           'icon' => 'package',  'label' => 'Productos', 'hint' => 'Catalogo comercial', 'color' => 'productos'],
+    ['perm' => 'services',        'url' => '/services',           'icon' => 'layers',   'label' => 'Servicios', 'hint' => 'Landing page', 'color' => 'servicios'],
+    ['perm' => 'galleries',       'url' => '/galleries',          'icon' => 'image',    'label' => 'Galeria', 'hint' => 'Imagenes publicas', 'color' => 'galeria'],
+    ['perm' => 'social_networks', 'url' => '/social-networks',    'icon' => 'share',    'label' => 'Redes sociales', 'hint' => 'Canales activos', 'color' => 'redes'],
+    ['perm' => 'contacts',        'url' => '/contacts',           'icon' => 'mail',     'label' => 'Contactenos', 'hint' => 'Mensajes recibidos', 'color' => 'contactos'],
+    ['perm' => 'files',           'url' => '/media',              'icon' => 'image',    'label' => 'Media', 'hint' => 'Biblioteca', 'color' => 'media'],
+    ['perm' => 'pages',           'url' => '/about',              'icon' => 'layout',   'label' => 'Nosotros', 'hint' => 'Datos institucionales', 'color' => 'nosotros'],
+    ['perm' => 'users',           'url' => '/users',              'icon' => 'users',    'label' => 'Usuarios', 'hint' => 'Accesos del sistema', 'color' => 'usuarios'],
+    ['perm' => 'settings',        'url' => '/settings',           'icon' => 'settings', 'label' => 'Configuracion', 'hint' => 'Parametros generales', 'color' => 'config'],
 ];
 $quickLinks = array_values(array_filter($quickLinks, fn ($link) => can($link['perm'])));
 $visibleLatestContents = array_values(array_filter($latestContents ?? [], fn ($item) => can($item['permission'])));
@@ -220,7 +220,7 @@ $statusClass = function (?string $status): string {
 
     <div class="dashboard-mobile-grid">
         <?php foreach ($quickLinks as $link): ?>
-            <a class="dashboard-mobile-card" href="<?= e(url($link['url'])) ?>">
+            <a class="dashboard-mobile-card qc-<?= e($link['color']) ?>" href="<?= e(url($link['url'])) ?>">
                 <span><?= icon($link['icon']) ?></span>
                 <strong><?= e($link['label']) ?></strong>
                 <small><?= e($link['hint']) ?></small>

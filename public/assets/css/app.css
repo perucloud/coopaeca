@@ -3244,21 +3244,52 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
     padding: 14px;
   }
   .dashboard-mobile-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
   .dashboard-mobile-card {
-    min-height: 106px;
-    grid-template-columns: 54px minmax(0, 1fr);
-    grid-template-areas: "icon title" "icon hint";
-    justify-items: start;
-    text-align: left;
-    align-content: center;
-    column-gap: 12px;
+    min-height: 118px;
+    padding: 14px 8px;
   }
-  .dashboard-mobile-card span { grid-area: icon; }
-  .dashboard-mobile-card strong { grid-area: title; }
-  .dashboard-mobile-card small { grid-area: hint; }
+  .dashboard-mobile-card span { width: 42px; height: 42px; }
+  .dashboard-mobile-card span .icon { width: 21px; height: 21px; }
+  .dashboard-mobile-card strong { font-size: 13px; }
+  .dashboard-mobile-card small { font-size: 10.5px; }
 }
+
+/* Panel rapido movil: tarjetas con tinte pastel distintivo por modulo,
+   para diferenciarlas visualmente en vez de un muro de tarjetas blancas. */
+.dashboard-mobile-card.qc-noticias   { background: #eaf1ff; border-color: #cfe0ff; }
+.dashboard-mobile-card.qc-noticias   span { background: #d7e6ff; color: #2f5fd6; }
+.dashboard-mobile-card.qc-productos  { background: #e6f7f3; border-color: #c7ede3; }
+.dashboard-mobile-card.qc-productos  span { background: #cdf0e6; color: #0f9488; }
+.dashboard-mobile-card.qc-servicios  { background: #f2ecff; border-color: #ddd0fb; }
+.dashboard-mobile-card.qc-servicios  span { background: #e6d9fe; color: #7c3aed; }
+.dashboard-mobile-card.qc-galeria    { background: #ffeef5; border-color: #fbd3e5; }
+.dashboard-mobile-card.qc-galeria    span { background: #fcdcea; color: #db2777; }
+.dashboard-mobile-card.qc-redes      { background: #eef2ff; border-color: #d6dcfc; }
+.dashboard-mobile-card.qc-redes      span { background: #dee4fd; color: #4f46e5; }
+.dashboard-mobile-card.qc-contactos  { background: #fff4e6; border-color: #fbe1bd; }
+.dashboard-mobile-card.qc-contactos  span { background: #fce6c2; color: #c2680a; }
+.dashboard-mobile-card.qc-media      { background: #e6f7ff; border-color: #c3e9fb; }
+.dashboard-mobile-card.qc-media      span { background: #cdeefd; color: #0284c7; }
+.dashboard-mobile-card.qc-nosotros   { background: #eafbea; border-color: #c9f0c9; }
+.dashboard-mobile-card.qc-nosotros   span { background: #d3f5d3; color: #16a34a; }
+.dashboard-mobile-card.qc-usuarios   { background: #fff0e6; border-color: #fbd9bf; }
+.dashboard-mobile-card.qc-usuarios   span { background: #fde1c8; color: #ea580c; }
+.dashboard-mobile-card.qc-config     { background: #f1f5f9; border-color: #dde4ec; }
+.dashboard-mobile-card.qc-config     span { background: #e2e9f1; color: #475569; }
+[data-theme="dark"] .dashboard-mobile-card[class*="qc-"] { background: var(--panel); border-color: var(--line); }
+[data-theme="dark"] .dashboard-mobile-card.qc-noticias   span { background: #1e3a63; color: #8fb4ff; }
+[data-theme="dark"] .dashboard-mobile-card.qc-productos  span { background: #103b34; color: #4fd9c3; }
+[data-theme="dark"] .dashboard-mobile-card.qc-servicios  span { background: #331f5c; color: #c4a7ff; }
+[data-theme="dark"] .dashboard-mobile-card.qc-galeria    span { background: #4a1530; color: #f78fc0; }
+[data-theme="dark"] .dashboard-mobile-card.qc-redes      span { background: #262c66; color: #b4bcff; }
+[data-theme="dark"] .dashboard-mobile-card.qc-contactos  span { background: #4a2f0c; color: #f5b869; }
+[data-theme="dark"] .dashboard-mobile-card.qc-media      span { background: #103a52; color: #7fd0fb; }
+[data-theme="dark"] .dashboard-mobile-card.qc-nosotros   span { background: #163c1e; color: #7be08a; }
+[data-theme="dark"] .dashboard-mobile-card.qc-usuarios   span { background: #4a2710; color: #ffb27a; }
+[data-theme="dark"] .dashboard-mobile-card.qc-config     span { background: #2a3644; color: #b7c4d4; }
 
 /* Payment methods admin */
 .payment-method-layout {
