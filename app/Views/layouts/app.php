@@ -28,17 +28,17 @@
             <span class="nav-section">Principal</span>
 
             <a href="<?= e(url('/dashboard')) ?>" class="nav-link <?= is_active('/dashboard', '/') ?>">
-                <?= icon('home') ?><span>Dashboard</span>
+                <?= nav_icon('home') ?><span>Dashboard</span>
             </a>
 
             <?php if (can('posts')): ?>
             <div class="nav-group <?= is_active('/posts') ? 'open' : '' ?>">
                 <button type="button" class="nav-link nav-group-toggle" data-submenu-toggle>
-                    <?= icon('edit') ?><span>Nueva noticia</span><?= icon('chevron-down', 'nav-chevron') ?>
+                    <?= nav_icon('edit') ?><span>Nueva noticia</span><?= nav_icon('chevron-down', 'nav-chevron') ?>
                 </button>
                 <div class="nav-submenu">
-                    <a href="<?= e(url('/posts/create')) ?>" class="<?= is_active('/posts/create') ?>"><?= icon('edit') ?><span>Crear noticia</span></a>
-                    <a href="<?= e(url('/posts')) ?>" class="<?= is_active('/posts') ?>"><?= icon('list') ?><span>Publicaciones</span></a>
+                    <a href="<?= e(url('/posts/create')) ?>" class="<?= is_active('/posts/create') ?>"><?= nav_icon('edit') ?><span>Crear noticia</span></a>
+                    <a href="<?= e(url('/posts')) ?>" class="<?= is_active('/posts') ?>"><?= nav_icon('list') ?><span>Publicaciones</span></a>
                 </div>
             </div>
             <?php endif; ?>
@@ -46,20 +46,20 @@
             <?php if (can('products') || can('orders') || can('sales') || can('inventory')): ?>
             <div class="nav-group <?= is_active('/products', '/orders', '/sales', '/inventory') ? 'open' : '' ?>">
                 <button type="button" class="nav-link nav-group-toggle" data-submenu-toggle>
-                    <?= icon('shopping-cart') ?><span>Tienda</span><?= icon('chevron-down', 'nav-chevron') ?>
+                    <?= nav_icon('shopping-cart') ?><span>Tienda</span><?= nav_icon('chevron-down', 'nav-chevron') ?>
                 </button>
                 <div class="nav-submenu">
                     <?php if (can('products')): ?>
-                    <a href="<?= e(url('/products')) ?>" class="<?= is_active('/products') ?>"><?= icon('package') ?><span>Productos</span></a>
+                    <a href="<?= e(url('/products')) ?>" class="<?= is_active('/products') ?>"><?= nav_icon('package') ?><span>Productos</span></a>
                     <?php endif; ?>
                     <?php if (can('orders')): ?>
-                    <a href="<?= e(url('/orders')) ?>" class="<?= is_active('/orders') ?>"><?= icon('clipboard-list') ?><span>Pedidos</span></a>
+                    <a href="<?= e(url('/orders')) ?>" class="<?= is_active('/orders') ?>"><?= nav_icon('clipboard-list') ?><span>Pedidos</span></a>
                     <?php endif; ?>
                     <?php if (can('sales')): ?>
-                    <a href="<?= e(url('/sales')) ?>" class="<?= is_active('/sales') ?>"><?= icon('shopping-bag') ?><span>Ventas</span></a>
+                    <a href="<?= e(url('/sales')) ?>" class="<?= is_active('/sales') ?>"><?= nav_icon('shopping-bag') ?><span>Ventas</span></a>
                     <?php endif; ?>
                     <?php if (can('inventory')): ?>
-                    <a href="<?= e(url('/inventory')) ?>" class="<?= is_active('/inventory') ?>"><?= icon('boxes') ?><span>Inventario</span></a>
+                    <a href="<?= e(url('/inventory')) ?>" class="<?= is_active('/inventory') ?>"><?= nav_icon('boxes') ?><span>Inventario</span></a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -67,13 +67,13 @@
 
             <?php if (can('services')): ?>
             <a href="<?= e(url('/services')) ?>" class="nav-link <?= is_active('/services') ?>">
-                <?= icon('layers') ?><span>Servicios</span>
+                <?= nav_icon('layers') ?><span>Servicios</span>
             </a>
             <?php endif; ?>
 
             <?php if (can('galleries')): ?>
             <a href="<?= e(url('/galleries')) ?>" class="nav-link <?= is_active('/galleries') ?>">
-                <?= icon('image') ?><span>Galería</span>
+                <?= nav_icon('image') ?><span>Galería</span>
             </a>
             <?php endif; ?>
 
@@ -81,20 +81,20 @@
             <?php $unread = can('contacts') ? (int)Database::connection()->query("SELECT COUNT(*) FROM contact_messages WHERE status='new'")->fetchColumn() : 0; ?>
             <div class="nav-group <?= is_active('/social-networks', '/about', '/contacts') ? 'open' : '' ?>">
                 <button type="button" class="nav-link nav-group-toggle" data-submenu-toggle>
-                    <?= icon('layout') ?><span>Landing page</span>
+                    <?= nav_icon('layout') ?><span>Landing page</span>
                     <?php if ($unread > 0): ?><em class="nav-badge nav-badge-inline"><?= $unread ?></em><?php endif; ?>
-                    <?= icon('chevron-down', 'nav-chevron') ?>
+                    <?= nav_icon('chevron-down', 'nav-chevron') ?>
                 </button>
                 <div class="nav-submenu">
                     <?php if (can('social_networks')): ?>
-                    <a href="<?= e(url('/social-networks')) ?>" class="<?= is_active('/social-networks') ?>"><?= icon('share') ?><span>Redes sociales</span></a>
+                    <a href="<?= e(url('/social-networks')) ?>" class="<?= is_active('/social-networks') ?>"><?= nav_icon('share') ?><span>Redes sociales</span></a>
                     <?php endif; ?>
                     <?php if (can('pages')): ?>
-                    <a href="<?= e(url('/about')) ?>" class="<?= is_active('/about') ?>"><?= icon('users') ?><span>Nosotros</span></a>
+                    <a href="<?= e(url('/about')) ?>" class="<?= is_active('/about') ?>"><?= nav_icon('users') ?><span>Nosotros</span></a>
                     <?php endif; ?>
                     <?php if (can('contacts')): ?>
                     <a href="<?= e(url('/contacts')) ?>" class="<?= is_active('/contacts') ?>">
-                        <?= icon('mail') ?><span>Contáctenos</span>
+                        <?= nav_icon('mail') ?><span>Contáctenos</span>
                         <?php if ($unread > 0): ?><em class="nav-badge"><?= $unread ?></em><?php endif; ?>
                     </a>
                     <?php endif; ?>
@@ -104,7 +104,7 @@
 
             <?php if (can('files')): ?>
             <a href="<?= e(url('/media')) ?>" class="nav-link <?= is_active('/media') ?>">
-                <?= icon('image') ?><span>Media</span>
+                <?= nav_icon('media') ?><span>Media</span>
             </a>
             <?php endif; ?>
 
@@ -112,7 +112,7 @@
                      El codigo, tablas y rutas de app/Controllers/Mail siguen intactos por si se reutilizan. */ ?>
 
             <a href="<?= e(url('/')) ?>" class="nav-link nav-web-link" target="_blank" rel="noopener">
-                <?= icon('share') ?><span>Ver pagina web</span>
+                <?= nav_icon('share') ?><span>Ver pagina web</span>
             </a>
 
             <span class="nav-section">Administración</span>
@@ -120,13 +120,13 @@
             <?php if (can('users') || can('settings') || can('payment_methods') || is_superadmin()): ?>
             <div class="nav-group <?= is_active('/users', '/settings', '/payment-methods', '/profile') ? 'open' : '' ?>">
                 <button type="button" class="nav-link nav-group-toggle" data-submenu-toggle>
-                    <?= icon('shield') ?><span>Sistema</span><?= icon('chevron-down', 'nav-chevron') ?>
+                    <?= nav_icon('shield') ?><span>Sistema</span><?= nav_icon('chevron-down', 'nav-chevron') ?>
                 </button>
                 <div class="nav-submenu">
-                    <?php if (can('users')): ?><a href="<?= e(url('/users')) ?>" class="<?= is_active('/users') ?>"><?= icon('users') ?><span>Usuarios</span></a><?php endif; ?>
-                    <?php if (can('settings')): ?><a href="<?= e(url('/settings')) ?>" class="<?= is_active('/settings') ?>"><?= icon('settings') ?><span>Configuración</span></a><?php endif; ?>
-                    <?php if (can('payment_methods')): ?><a href="<?= e(url('/payment-methods')) ?>" class="<?= is_active('/payment-methods') ?>"><?= icon('credit-card') ?><span>Metodos de pago</span></a><?php endif; ?>
-                    <a href="<?= e(url('/profile')) ?>" class="<?= is_active('/profile') ?>"><?= icon('user') ?><span>Mi perfil</span></a>
+                    <?php if (can('users')): ?><a href="<?= e(url('/users')) ?>" class="<?= is_active('/users') ?>"><?= nav_icon('users') ?><span>Usuarios</span></a><?php endif; ?>
+                    <?php if (can('settings')): ?><a href="<?= e(url('/settings')) ?>" class="<?= is_active('/settings') ?>"><?= nav_icon('settings') ?><span>Configuración</span></a><?php endif; ?>
+                    <?php if (can('payment_methods')): ?><a href="<?= e(url('/payment-methods')) ?>" class="<?= is_active('/payment-methods') ?>"><?= nav_icon('credit-card') ?><span>Metodos de pago</span></a><?php endif; ?>
+                    <a href="<?= e(url('/profile')) ?>" class="<?= is_active('/profile') ?>"><?= nav_icon('user') ?><span>Mi perfil</span></a>
                 </div>
             </div>
             <?php endif; ?>
