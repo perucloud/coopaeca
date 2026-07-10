@@ -109,6 +109,17 @@ function e(mixed $value): string
     return htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+/**
+ * Codigo corto de exhibicion (PED-000001, VEN-000042...) para mostrar en
+ * paneles administrativos en vez del codigo largo real (orders.code /
+ * sales.code). El codigo largo real no cambia: sigue siendo el
+ * identificador unico en BD, voucher, ticket y comunicacion con el cliente.
+ */
+function short_code(string $prefix, int $id): string
+{
+    return $prefix . '-' . str_pad((string)$id, 6, '0', STR_PAD_LEFT);
+}
+
 function slugify(string $value): string
 {
     $value = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value) ?: $value;

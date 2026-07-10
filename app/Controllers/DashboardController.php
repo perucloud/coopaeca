@@ -150,6 +150,7 @@ final class DashboardController extends Controller
                 'permission' => 'orders',
                 'icon' => 'clipboard-list',
                 'url' => '/orders/show?id=',
+                'code_prefix' => 'PED',
                 'sql' => "SELECT id, code AS name, status, COALESCE(updated_at, created_at) AS changed_at FROM orders ORDER BY changed_at DESC LIMIT 8",
             ],
             'sales' => [
@@ -157,6 +158,7 @@ final class DashboardController extends Controller
                 'permission' => 'sales',
                 'icon' => 'shopping-bag',
                 'url' => '/sales/show?id=',
+                'code_prefix' => 'VEN',
                 'sql' => "SELECT id, code AS name, status, COALESCE(updated_at, created_at) AS changed_at FROM sales ORDER BY changed_at DESC LIMIT 8",
             ],
             'services' => [
@@ -189,7 +191,7 @@ final class DashboardController extends Controller
                     'permission' => $query['permission'],
                     'icon' => $query['icon'],
                     'url' => $query['url'] === '/media' ? $query['url'] : $query['url'] . $row['id'],
-                    'name' => $row['name'],
+                    'name' => isset($query['code_prefix']) ? short_code($query['code_prefix'], (int)$row['id']) : $row['name'],
                     'status' => $row['status'],
                     'changed_at' => $row['changed_at'],
                 ];

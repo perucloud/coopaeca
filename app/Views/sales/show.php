@@ -5,7 +5,7 @@ $voucherUrl = !empty($sale['voucher_path']) ? url('/' . $sale['voucher_path']) :
 <section class="page-card">
     <div class="page-header">
         <div>
-            <h2><?= e($sale['code']) ?></h2>
+            <h2><?= e(short_code('VEN', (int)$sale['id'])) ?></h2>
             <span><?= e(ucfirst($sale['status'])) ?> · S/ <?= number_format((float)$sale['total'], 2) ?></span>
         </div>
         <a class="button ghost" href="<?= e(url('/sales')) ?>"><?= icon('arrow-left') ?> Volver</a>
@@ -24,7 +24,7 @@ $voucherUrl = !empty($sale['voucher_path']) ? url('/' . $sale['voucher_path']) :
         <article class="detail-panel">
             <h3>Operacion</h3>
             <dl class="detail-list">
-                <div><dt>Pedido</dt><dd><?= e($sale['order_code'] ?: '-') ?></dd></div>
+                <div><dt>Pedido</dt><dd><?= $sale['order_id'] ? e(short_code('PED', (int)$sale['order_id'])) : '-' ?></dd></div>
                 <div><dt>Origen</dt><dd><?= e($sale['source']) ?></dd></div>
                 <div><dt>Metodo</dt><dd><?= e($sale['payment_method']) ?></dd></div>
                 <div><dt>Operacion</dt><dd><?= e($sale['payment_operation_number']) ?></dd></div>

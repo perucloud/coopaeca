@@ -73,7 +73,10 @@ $statusLabels = ['confirmada' => 'Confirmada', 'anulada' => 'Anulada', 'entregad
             <tbody>
             <?php foreach ($sales as $sale): ?>
             <tr>
-                <td data-label="Venta"><strong><?= e($sale['code']) ?></strong><br><span class="text-muted"><?= e($sale['order_code'] ?: 'Sin pedido') ?></span></td>
+                <td data-label="Venta">
+                    <strong><?= e(short_code('VEN', (int)$sale['id'])) ?></strong><br>
+                    <span class="text-muted"><?= $sale['order_id'] ? e(short_code('PED', (int)$sale['order_id'])) : 'Sin pedido' ?></span>
+                </td>
                 <td data-label="Comprador"><strong><?= e($sale['customer_name']) ?></strong><br><span class="text-muted"><?= e($sale['document_type'] . ' ' . $sale['document_number']) ?></span></td>
                 <td data-label="Origen"><?= e($sourceLabels[$sale['source']] ?? $sale['source']) ?></td>
                 <td data-label="Items"><?= (int)$sale['items_count'] ?> prod. / <?= (int)$sale['units_count'] ?> und.</td>

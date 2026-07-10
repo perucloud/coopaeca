@@ -136,7 +136,7 @@ final class OrderController extends Controller
             $color = $badgeColor[$order['status']] ?? '#475569';
 
             $rows .= '<tr>'
-                . '<td>PED-' . str_pad((string)$order['id'], 6, '0', STR_PAD_LEFT) . '<br><span class="muted">' . e((string)$order['code']) . '</span></td>'
+                . '<td>' . e(short_code('PED', (int)$order['id'])) . '</td>'
                 . '<td>' . e((string)$order['customer_name']) . '</td>'
                 . '<td>' . e((string)$order['document_type']) . ' ' . e((string)$order['document_number']) . '</td>'
                 . '<td>' . $phoneLine . '</td>'
@@ -216,7 +216,7 @@ HTML;
         $sale = $saleStmt->fetch() ?: null;
 
         render('orders/show', [
-            'title' => 'Pedido ' . $order['code'],
+            'title' => 'Pedido ' . short_code('PED', $id),
             'order' => $order,
             'items' => OrderService::orderItems($id),
             'sale' => $sale,

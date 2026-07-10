@@ -9,12 +9,13 @@ $statusLabels = [
 ];
 $canProcess = in_array($order['status'], ['pendiente', 'voucher_enviado', 'en_revision'], true);
 $voucherUrl = url('/' . $order['voucher_path']);
+$orderShortCode = short_code('PED', (int)$order['id']);
 ?>
 
 <section class="page-card">
     <div class="page-header">
         <div>
-            <h2><?= e($order['code']) ?></h2>
+            <h2><?= e($orderShortCode) ?></h2>
             <span>Pedido <?= e($statusLabels[$order['status']] ?? $order['status']) ?> · S/ <?= number_format((float)$order['total'], 2) ?></span>
         </div>
         <a class="button ghost" href="<?= e(url('/orders')) ?>"><?= icon('arrow-left') ?> Volver</a>
@@ -134,7 +135,7 @@ $voucherUrl = url('/' . $order['voucher_path']);
             <?= csrf_field() ?>
             <input type="hidden" name="id" value="<?= (int)$order['id'] ?>">
             <div class="modal-body">
-                <p class="text-muted">El pedido <strong><?= e($order['code']) ?></strong> quedara marcado como rechazado. Indica el motivo para que quede registrado.</p>
+                <p class="text-muted">El pedido <strong><?= e($orderShortCode) ?></strong> quedara marcado como rechazado. Indica el motivo para que quede registrado.</p>
                 <label>Motivo de rechazo
                     <input class="form-control" name="admin_notes" placeholder="Ej. Voucher ilegible, monto no coincide" required autofocus>
                 </label>

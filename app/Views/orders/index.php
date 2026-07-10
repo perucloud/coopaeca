@@ -92,10 +92,7 @@ $badgeClass = [
             <tbody>
             <?php foreach ($orders as $order): ?>
             <tr>
-                <td data-label="Pedido">
-                    <strong>PED-<?= str_pad((string)$order['id'], 6, '0', STR_PAD_LEFT) ?></strong>
-                    <span class="text-muted" title="<?= e($order['code']) ?>"><?= e($order['code']) ?></span>
-                </td>
+                <td data-label="Pedido"><strong><?= e(short_code('PED', (int)$order['id'])) ?></strong></td>
                 <td data-label="Apellidos y nombres"><?= e($order['customer_name']) ?></td>
                 <td data-label="DNI/RUC"><?= e($order['document_type'] . ' ' . $order['document_number']) ?></td>
                 <td data-label="Telefono / WhatsApp">

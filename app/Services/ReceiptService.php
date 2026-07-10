@@ -46,7 +46,7 @@ final class ReceiptService
                 . number_format((float)$sale['total'], 2) . '.</p>'
                 . '<p>Gracias por tu preferencia.<br>' . e((string)$coopName) . '</p>',
             'adjuntos' => [
-                ['path' => dirname(__DIR__, 2) . '/public/' . $file['disk_path'], 'name' => $sale['code'] . '.pdf', 'mime' => 'application/pdf'],
+                ['path' => dirname(__DIR__, 2) . '/public/' . $file['disk_path'], 'name' => short_code('VEN', (int)$sale['id']) . '.pdf', 'mime' => 'application/pdf'],
             ],
         ]);
 
@@ -87,11 +87,11 @@ final class ReceiptService
                  VALUES (?, ?, ?, ?, ?, ?)'
             )->execute([
                 'uploads/receipts/' . $name,
-                $sale['code'] . '.pdf',
+                short_code('VEN', (int)$sale['id']) . '.pdf',
                 'application/pdf',
                 strlen($pdfContent),
                 $userId,
-                'Ticket de venta ' . $sale['code'],
+                'Ticket de venta ' . short_code('VEN', (int)$sale['id']),
             ]);
             $fileId = (int)$pdo->lastInsertId();
 

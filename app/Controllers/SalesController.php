@@ -84,7 +84,7 @@ final class SalesController extends Controller
         $items->execute([$id]);
 
         render('sales/show', [
-            'title' => 'Venta ' . $sale['code'],
+            'title' => 'Venta ' . short_code('VEN', (int)$sale['id']),
             'sale' => $sale,
             'items' => $items->fetchAll(),
         ]);
@@ -167,7 +167,7 @@ final class SalesController extends Controller
         }
 
         header('Content-Type: application/pdf');
-        header('Content-Disposition: inline; filename="' . $sale['code'] . '.pdf"');
+        header('Content-Disposition: inline; filename="' . short_code('VEN', (int)$sale['id']) . '.pdf"');
         readfile($path);
         exit;
     }
