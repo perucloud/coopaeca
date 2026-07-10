@@ -144,7 +144,8 @@ final class ReceiptService
 <head>
 <meta charset="utf-8">
 <style>
-    body { font-family: 'Helvetica', sans-serif; font-size: 9px; color: #000; margin: 0; padding: 6px; }
+    @page { margin: 4mm 3mm; }
+    body { font-family: 'Helvetica', sans-serif; font-size: 9px; color: #000; margin: 0; padding: 0; }
     .center { text-align: center; }
     .right { text-align: right; }
     h1 { font-size: 12px; margin: 0 0 2px; }
