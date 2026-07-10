@@ -77,6 +77,7 @@ $router->group(['middleware' => ['AuthMiddleware', 'CsrfMiddleware']], function 
     $r->get('/products/pdf',    [ProductController::class, 'pdf'],    ['PermissionMiddleware:products.view']);
 
     $r->get('/orders',       [OrderController::class, 'index'],      ['PermissionMiddleware:orders.view']);
+    $r->get('/orders/pdf',   [OrderController::class, 'pdf'],        ['PermissionMiddleware:orders.view']);
     $r->get('/orders/show',  [OrderController::class, 'show'],       ['PermissionMiddleware:orders.view']);
     $r->post('/orders/review',[OrderController::class, 'markReview'],['PermissionMiddleware:orders.edit']);
     $r->post('/orders/approve',[OrderController::class, 'approve'],  ['PermissionMiddleware:orders.approve']);

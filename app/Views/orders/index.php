@@ -23,6 +23,7 @@ $badgeClass = [
             <h2>Pedidos</h2>
             <span>Valida compras web, vouchers y disponibilidad antes de generar ventas.</span>
         </div>
+        <button type="button" class="button ghost" id="openPdfModal"><?= icon('printer') ?> Imprimir PDF</button>
     </div>
 
     <div class="stats-grid compact">
@@ -72,7 +73,7 @@ $badgeClass = [
     </div>
 
     <div class="table-wrap">
-        <table>
+        <table class="orders-table">
             <thead>
             <tr>
                 <th>Pedido</th>
@@ -144,3 +145,52 @@ $badgeClass = [
         </table>
     </div>
 </section>
+
+<!-- Modal de previsualizacion e impresion de PDF -->
+<div class="modal-overlay" id="pdfModal" style="display:none">
+    <div class="modal-box modal-xl">
+        <div class="modal-header">
+            <h3>Reporte de pedidos en PDF</h3>
+            <button type="button" class="modal-close" id="pdfModalClose">&times;</button>
+        </div>
+        <div class="modal-body pdf-modal-body">
+            <iframe id="pdfFrame" class="pdf-frame" title="Previsualizacion PDF"></iframe>
+        </div>
+        <div class="modal-footer">
+            <a class="button ghost" id="pdfDownload" href="<?= e(url('/orders/pdf') . '?' . http_build_query($filters)) ?>" download="pedidos.pdf"><?= icon('download') ?> Descargar</a>
+            <button type="button" class="button primary" id="pdfPrint"><?= icon('printer') ?> Imprimir</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var modal = document.getElementById('pdfModal');
+    var frame = document.getElementById('pdfFrame');
+    var openBtn = document.getElementById('openPdfModal');
+    var closeBtn = document.getElementById('pdfModalClose');
+    var printBtn = document.getElementById('pdfPrint');
+    var pdfUrl = <?= json_encode(url('/orders/pdf') . '?' . http_build_query($filters)) ?>;
+    var loaded = false;
+
+    openBtn.addEventListener('click', function () {
+        if (!loaded) {
+            frame.src = pdfUrl;
+            loaded = true;
+        }
+        modal.style.display = 'flex';
+    });
+    closeBtn.addEventListener('click', function () { modal.style.display = 'none'; });
+    modal.addEventListener('click', function (event) {
+        if (event.target === modal) modal.style.display = 'none';
+    });
+    printBtn.addEventListener('click', function () {
+        try {
+            frame.contentWindow.focus();
+            frame.contentWindow.print();
+        } catch (error) {
+            window.open(pdfUrl, '_blank');
+        }
+    });
+})();
+</script>

@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Arial Narrow';
+  src: url('../fonts/ARIALN.TTF') format('truetype');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #f5f7fb;
   --panel: #ffffff;
@@ -532,6 +540,19 @@ th, td {
   font-size: 14px;
 }
 th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+
+/* Tabla de Pedidos: muchas columnas, tipografia comprimida para que quepan
+   sin necesidad de bajar el zoom del navegador. Escopeado a .orders-table
+   para no afectar la tipografia del resto del panel. */
+.orders-table th,
+.orders-table td {
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  font-size: 12.5px;
+  padding: 8px 7px;
+}
+.orders-table th { font-size: 10.5px; }
+.orders-table .badge { font-size: 10.5px; padding: 3px 7px; }
+
 .badge {
   display: inline-flex;
   border-radius: 999px;
