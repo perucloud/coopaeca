@@ -132,4 +132,63 @@ final class SalesController extends Controller
         }
         Response::redirect('/sales/show?id=' . $id);
     }
+
+    public function issueReceipt(): void
+    {
+        $id = (int)($_POST['id'] ?? 0);
+        $redirect = self::safeRedirect((string)($_POST['redirect'] ?? ''), '/sales/show?id=' . $id);
+        try {
+            ReceiptService::ensureIssued($id, (int)user()['id']);
+            flash('status', 'Ticket emitido correctamente.');
+        } catch (Throwable $e) {
+            back_with_errors([$e->getMessage()], []);
+        }
+        Response::redirect($redirect);
+    }
+
+    public function viewReceipt(): void
+    {
+        $id = (int)($_GET['id'] ?? 0);
+        $sale = SaleService::find($id);
+        if (!$sale['receipt_file_id']) {
+            Response::abort(404, 'Este ticket aun no ha sido emitido.');
+        }
+
+        $stmt = Database::connection()->prepare('SELECT * FROM files WHERE id = ? LIMIT 1');
+        $stmt->execute([$sale['receipt_file_id']]);
+        $file = $stmt->fetch();
+        if (!$file) {
+            Response::abort(404, 'Archivo de ticket no encontrado.');
+        }
+
+        $path = dirname(__DIR__, 2) . '/public/' . $file['disk_path'];
+        if (!is_file($path)) {
+            Response::abort(404, 'Archivo de ticket no encontrado.');
+        }
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="' . $sale['code'] . '.pdf"');
+        readfile($path);
+        exit;
+    }
+
+    public function emailReceipt(): void
+    {
+        $id = (int)($_POST['id'] ?? 0);
+        $redirect = self::safeRedirect((string)($_POST['redirect'] ?? ''), '/sales/show?id=' . $id);
+        $email = trim((string)($_POST['email'] ?? ''));
+        try {
+            ReceiptService::emailTo($id, $email, (int)user()['id']);
+            flash('status', 'Ticket enviado a ' . $email . '.');
+        } catch (Throwable $e) {
+            back_with_errors([$e->getMessage()], []);
+        }
+        Response::redirect($redirect);
+    }
+
+    /** Solo permite redirigir dentro del propio panel (evita open redirect via el campo oculto "redirect"). */
+    private static function safeRedirect(string $path, string $fallback): string
+    {
+        return (str_starts_with($path, '/') && !str_starts_with($path, '//')) ? $path : $fallback;
+    }
 }

@@ -33,6 +33,7 @@ require __DIR__ . '/Services/VoucherStorageService.php';
 require __DIR__ . '/Services/InventoryService.php';
 require __DIR__ . '/Services/OrderService.php';
 require __DIR__ . '/Services/SaleService.php';
+require __DIR__ . '/Services/ReceiptService.php';
 require __DIR__ . '/Helpers/auth.php';
 require __DIR__ . '/Middleware/AuthMiddleware.php';
 require __DIR__ . '/Middleware/GuestMiddleware.php';

@@ -98,12 +98,103 @@ $voucherUrl = url('/' . $order['voucher_path']);
             <input type="hidden" name="id" value="<?= (int)$order['id'] ?>">
             <button class="button primary" type="submit"><?= icon('check-circle') ?> Aprobar pedido</button>
         </form>
-        <form method="post" action="<?= e(url('/orders/reject')) ?>" class="reject-form" onsubmit="return confirm('Rechazar este pedido?')">
-            <?= csrf_field() ?>
-            <input type="hidden" name="id" value="<?= (int)$order['id'] ?>">
-            <input class="form-control" name="admin_notes" placeholder="Motivo de rechazo">
-            <button class="button danger" type="submit">Rechazar</button>
-        </form>
+        <button type="button" class="button danger" id="openRejectModal"><?= icon('x') ?> Rechazar</button>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($order['status'] === 'aprobado' && $sale): ?>
+    <div class="action-row">
+        <?php if (!$sale['receipt_file_id']): ?>
+            <?php if (can('sales', 'create')): ?>
+            <form method="post" action="<?= e(url('/sales/receipt/issue')) ?>">
+                <?= csrf_field() ?>
+                <input type="hidden" name="id" value="<?= (int)$sale['id'] ?>">
+                <input type="hidden" name="redirect" value="<?= e(url('/orders/show?id=' . (int)$order['id'])) ?>">
+                <button class="button primary" type="submit"><?= icon('printer') ?> Emitir ticket</button>
+            </form>
+            <?php endif; ?>
+        <?php else: ?>
+            <a class="button ghost" href="<?= e(url('/sales/receipt/view?id=' . (int)$sale['id'])) ?>" target="_blank" rel="noopener"><?= icon('file') ?> Ver ticket</a>
+            <?php if (can('sales', 'create')): ?>
+            <button type="button" class="button ghost" id="openEmailReceiptModal"><?= icon('mail') ?> Enviar por correo</button>
+            <?php endif; ?>
+        <?php endif; ?>
     </div>
     <?php endif; ?>
 </section>
+
+<?php if ($canProcess): ?>
+<div class="modal-overlay" id="rejectModal" style="display:none">
+    <div class="modal-box modal-sm">
+        <div class="modal-header">
+            <h3>Rechazar pedido</h3>
+            <button type="button" class="modal-close" id="rejectModalClose">&times;</button>
+        </div>
+        <form method="post" action="<?= e(url('/orders/reject')) ?>">
+            <?= csrf_field() ?>
+            <input type="hidden" name="id" value="<?= (int)$order['id'] ?>">
+            <div class="modal-body">
+                <p class="text-muted">El pedido <strong><?= e($order['code']) ?></strong> quedara marcado como rechazado. Indica el motivo para que quede registrado.</p>
+                <label>Motivo de rechazo
+                    <input class="form-control" name="admin_notes" placeholder="Ej. Voucher ilegible, monto no coincide" required autofocus>
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="button ghost" id="rejectModalCancel">Cancelar</button>
+                <button type="submit" class="button danger">Confirmar rechazo</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+(function () {
+    var modal = document.getElementById('rejectModal');
+    var openBtn = document.getElementById('openRejectModal');
+    if (!modal || !openBtn) return;
+    function open() { modal.style.display = 'flex'; }
+    function close() { modal.style.display = 'none'; }
+    openBtn.addEventListener('click', open);
+    document.getElementById('rejectModalClose')?.addEventListener('click', close);
+    document.getElementById('rejectModalCancel')?.addEventListener('click', close);
+    modal.addEventListener('click', function (event) { if (event.target === modal) close(); });
+})();
+</script>
+<?php endif; ?>
+
+<?php if ($order['status'] === 'aprobado' && $sale && $sale['receipt_file_id'] && can('sales', 'create')): ?>
+<div class="modal-overlay" id="emailReceiptModal" style="display:none">
+    <div class="modal-box modal-sm">
+        <div class="modal-header">
+            <h3>Enviar ticket por correo</h3>
+            <button type="button" class="modal-close" id="emailReceiptModalClose">&times;</button>
+        </div>
+        <form method="post" action="<?= e(url('/sales/receipt/email')) ?>">
+            <?= csrf_field() ?>
+            <input type="hidden" name="id" value="<?= (int)$sale['id'] ?>">
+            <input type="hidden" name="redirect" value="<?= e(url('/orders/show?id=' . (int)$order['id'])) ?>">
+            <div class="modal-body">
+                <label>Correo electronico
+                    <input class="form-control" type="email" name="email" value="<?= e($order['email'] ?: '') ?>" placeholder="cliente@correo.com" required autofocus>
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="button ghost" id="emailReceiptModalCancel">Cancelar</button>
+                <button type="submit" class="button primary"><?= icon('mail') ?> Enviar</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+(function () {
+    var modal = document.getElementById('emailReceiptModal');
+    var openBtn = document.getElementById('openEmailReceiptModal');
+    if (!modal || !openBtn) return;
+    function open() { modal.style.display = 'flex'; }
+    function close() { modal.style.display = 'none'; }
+    openBtn.addEventListener('click', open);
+    document.getElementById('emailReceiptModalClose')?.addEventListener('click', close);
+    document.getElementById('emailReceiptModalCancel')?.addEventListener('click', close);
+    modal.addEventListener('click', function (event) { if (event.target === modal) close(); });
+})();
+</script>
+<?php endif; ?>

@@ -76,36 +76,69 @@ $badgeClass = [
             <thead>
             <tr>
                 <th>Pedido</th>
-                <th>Comprador</th>
-                <th>Items</th>
-                <th>Pago</th>
+                <th>Apellidos y nombres</th>
+                <th>DNI/RUC</th>
+                <th>Telefono / WhatsApp</th>
+                <th>Cantidad</th>
+                <th>Producto</th>
+                <th>Tipo de pago</th>
                 <th>Total</th>
                 <th>Estado</th>
-                <th>Fecha</th>
+                <th>Fecha compra</th>
                 <th></th>
             </tr>
             </thead>
             <tbody>
             <?php foreach ($orders as $order): ?>
             <tr>
-                <td data-label="Pedido"><strong><?= e($order['code']) ?></strong></td>
-                <td data-label="Comprador">
-                    <strong><?= e($order['customer_name']) ?></strong>
-                    <span class="text-muted"><?= e($order['document_type'] . ' ' . $order['document_number']) ?> · <?= e($order['whatsapp']) ?></span>
+                <td data-label="Pedido">
+                    <strong>PED-<?= str_pad((string)$order['id'], 6, '0', STR_PAD_LEFT) ?></strong>
+                    <span class="text-muted" title="<?= e($order['code']) ?>"><?= e($order['code']) ?></span>
                 </td>
-                <td data-label="Items"><?= (int)$order['items_count'] ?> prod. / <?= (int)$order['units_count'] ?> und.</td>
-                <td data-label="Pago">
+                <td data-label="Apellidos y nombres"><?= e($order['customer_name']) ?></td>
+                <td data-label="DNI/RUC"><?= e($order['document_type'] . ' ' . $order['document_number']) ?></td>
+                <td data-label="Telefono / WhatsApp">
+                    <?php if ($order['phone'] && $order['phone'] !== $order['whatsapp']): ?>
+                        <?= e($order['phone']) ?> / <?= e($order['whatsapp']) ?>
+                    <?php else: ?>
+                        <?= e($order['whatsapp']) ?>
+                    <?php endif; ?>
+                </td>
+                <td data-label="Cantidad"><?= (int)$order['units_count'] ?> und.</td>
+                <td data-label="Producto">
+                    <?php
+                        $productNames = array_filter(explode(', ', (string)($order['product_names'] ?? '')));
+                        $firstProduct = $productNames[0] ?? '-';
+                        $extraCount = count($productNames) - 1;
+                    ?>
+                    <?= e($firstProduct) ?><?php if ($extraCount > 0): ?> <span class="text-muted">+<?= $extraCount ?> mas</span><?php endif; ?>
+                </td>
+                <td data-label="Tipo de pago">
                     <?= e($order['payment_method']) ?><br>
-                    <span class="text-muted"><?= e($order['payment_operation_number']) ?></span>
+                    <span class="text-muted">N° <?= e($order['payment_operation_number']) ?></span>
                 </td>
                 <td data-label="Total"><strong>S/ <?= number_format((float)$order['total'], 2) ?></strong></td>
                 <td data-label="Estado"><span class="badge <?= e($badgeClass[$order['status']] ?? 'muted') ?>"><?= e($statusLabels[$order['status']] ?? $order['status']) ?></span></td>
-                <td data-label="Fecha"><?= e(date('d/m/Y H:i', strtotime($order['created_at']))) ?></td>
-                <td class="actions"><a class="button small" href="<?= e(url('/orders/show?id=' . (int)$order['id'])) ?>">Ver</a></td>
+                <td data-label="Fecha compra"><?= e(date('d/m/Y H:i', strtotime($order['created_at']))) ?></td>
+                <td class="actions">
+                    <a class="button small" href="<?= e(url('/orders/show?id=' . (int)$order['id'])) ?>">Ver</a>
+                    <?php if ($order['status'] === 'aprobado' && $order['sale_id']): ?>
+                        <?php if ($order['sale_receipt_file_id']): ?>
+                        <a class="button small info" href="<?= e(url('/sales/receipt/view?id=' . (int)$order['sale_id'])) ?>" target="_blank" rel="noopener"><?= icon('file') ?> Ticket</a>
+                        <?php elseif (can('sales', 'create')): ?>
+                        <form method="post" action="<?= e(url('/sales/receipt/issue')) ?>">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="id" value="<?= (int)$order['sale_id'] ?>">
+                            <input type="hidden" name="redirect" value="<?= e(url('/orders')) ?>">
+                            <button class="button small info" type="submit"><?= icon('printer') ?> Emitir</button>
+                        </form>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </td>
             </tr>
             <?php endforeach; ?>
             <?php if (!$orders): ?>
-            <tr><td colspan="8" class="empty-state">No hay pedidos para los filtros seleccionados.</td></tr>
+            <tr><td colspan="11" class="empty-state">No hay pedidos para los filtros seleccionados.</td></tr>
             <?php endif; ?>
             </tbody>
         </table>

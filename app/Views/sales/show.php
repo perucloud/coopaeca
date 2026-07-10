@@ -51,6 +51,26 @@ $voucherUrl = !empty($sale['voucher_path']) ? url('/' . $sale['voucher_path']) :
         </table>
     </div>
 
+    <?php if ($sale['status'] === 'confirmada'): ?>
+    <div class="action-row">
+        <?php if (!$sale['receipt_file_id']): ?>
+            <?php if (can('sales', 'create')): ?>
+            <form method="post" action="<?= e(url('/sales/receipt/issue')) ?>">
+                <?= csrf_field() ?>
+                <input type="hidden" name="id" value="<?= (int)$sale['id'] ?>">
+                <input type="hidden" name="redirect" value="<?= e(url('/sales/show?id=' . (int)$sale['id'])) ?>">
+                <button class="button primary" type="submit"><?= icon('printer') ?> Emitir ticket</button>
+            </form>
+            <?php endif; ?>
+        <?php else: ?>
+            <a class="button ghost" href="<?= e(url('/sales/receipt/view?id=' . (int)$sale['id'])) ?>" target="_blank" rel="noopener"><?= icon('file') ?> Ver ticket</a>
+            <?php if (can('sales', 'create')): ?>
+            <button type="button" class="button ghost" id="openEmailReceiptModal"><?= icon('mail') ?> Enviar por correo</button>
+            <?php endif; ?>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+
     <?php if ($sale['status'] !== 'anulada'): ?>
     <form method="post" action="<?= e(url('/sales/cancel')) ?>" class="action-row" onsubmit="return confirm('Anular esta venta y revertir stock?')">
         <?= csrf_field() ?>
@@ -60,3 +80,41 @@ $voucherUrl = !empty($sale['voucher_path']) ? url('/' . $sale['voucher_path']) :
     </form>
     <?php endif; ?>
 </section>
+
+<?php if ($sale['status'] === 'confirmada' && $sale['receipt_file_id'] && can('sales', 'create')): ?>
+<div class="modal-overlay" id="emailReceiptModal" style="display:none">
+    <div class="modal-box modal-sm">
+        <div class="modal-header">
+            <h3>Enviar ticket por correo</h3>
+            <button type="button" class="modal-close" id="emailReceiptModalClose">&times;</button>
+        </div>
+        <form method="post" action="<?= e(url('/sales/receipt/email')) ?>">
+            <?= csrf_field() ?>
+            <input type="hidden" name="id" value="<?= (int)$sale['id'] ?>">
+            <input type="hidden" name="redirect" value="<?= e(url('/sales/show?id=' . (int)$sale['id'])) ?>">
+            <div class="modal-body">
+                <label>Correo electronico
+                    <input class="form-control" type="email" name="email" value="<?= e($sale['email'] ?: '') ?>" placeholder="cliente@correo.com" required autofocus>
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="button ghost" id="emailReceiptModalCancel">Cancelar</button>
+                <button type="submit" class="button primary"><?= icon('mail') ?> Enviar</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+(function () {
+    var modal = document.getElementById('emailReceiptModal');
+    var openBtn = document.getElementById('openEmailReceiptModal');
+    if (!modal || !openBtn) return;
+    function open() { modal.style.display = 'flex'; }
+    function close() { modal.style.display = 'none'; }
+    openBtn.addEventListener('click', open);
+    document.getElementById('emailReceiptModalClose')?.addEventListener('click', close);
+    document.getElementById('emailReceiptModalCancel')?.addEventListener('click', close);
+    modal.addEventListener('click', function (event) { if (event.target === modal) close(); });
+})();
+</script>
+<?php endif; ?>

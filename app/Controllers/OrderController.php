@@ -30,10 +30,13 @@ final class OrderController extends Controller
         }
 
         $sql = 'SELECT o.*, f.disk_path AS voucher_path,
-                       COUNT(oi.id) AS items_count, COALESCE(SUM(oi.quantity), 0) AS units_count
+                       COUNT(oi.id) AS items_count, COALESCE(SUM(oi.quantity), 0) AS units_count,
+                       GROUP_CONCAT(DISTINCT oi.product_name ORDER BY oi.id SEPARATOR ", ") AS product_names,
+                       s.id AS sale_id, s.code AS sale_code, s.receipt_file_id AS sale_receipt_file_id
                 FROM orders o
                 JOIN files f ON f.id = o.voucher_file_id
                 LEFT JOIN order_items oi ON oi.order_id = o.id
+                LEFT JOIN sales s ON s.order_id = o.id
                 WHERE ' . implode(' AND ', $where) . '
                 GROUP BY o.id
                 ORDER BY o.created_at DESC
@@ -59,10 +62,16 @@ final class OrderController extends Controller
     {
         $id = (int)($_GET['id'] ?? 0);
         $order = OrderService::findOrder($id);
+
+        $saleStmt = Database::connection()->prepare('SELECT id, code, receipt_file_id FROM sales WHERE order_id = ? LIMIT 1');
+        $saleStmt->execute([$id]);
+        $sale = $saleStmt->fetch() ?: null;
+
         render('orders/show', [
             'title' => 'Pedido ' . $order['code'],
             'order' => $order,
             'items' => OrderService::orderItems($id),
+            'sale' => $sale,
         ]);
     }
 

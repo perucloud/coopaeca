@@ -446,11 +446,53 @@ Validado por QA_ENGINEER:
 - Prueba funcional end-to-end contra Apache real (no CLI): ajuste individual `-2` sobre un producto (19 -> 17, movimiento `ajuste_manual` auditado) e ingreso masivo sobre dos productos a la vez (`quantity[1]=5`, `quantity[2]=3`, ambos productos actualizados y auditados en una sola escritura). Datos de prueba limpiados y stock restaurado despues.
 - El iframe de previsualizacion de PDF aparece en blanco en capturas de Chromium headless (Playwright); se confirmo que la causa es una limitacion del visor de PDF en modo headless y no un fallo real: el iframe solicita `/products/pdf`, recibe `200` con `content-type: application/pdf` y el `src` queda correctamente asignado. Pendiente de una revision visual del usuario en un navegador de escritorio normal.
 
+### ORCHESTRATOR -> DATABASE_ENGINEER + BACKEND_ENGINEER + UI_UX_ENGINEER + FRONTEND_ENGINEER + SECURITY_ENGINEER + QA_ENGINEER
+
+Fecha: 2026-07-09
+
+Tarea (autorizada explicitamente por el usuario tras resolver 3 decisiones funcionales pendientes via preguntas dirigidas):
+
+- Modal para el motivo de rechazo de un pedido (antes era un input siempre visible en la fila de acciones).
+- Rediseño de la tabla `/orders`: codigo corto visual (PED-000001) sin tocar el codigo real, columnas separadas de documento/telefono-whatsapp/cantidad/producto (resumen "Producto A +N mas")/tipo de pago, sin romper Aprobar/Rechazar por pedido.
+- Modulo nuevo de ticket/comprobante de venta (80mm termico), inexistente hasta ahora: se emite una sola vez por venta confirmada, queda guardado para reimprimir o reenviar por correo, y la accion aparece tanto en Pedidos (una vez aprobado) como en Ventas (fuente de verdad real).
+
+Decisiones confirmadas por el usuario antes de implementar:
+
+1. El codigo real del pedido (`PED-20260709-6DDBA26A`) no cambia; solo se agrega una etiqueta corta derivada del `id` en la tabla.
+2. Un pedido con varios productos se sigue mostrando en una sola fila (resumen "Producto A +N mas" y cantidad total), sin romper el flujo de aprobacion por pedido.
+3. El ticket pertenece a la venta (`sales`, codigo VEN-xxx) generada al aprobar, pero la accion de emitir/ver/reimprimir/enviar debe estar visible tanto en el pedido aprobado como en la venta.
+
+Estado: completado.
+
+HANDOFF aceptado por ORCHESTRATOR:
+
+- Migracion `0029_add_sales_receipt.sql` agrega `receipt_file_id`, `receipt_issued_at`, `receipt_issued_by` a `sales` (aditivo, sin tocar `orders` ni datos existentes). Se respaldo `sales` en `sales_backup_pre0029` antes de aplicar.
+- `ReceiptService` nuevo: genera el PDF del ticket (80mm, Dompdf, mismo patron que el PDF de Productos), lo guarda una sola vez vinculado a `files`/`sales.receipt_file_id` (idempotente: si ya existe, no se regenera), y envia por correo con adjunto reutilizando `SmtpService` + la cuenta remitente de `MAIL_NOTIFY_*` (mismo patron que `ContactNotifier`).
+- `SalesController`: nuevos endpoints `POST /sales/receipt/issue`, `GET /sales/receipt/view`, `POST /sales/receipt/email`. Permisos: ver/reimprimir con `sales.view`, emitir/enviar con `sales.create` (no se creo un permiso nuevo en el catalogo).
+- `OrderController::index()`/`show()` ahora exponen la venta vinculada (`sale_id`, `sale_code`, `sale_receipt_file_id`) via `LEFT JOIN sales`, para poder mostrar la accion de ticket en Pedidos sin duplicar logica de negocio.
+- `orders/show.php`: boton "Rechazar" abre modal (mismo patron `.modal-overlay` ya usado 3 veces antes) en vez de input siempre visible; seccion de ticket condicional al estado `aprobado`.
+- `orders/index.php`: columnas Pedido (codigo corto + real), Apellidos y nombres, DNI/RUC, Telefono/WhatsApp, Cantidad, Producto (resumen), Tipo de pago, Total, Estado, Fecha compra, Acciones (Ver + Emitir/Ticket condicional).
+- `sales/index.php` y `sales/show.php`: misma accion de ticket (Emitir/Ver/Enviar por correo) que en Pedidos, para que ambos modulos muestren el mismo estado real.
+
+Hallazgo de SECURITY_ENGINEER (corregido antes de QA):
+
+- El campo oculto `redirect` usado para volver a la pagina de origen tras emitir/enviar el ticket permitia URLs absolutas sin validar, lo que habilitaba un *open redirect* (`Response::redirect()` no distingue rutas internas de URLs externas). Se agrego `SalesController::safeRedirect()`, que solo acepta rutas que empiecen con `/` y no con `//`, cayendo a un destino seguro por defecto en cualquier otro caso.
+
+Validado por QA_ENGINEER (prueba real end-to-end, no simulada):
+
+- `php -l` sin errores en todos los archivos PHP tocados.
+- Se emitio el ticket de una venta real y aprobada existente (`VEN-20260709-9CE00264`, pedido `PED-20260709-1DEFD5BD`): `sales.receipt_file_id` quedo asignado, el archivo PDF se genero en disco (2203 bytes) y quedo registrado en `files`.
+- `GET /sales/receipt/view?id=3` devuelve `200`, `Content-Type: application/pdf`; contenido verificado con `pdftotext`: nombre de la cooperativa, direccion, telefono, codigo de venta, cliente, documento, los 3 productos con cantidad/precio/subtotal correctos, total S/ 216.00, metodo de pago y numero de operacion.
+- Envio de correo real probado contra `pjevsatipo1812@gmail.com` con el PDF adjunto; sin errores en logs; registrado en `activity_logs`.
+- Capturas Playwright confirmando: modal de rechazo con el motivo requerido; tabla de Pedidos con las 11 columnas solicitadas y el boton "Ticket"/"Emitir" apareciendo solo cuando corresponde; seccion de ticket en el detalle del pedido aprobado; misma seccion de ticket en el detalle de la venta.
+- Limitacion tecnica conocida (ya anticipada antes de implementar): Dompdf no soporta alto de pagina automatico, por lo que el PDF del ticket sale en 3 "paginas" con espacio en blanco en vez de una sola tira continua. El contenido es correcto; si al imprimir en una impresora termica real se nota el salto, hay que ajustar la altura fija de `ReceiptService::generate()` (actualmente 1600pt).
+
 ## Siguiente paso
 
+- Ajustar la altura fija del PDF del ticket si al probar en una impresora termica de 80mm real se nota el salto de "pagina" en blanco.
 - SECURITY_ENGINEER debe revisar carga de voucher, CSRF publico, validaciones y superficie de carrito.
 - QA_ENGINEER debe ejecutar prueba funcional manual/end-to-end en navegador real: agregar producto, checkout con voucher (incluyendo el nuevo selector de ubigeo), pedido en dashboard, aprobacion, venta y stock.
-- Aplicar `database/migrations/0028_expand_ubigeo_catalog.sql` y `database/seeders/import_ubigeo.php` en el servidor de produccion cuando se despliegue (en local ya estan aplicados y verificados).
-- Eliminar `ubigeo_backup_pre0028` de la base local una vez confirmado que la cobertura nacional no rompio nada (se dejo como respaldo temporal).
+- Aplicar `database/migrations/0028_expand_ubigeo_catalog.sql`, `database/migrations/0029_add_sales_receipt.sql` y `database/seeders/import_ubigeo.php` en el servidor de produccion cuando se despliegue (en local ya estan aplicados y verificados).
+- Eliminar `ubigeo_backup_pre0028` y `sales_backup_pre0029` de la base local una vez confirmado que los cambios no rompieron nada (se dejaron como respaldo temporal).
 - Correr `composer install` en cualquier entorno (staging/produccion) antes de desplegar el modulo de Inventario/Productos, para que se instale `dompdf/dompdf`.
 - El usuario debe confirmar visualmente en un navegador de escritorio (no headless) que el PDF se previsualiza correctamente dentro del modal de Productos.

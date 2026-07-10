@@ -80,7 +80,21 @@ $statusLabels = ['confirmada' => 'Confirmada', 'anulada' => 'Anulada', 'entregad
                 <td data-label="Pago"><?= e($sale['payment_method']) ?><br><span class="text-muted"><?= e($sale['payment_operation_number']) ?></span></td>
                 <td data-label="Total"><strong>S/ <?= number_format((float)$sale['total'], 2) ?></strong></td>
                 <td data-label="Estado"><span class="badge <?= $sale['status'] === 'confirmada' ? 'ok' : 'off' ?>"><?= e($statusLabels[$sale['status']] ?? $sale['status']) ?></span></td>
-                <td class="actions"><a class="button small" href="<?= e(url('/sales/show?id=' . (int)$sale['id'])) ?>">Ver</a></td>
+                <td class="actions">
+                    <a class="button small" href="<?= e(url('/sales/show?id=' . (int)$sale['id'])) ?>">Ver</a>
+                    <?php if ($sale['status'] === 'confirmada'): ?>
+                        <?php if ($sale['receipt_file_id']): ?>
+                        <a class="button small info" href="<?= e(url('/sales/receipt/view?id=' . (int)$sale['id'])) ?>" target="_blank" rel="noopener"><?= icon('file') ?> Ticket</a>
+                        <?php elseif (can('sales', 'create')): ?>
+                        <form method="post" action="<?= e(url('/sales/receipt/issue')) ?>">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="id" value="<?= (int)$sale['id'] ?>">
+                            <input type="hidden" name="redirect" value="<?= e(url('/sales')) ?>">
+                            <button class="button small info" type="submit"><?= icon('printer') ?> Emitir</button>
+                        </form>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </td>
             </tr>
             <?php endforeach; ?>
             <?php if (!$sales): ?>

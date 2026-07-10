@@ -87,6 +87,9 @@ $router->group(['middleware' => ['AuthMiddleware', 'CsrfMiddleware']], function 
     $r->post('/sales/store', [SalesController::class, 'store'],      ['PermissionMiddleware:sales.create']);
     $r->get('/sales/show',   [SalesController::class, 'show'],       ['PermissionMiddleware:sales.view']);
     $r->post('/sales/cancel',[SalesController::class, 'cancel'],     ['PermissionMiddleware:sales.cancel']);
+    $r->post('/sales/receipt/issue', [SalesController::class, 'issueReceipt'], ['PermissionMiddleware:sales.create']);
+    $r->get('/sales/receipt/view',   [SalesController::class, 'viewReceipt'],  ['PermissionMiddleware:sales.view']);
+    $r->post('/sales/receipt/email', [SalesController::class, 'emailReceipt'], ['PermissionMiddleware:sales.create']);
 
     $r->get('/inventory',            [InventoryController::class, 'index'],     ['PermissionMiddleware:inventory.view']);
     $r->get('/inventory/movements',  [InventoryController::class, 'movements'], ['PermissionMiddleware:inventory.view']);
