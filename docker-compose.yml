@@ -1,0 +1,39 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: http://localhost:8080
+      APP_SECURE_COOKIES: "false"
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: dashboard_base
+      DB_USERNAME: ccopaeca
+      DB_PASSWORD: ccopaeca_secret
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: dashboard_base
+      MYSQL_USER: ccopaeca
+      MYSQL_PASSWORD: ccopaeca_secret
+      MYSQL_ROOT_PASSWORD: root_secret_change_me
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/init-db.sh:/docker-entrypoint-initdb.d/01-init-db.sh:ro
+      - ./database/migrations:/docker-entrypoint-initdb.d/migrations:ro
+      - ./database/seeders:/docker-entrypoint-initdb.d/seeders:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_secret_change_me"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql_data:

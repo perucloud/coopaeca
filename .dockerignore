@@ -1,0 +1,16 @@
+.git
+.env
+.env.*
+!.env.example
+vendor
+node_modules
+storage/logs
+storage/uploads
+public/uploads/media
+public/uploads/posts
+public/uploads/settings
+public/uploads/vouchers
+public/uploads/payment-methods
+public/uploads/receipts
+public/uploads/sliders
+.phpunit.cache

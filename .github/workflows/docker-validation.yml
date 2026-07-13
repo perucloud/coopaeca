@@ -1,0 +1,68 @@
+name: Docker validation
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+    paths:
+      - Dockerfile
+      - docker-compose.yml
+      - .dockerignore
+      - docker/**
+      - .github/workflows/docker-validation.yml
+
+jobs:
+  docker-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose configuration
+        run: docker compose config
+
+      - name: Build Docker images
+        run: docker compose build
+
+      - name: Start services
+        run: docker compose up -d
+
+      - name: Wait for services
+        run: |
+          for attempt in {1..18}; do
+            web_state="$(docker compose ps web --format '{{.State}}' || true)"
+            db_container="$(docker compose ps -q db || true)"
+            db_health=""
+
+            if [ -n "$db_container" ]; then
+              db_health="$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$db_container" 2>/dev/null || true)"
+            fi
+
+            echo "Attempt ${attempt}/18 - web=${web_state:-unknown} db=${db_health:-unknown}"
+
+            if [ "$web_state" = "running" ] && [ "$db_health" = "healthy" ]; then
+              exit 0
+            fi
+
+            sleep 5
+          done
+
+          docker compose ps
+          exit 1
+
+      - name: Show containers
+        run: docker compose ps
+
+      - name: Check HTTP response
+        run: curl --fail --retry 10 --retry-delay 5 http://localhost:8080
+
+      - name: Show Docker logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+
+      - name: Stop services
+        if: always()
+        run: docker compose down
