@@ -1,4 +1,4 @@
-FROM php:8.2-cli AS dependencies
+FROM php:8.3-cli AS dependencies
 
 WORKDIR /app
 
@@ -22,7 +22,7 @@ RUN apt-get update \
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
 
-FROM php:8.2-apache
+FROM php:8.3-apache
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
