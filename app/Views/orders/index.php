@@ -1,193 +1,28 @@
 <?php
-$statusLabels = [
-    'pendiente' => 'Pendiente',
-    'voucher_enviado' => 'Voucher enviado',
-    'en_revision' => 'En revision',
-    'aprobado' => 'Aprobado',
-    'rechazado' => 'Rechazado',
-    'cancelado' => 'Cancelado',
-];
-$badgeClass = [
-    'aprobado' => 'ok',
-    'rechazado' => 'off',
-    'cancelado' => 'off',
-    'en_revision' => 'warn',
-    'voucher_enviado' => 'muted',
-    'pendiente' => 'muted',
-];
+$statusLabels = ['pendiente'=>'Pendiente','voucher_enviado'=>'Voucher enviado','en_revision'=>'En revisión','aprobado'=>'Aprobado','rechazado'=>'Rechazado','cancelado'=>'Cancelado'];
+$badgeClass = ['aprobado'=>'ok','rechazado'=>'off','cancelado'=>'off','en_revision'=>'warn','voucher_enviado'=>'muted','pendiente'=>'muted'];
+$deliveryLabels = ['sent'=>'Enviado','failed'=>'Fallido','pending'=>'Pendiente','prepared'=>'WhatsApp preparado'];
+$deliveryBadges = ['sent'=>'ok','failed'=>'off','pending'=>'warn','prepared'=>'muted'];
 ?>
-
-<section class="page-card">
-    <div class="page-header">
-        <div>
-            <h2>Pedidos</h2>
-            <span>Valida compras web, vouchers y disponibilidad antes de generar ventas.</span>
-        </div>
-        <button type="button" class="button ghost" id="openPdfModal"><?= icon('printer') ?> Imprimir PDF</button>
-    </div>
-
-    <div class="stats-grid compact">
-        <?php foreach ($statusLabels as $key => $label): ?>
-        <div class="stat-card soft">
-            <span><?= e($label) ?></span>
-            <strong><?= (int)($stats[$key] ?? 0) ?></strong>
-        </div>
-        <?php endforeach; ?>
-    </div>
-
-    <div class="filter-panel">
-        <div class="filter-panel-head">
-            <span class="filter-panel-icon"><?= icon('search') ?></span>
-            <div>
-                <strong>Filtros de búsqueda</strong>
-                <span>Ubica pedidos por código, comprador, estado o fecha.</span>
-            </div>
-        </div>
-        <form method="get" action="<?= e(url('/orders')) ?>" class="filter-grid">
-            <label class="filter-field wide">
-                <span>Buscar</span>
-                <input class="form-control" type="text" name="q" value="<?= e($filters['q']) ?>" placeholder="Código, comprador, DNI/RUC, WhatsApp u operación">
-            </label>
-            <label class="filter-field">
-                <span>Estado</span>
-                <select class="form-control" name="status">
-                    <option value="">Todos</option>
-                    <?php foreach ($statusLabels as $key => $label): ?>
-                    <option value="<?= e($key) ?>" <?= $filters['status'] === $key ? 'selected' : '' ?>><?= e($label) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </label>
-            <label class="filter-field">
-                <span>Desde</span>
-                <input class="form-control" type="date" name="from" value="<?= e($filters['from']) ?>">
-            </label>
-            <label class="filter-field">
-                <span>Hasta</span>
-                <input class="form-control" type="date" name="to" value="<?= e($filters['to']) ?>">
-            </label>
-            <div class="filter-actions">
-                <button class="button primary" type="submit"><?= icon('search') ?> Filtrar</button>
-                <a class="button ghost" href="<?= e(url('/orders')) ?>">Limpiar</a>
-            </div>
-        </form>
-    </div>
-
-    <div class="table-wrap">
-        <table class="orders-table">
-            <thead>
-            <tr>
-                <th>Pedido</th>
-                <th>Apellidos y nombres</th>
-                <th>DNI/RUC</th>
-                <th>Telefono / WhatsApp</th>
-                <th>Cantidad</th>
-                <th>Producto</th>
-                <th>Tipo de pago</th>
-                <th>Total</th>
-                <th>Estado</th>
-                <th>Fecha compra</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($orders as $order): ?>
-            <tr>
-                <td data-label="Pedido"><strong><?= e(short_code('PED', (int)$order['id'])) ?></strong></td>
-                <td data-label="Apellidos y nombres"><?= e($order['customer_name']) ?></td>
-                <td data-label="DNI/RUC"><?= e($order['document_type'] . ' ' . $order['document_number']) ?></td>
-                <td data-label="Telefono / WhatsApp">
-                    <?php if ($order['phone'] && $order['phone'] !== $order['whatsapp']): ?>
-                        <?= e($order['phone']) ?> / <?= e($order['whatsapp']) ?>
-                    <?php else: ?>
-                        <?= e($order['whatsapp']) ?>
-                    <?php endif; ?>
-                </td>
-                <td data-label="Cantidad"><?= (int)$order['units_count'] ?> und.</td>
-                <td data-label="Producto">
-                    <?php
-                        $productNames = array_filter(explode(', ', (string)($order['product_names'] ?? '')));
-                        $firstProduct = $productNames[0] ?? '-';
-                        $extraCount = count($productNames) - 1;
-                    ?>
-                    <?= e($firstProduct) ?><?php if ($extraCount > 0): ?> <span class="text-muted">+<?= $extraCount ?> mas</span><?php endif; ?>
-                </td>
-                <td data-label="Tipo de pago">
-                    <?= e($order['payment_method']) ?><br>
-                    <span class="text-muted">N° <?= e($order['payment_operation_number']) ?></span>
-                </td>
-                <td data-label="Total"><strong>S/ <?= number_format((float)$order['total'], 2) ?></strong></td>
-                <td data-label="Estado"><span class="badge <?= e($badgeClass[$order['status']] ?? 'muted') ?>"><?= e($statusLabels[$order['status']] ?? $order['status']) ?></span></td>
-                <td data-label="Fecha compra"><?= e(date('d/m/Y H:i', strtotime($order['created_at']))) ?></td>
-                <td class="actions">
-                    <a class="button small" href="<?= e(url('/orders/show?id=' . (int)$order['id'])) ?>">Ver</a>
-                    <?php if ($order['status'] === 'aprobado' && $order['sale_id']): ?>
-                        <?php if ($order['sale_receipt_file_id']): ?>
-                        <a class="button small info" href="<?= e(url('/sales/receipt/view?id=' . (int)$order['sale_id'])) ?>" target="_blank" rel="noopener"><?= icon('file') ?> Ticket</a>
-                        <?php elseif (can('sales', 'create')): ?>
-                        <form method="post" action="<?= e(url('/sales/receipt/issue')) ?>">
-                            <?= csrf_field() ?>
-                            <input type="hidden" name="id" value="<?= (int)$order['sale_id'] ?>">
-                            <input type="hidden" name="redirect" value="<?= e(url('/orders')) ?>">
-                            <button class="button small info" type="submit"><?= icon('printer') ?> Emitir</button>
-                        </form>
-                        <?php endif; ?>
-                    <?php endif; ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-            <?php if (!$orders): ?>
-            <tr><td colspan="11" class="empty-state">No hay pedidos para los filtros seleccionados.</td></tr>
-            <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
+<section class="page-card orders-page">
+ <div class="page-header"><div><h2>Pedidos</h2><span>Valida pagos y administra comprobantes y entregas al cliente.</span></div><button type="button" class="button pdf-report" id="openPdfModal"><?= icon('printer') ?> Imprimir reporte de pedidos</button></div>
+ <div class="stats-grid compact"><?php foreach($statusLabels as $key=>$label): ?><div class="stat-card soft"><span><?= e($label) ?></span><strong><?= (int)($stats[$key]??0) ?></strong></div><?php endforeach ?></div>
+ <div class="filter-panel">
+  <div class="filter-panel-head"><span class="filter-panel-icon"><?= icon('search') ?></span><div><strong>Filtros de búsqueda</strong><span>Ubica pedidos por código, comprador, estado o fecha.</span></div></div>
+  <form method="get" action="<?= e(url('/orders')) ?>" class="filter-grid">
+   <label class="filter-field wide"><span>Buscar</span><input class="form-control" name="q" value="<?= e($filters['q']) ?>" placeholder="Código, comprador, DNI/RUC, WhatsApp u operación"></label>
+   <label class="filter-field"><span>Estado</span><select class="form-control" name="status"><option value="">Todos</option><?php foreach($statusLabels as $key=>$label): ?><option value="<?= e($key) ?>" <?= $filters['status']===$key?'selected':'' ?>><?= e($label) ?></option><?php endforeach ?></select></label>
+   <label class="filter-field"><span>Desde</span><input class="form-control" type="date" name="from" value="<?= e($filters['from']) ?>"></label>
+   <label class="filter-field"><span>Hasta</span><input class="form-control" type="date" name="to" value="<?= e($filters['to']) ?>"></label>
+   <div class="filter-actions"><button class="button primary" type="submit"><?= icon('search') ?> Filtrar</button><a class="button ghost" href="<?= e(url('/orders')) ?>">Limpiar</a></div>
+  </form>
+ </div>
+ <div class="table-wrap"><table class="orders-table" id="ordersTable" data-orders-refresh-url="<?= e(url('/orders/rows' . (($qs = http_build_query($filters)) !== '' ? '?' . $qs : ''))) ?>"><thead><tr><th>Pedido / cliente</th><th>Contacto</th><th>Compra</th><th>Pago</th><th>Total</th><th>Estado</th><th>Último envío</th><th>Acciones</th></tr></thead><tbody id="ordersTableBody">
+ <?php require __DIR__ . '/_rows.php'; ?>
+ </tbody></table></div>
 </section>
-
-<!-- Modal de previsualizacion e impresion de PDF -->
-<div class="modal-overlay" id="pdfModal" style="display:none">
-    <div class="modal-box modal-xl">
-        <div class="modal-header">
-            <h3>Reporte de pedidos en PDF</h3>
-            <button type="button" class="modal-close" id="pdfModalClose">&times;</button>
-        </div>
-        <div class="modal-body pdf-modal-body">
-            <iframe id="pdfFrame" class="pdf-frame" title="Previsualizacion PDF"></iframe>
-        </div>
-        <div class="modal-footer">
-            <a class="button ghost" id="pdfDownload" href="<?= e(url('/orders/pdf') . '?' . http_build_query($filters)) ?>" download="pedidos.pdf"><?= icon('download') ?> Descargar</a>
-            <button type="button" class="button primary" id="pdfPrint"><?= icon('printer') ?> Imprimir</button>
-        </div>
-    </div>
-</div>
-
-<script>
-(function () {
-    var modal = document.getElementById('pdfModal');
-    var frame = document.getElementById('pdfFrame');
-    var openBtn = document.getElementById('openPdfModal');
-    var closeBtn = document.getElementById('pdfModalClose');
-    var printBtn = document.getElementById('pdfPrint');
-    var pdfUrl = <?= json_encode(url('/orders/pdf') . '?' . http_build_query($filters)) ?>;
-    var loaded = false;
-
-    openBtn.addEventListener('click', function () {
-        if (!loaded) {
-            frame.src = pdfUrl;
-            loaded = true;
-        }
-        modal.style.display = 'flex';
-    });
-    closeBtn.addEventListener('click', function () { modal.style.display = 'none'; });
-    modal.addEventListener('click', function (event) {
-        if (event.target === modal) modal.style.display = 'none';
-    });
-    printBtn.addEventListener('click', function () {
-        try {
-            frame.contentWindow.focus();
-            frame.contentWindow.print();
-        } catch (error) {
-            window.open(pdfUrl, '_blank');
-        }
-    });
-})();
-</script>
+<?php require __DIR__.'/voucher-modal.php'; ?>
+<?php require __DIR__.'/detail-modal.php'; ?>
+<?php require __DIR__.'/cancel-sale-modal.php'; ?>
+<div class="modal-overlay" id="pdfModal" style="display:none"><div class="modal-box modal-xl"><div class="modal-header"><h3>Reporte de pedidos en PDF</h3><button type="button" class="modal-close" data-close>&times;</button></div><div class="modal-body pdf-modal-body"><iframe id="pdfFrame" class="pdf-frame" title="Previsualización PDF"></iframe></div><div class="modal-footer"><a class="button ghost" href="<?= e(url('/orders/pdf').'?'.http_build_query($filters)) ?>" download="pedidos.pdf"><?= icon('download') ?> Descargar</a><button type="button" class="button primary" id="pdfPrint"><?= icon('printer') ?> Imprimir</button></div></div></div>
+<script>(function(){var m=document.getElementById('pdfModal'),f=document.getElementById('pdfFrame'),u=<?= json_encode(url('/orders/pdf').'?'.http_build_query($filters)) ?>;document.getElementById('openPdfModal').addEventListener('click',function(){if(!f.src)f.src=u;m.style.display='flex'});m.querySelector('[data-close]').addEventListener('click',function(){m.style.display='none'});m.addEventListener('click',function(e){if(e.target===m)m.style.display='none'});document.getElementById('pdfPrint').addEventListener('click',function(){try{f.contentWindow.focus();f.contentWindow.print()}catch(e){window.open(u,'_blank')}})})();</script>

@@ -80,7 +80,7 @@ require __DIR__ . '/partials/header.php';
                 <?php if ($cats): ?>
                 <div class="pd-cats">
                     <?php foreach ($cats as $cat): ?>
-                        <span class="pd-cat-tag"><?= e($cat['name']) ?></span>
+                        <span class="pd-cat-tag"><?= e(localized_value($cat, 'name')) ?></span>
                     <?php endforeach; ?>
                 </div>
                 <?php endif; ?>
@@ -112,7 +112,7 @@ require __DIR__ . '/partials/header.php';
                         <input type="number" id="pdQuantity" class="pd-qty-input" min="1"<?php if ($waStockQty !== ''): ?> max="<?= $waStockQty ?>"<?php endif; ?> value="1"<?php if ($waStock !== null && (int)$waStock === 0): ?> disabled<?php endif; ?>>
                     </div>
                     <button type="button" id="pdAddCartBtn" class="pd-btn-cart" data-product='<?= e($waJson) ?>'<?php if ($waStock !== null && (int)$waStock === 0): ?> disabled<?php endif; ?>>
-                        <?= icon('shopping-cart') ?> <?= e(landing_lang() === 'en' ? 'Add to cart' : 'Anadir al carrito') ?>
+                        <?= icon('shopping-cart') ?> <?= e(t('product.add_cart')) ?>
                     </button>
                     <button type="button" id="pdWhatsappAssistBtn" class="pd-btn-contact" data-product='<?= e($waJson) ?>'>
                         <?= icon('message-circle') ?> <?= e(t('product.buy_whatsapp')) ?>
@@ -245,7 +245,7 @@ require __DIR__ . '/partials/header.php';
                     <h3 class="pd-side-title"><?= icon('tag') ?> <?= e(t('product.categories')) ?></h3>
                     <div class="pd-side-tags">
                         <?php foreach ($cats as $cat): ?>
-                            <span class="pd-side-tag"><?= e($cat['name']) ?></span>
+                            <span class="pd-side-tag"><?= e(localized_value($cat, 'name')) ?></span>
                         <?php endforeach; ?>
                     </div>
                 </div>
@@ -292,7 +292,7 @@ require __DIR__ . '/partials/header.php';
                         </div>
                     <?php endif; ?>
                     <?php if (!empty($rp['is_featured'])): ?>
-                        <span class="lp-card-badge-featured">★ Destacado</span>
+                        <span class="lp-card-badge-featured">★ <?= e(t('product.featured')) ?></span>
                     <?php endif; ?>
                     <?php if ($rpPrice > 0): ?>
                     <div class="lp-card-price-tag">
@@ -352,7 +352,7 @@ require __DIR__ . '/partials/header.php';
             .replace(':presentation', data.presentation || '')
             .replace(':qty', qty)
             .replace(':price', data.price);
-        window.open('https://wa.me/' + data.phone + '?text=' + encodeURIComponent(msg), '_blank');
+        window.open(window.lpWhatsAppLink(data.phone, msg), '_blank');
     });
 })();
 </script>

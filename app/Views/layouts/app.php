@@ -7,7 +7,7 @@
     <title><?= e($title ?? dashboard_name()) ?> - <?= e(dashboard_name()) ?></title>
     <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>">
 </head>
-<body>
+<body data-orders-pending-url="<?= e(url('/orders/pending-count')) ?>">
 
 <div class="app-shell" id="appShell">
     <aside class="sidebar" id="sidebar">
@@ -44,16 +44,22 @@
             <?php endif; ?>
 
             <?php if (can('products') || can('orders') || can('sales') || can('inventory')): ?>
+            <?php $ordersPending = can('orders') ? (int)Database::connection()->query("SELECT COUNT(*) FROM orders WHERE status IN ('pendiente', 'voucher_enviado')")->fetchColumn() : 0; ?>
             <div class="nav-group <?= is_active('/products', '/orders', '/sales', '/inventory') ? 'open' : '' ?>">
                 <button type="button" class="nav-link nav-group-toggle" data-submenu-toggle>
-                    <?= nav_icon('shopping-cart') ?><span>Tienda</span><?= nav_icon('chevron-down', 'nav-chevron') ?>
+                    <?= nav_icon('shopping-cart') ?><span>Tienda</span>
+                    <?php if ($ordersPending > 0): ?><em class="nav-badge nav-badge-inline" id="ordersPendingBadgeInline"><?= $ordersPending ?></em><?php endif; ?>
+                    <?= nav_icon('chevron-down', 'nav-chevron') ?>
                 </button>
                 <div class="nav-submenu">
                     <?php if (can('products')): ?>
                     <a href="<?= e(url('/products')) ?>" class="<?= is_active('/products') ?>"><?= nav_icon('package') ?><span>Productos</span></a>
                     <?php endif; ?>
                     <?php if (can('orders')): ?>
-                    <a href="<?= e(url('/orders')) ?>" class="<?= is_active('/orders') ?>"><?= nav_icon('clipboard-list') ?><span>Pedidos</span></a>
+                    <a href="<?= e(url('/orders')) ?>" class="<?= is_active('/orders') ?>">
+                        <?= nav_icon('clipboard-list') ?><span>Pedidos</span>
+                        <em class="nav-badge" id="ordersPendingBadge" <?= $ordersPending > 0 ? '' : 'hidden' ?>><?= $ordersPending ?></em>
+                    </a>
                     <?php endif; ?>
                     <?php if (can('sales')): ?>
                     <a href="<?= e(url('/sales')) ?>" class="<?= is_active('/sales') ?>"><?= nav_icon('shopping-bag') ?><span>Ventas</span></a>
@@ -77,15 +83,18 @@
             </a>
             <?php endif; ?>
 
-            <?php if (can('social_networks') || can('pages') || can('contacts')): ?>
+            <?php if (can('social_networks') || can('pages') || can('contacts') || can('sliders')): ?>
             <?php $unread = can('contacts') ? (int)Database::connection()->query("SELECT COUNT(*) FROM contact_messages WHERE status='new'")->fetchColumn() : 0; ?>
-            <div class="nav-group <?= is_active('/social-networks', '/about', '/contacts') ? 'open' : '' ?>">
+            <div class="nav-group <?= is_active('/social-networks', '/about', '/contacts', '/sliders') ? 'open' : '' ?>">
                 <button type="button" class="nav-link nav-group-toggle" data-submenu-toggle>
                     <?= nav_icon('layout') ?><span>Landing page</span>
                     <?php if ($unread > 0): ?><em class="nav-badge nav-badge-inline"><?= $unread ?></em><?php endif; ?>
                     <?= nav_icon('chevron-down', 'nav-chevron') ?>
                 </button>
                 <div class="nav-submenu">
+                    <?php if (can('sliders')): ?>
+                    <a href="<?= e(url('/sliders')) ?>" class="<?= is_active('/sliders') ?>"><?= nav_icon('image') ?><span>Hero / Sliders</span></a>
+                    <?php endif; ?>
                     <?php if (can('social_networks')): ?>
                     <a href="<?= e(url('/social-networks')) ?>" class="<?= is_active('/social-networks') ?>"><?= nav_icon('share') ?><span>Redes sociales</span></a>
                     <?php endif; ?>
@@ -169,6 +178,7 @@
                     'payment-methods' => 'Metodos de pago',
                     'services' => 'Servicios',
                     'galleries' => 'Galería',
+                    'sliders' => 'Hero / Sliders',
                     'social-networks' => 'Redes sociales',
                     'about' => 'Nosotros',
                     'contacts' => 'Contáctenos',

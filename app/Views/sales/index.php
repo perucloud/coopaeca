@@ -9,7 +9,10 @@ $statusLabels = ['confirmada' => 'Confirmada', 'anulada' => 'Anulada', 'entregad
             <h2>Ventas</h2>
             <span>Registro comercial definitivo generado por pedidos aprobados o ventas confirmadas.</span>
         </div>
-        <a class="button primary" href="<?= e(url('/sales/create')) ?>"><?= icon('plus') ?> Nueva venta</a>
+        <div class="header-actions">
+            <button type="button" class="button pdf-report" id="openSalesPdfModal"><?= icon('printer') ?> Imprimir reporte de ventas</button>
+            <a class="button primary" href="<?= e(url('/sales/create')) ?>"><?= icon('plus') ?> Nueva venta</a>
+        </div>
     </div>
 
     <div class="stats-grid compact">
@@ -74,8 +77,12 @@ $statusLabels = ['confirmada' => 'Confirmada', 'anulada' => 'Anulada', 'entregad
             <?php foreach ($sales as $sale): ?>
             <tr>
                 <td data-label="Venta">
-                    <strong><?= e(short_code('VEN', (int)$sale['id'])) ?></strong><br>
-                    <span class="text-muted"><?= $sale['order_id'] ? e(short_code('PED', (int)$sale['order_id'])) : 'Sin pedido' ?></span>
+                    <strong><?= e(display_code('VEN', (int)$sale['id'], $sale['code'] ?? null)) ?></strong><br>
+                    <?php if ($sale['order_id']): ?>
+                    <a class="text-muted" href="<?= e(url('/orders/show?id=' . (int)$sale['order_id'])) ?>" title="Ver pedido origen"><?= e(display_code('PED', (int)$sale['order_id'], $sale['order_code'] ?? null)) ?></a>
+                    <?php else: ?>
+                    <span class="text-muted">Sin pedido</span>
+                    <?php endif; ?>
                 </td>
                 <td data-label="Comprador"><strong><?= e($sale['customer_name']) ?></strong><br><span class="text-muted"><?= e($sale['document_type'] . ' ' . $sale['document_number']) ?></span></td>
                 <td data-label="Origen"><?= e($sourceLabels[$sale['source']] ?? $sale['source']) ?></td>
@@ -83,20 +90,24 @@ $statusLabels = ['confirmada' => 'Confirmada', 'anulada' => 'Anulada', 'entregad
                 <td data-label="Pago"><?= e($sale['payment_method']) ?><br><span class="text-muted"><?= e($sale['payment_operation_number']) ?></span></td>
                 <td data-label="Total"><strong>S/ <?= number_format((float)$sale['total'], 2) ?></strong></td>
                 <td data-label="Estado"><span class="badge <?= $sale['status'] === 'confirmada' ? 'ok' : 'off' ?>"><?= e($statusLabels[$sale['status']] ?? $sale['status']) ?></span></td>
-                <td class="actions">
-                    <a class="button small" href="<?= e(url('/sales/show?id=' . (int)$sale['id'])) ?>">Ver</a>
+                <td class="actions order-actions">
+                    <a class="button small action-view" href="<?= e(url('/sales/show?id=' . (int)$sale['id'])) ?>"><?= icon('eye') ?> Ver</a>
+                    <?php if (!empty($sale['voucher_path'])): ?>
+                    <button class="button small action-voucher" type="button" data-voucher-open data-voucher-url="<?= e(url('/sales/voucher/view?id=' . (int)$sale['id'])) ?>" data-voucher-code="<?= e(display_code('VEN', (int)$sale['id'], $sale['code'] ?? null)) ?>" data-voucher-mime="<?= e((string)($sale['voucher_mime'] ?? '')) ?>"><?= icon('file') ?> Voucher</button>
+                    <?php endif; ?>
                     <?php if ($sale['status'] === 'confirmada'): ?>
                         <?php if ($sale['receipt_file_id']): ?>
-                        <a class="button small info" href="<?= e(url('/sales/receipt/view?id=' . (int)$sale['id'])) ?>" target="_blank" rel="noopener"><?= icon('file') ?> Ticket</a>
+                        <a class="button small action-receipt" href="<?= e(url('/sales/receipt/view?id=' . (int)$sale['id'])) ?>" target="_blank" rel="noopener"><?= icon('file') ?> Comprobante</a>
                         <?php elseif (can('sales', 'create')): ?>
                         <form method="post" action="<?= e(url('/sales/receipt/issue')) ?>">
                             <?= csrf_field() ?>
                             <input type="hidden" name="id" value="<?= (int)$sale['id'] ?>">
                             <input type="hidden" name="redirect" value="<?= e(url('/sales')) ?>">
-                            <button class="button small info" type="submit"><?= icon('printer') ?> Emitir</button>
+                            <button class="button small action-issue" type="submit"><?= icon('printer') ?> Emitir</button>
                         </form>
                         <?php endif; ?>
                     <?php endif; ?>
+                    <a class="button small icon-only action-print" href="<?= e(url('/sales/pdf?id=' . (int)$sale['id'])) ?>" target="_blank" rel="noopener" title="Imprimir esta venta" aria-label="Imprimir esta venta"><?= icon('printer') ?></a>
                 </td>
             </tr>
             <?php endforeach; ?>
@@ -107,3 +118,7 @@ $statusLabels = ['confirmada' => 'Confirmada', 'anulada' => 'Anulada', 'entregad
         </table>
     </div>
 </section>
+
+<?php require __DIR__ . '/../orders/voucher-modal.php'; ?>
+<div class="modal-overlay" id="salesPdfModal" style="display:none"><div class="modal-box modal-xl"><div class="modal-header"><h3>Reporte de ventas en PDF</h3><button type="button" class="modal-close" data-close>&times;</button></div><div class="modal-body pdf-modal-body"><iframe id="salesPdfFrame" class="pdf-frame" title="Previsualización PDF"></iframe></div><div class="modal-footer"><a class="button ghost" href="<?= e(url('/sales/pdf') . '?' . http_build_query($filters)) ?>" download="ventas.pdf"><?= icon('download') ?> Descargar</a><button type="button" class="button primary" id="salesPdfPrint"><?= icon('printer') ?> Imprimir</button></div></div></div>
+<script>(function(){var m=document.getElementById('salesPdfModal'),f=document.getElementById('salesPdfFrame'),u=<?= json_encode(url('/sales/pdf') . '?' . http_build_query($filters)) ?>;document.getElementById('openSalesPdfModal').addEventListener('click',function(){if(!f.src)f.src=u;m.style.display='flex'});m.querySelector('[data-close]').addEventListener('click',function(){m.style.display='none'});m.addEventListener('click',function(e){if(e.target===m)m.style.display='none'});document.getElementById('salesPdfPrint').addEventListener('click',function(){try{f.contentWindow.focus();f.contentWindow.print()}catch(e){window.open(u,'_blank')}})})();</script>

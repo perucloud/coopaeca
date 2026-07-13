@@ -3,10 +3,23 @@ $headerLogo = !empty($settings['header_logo_path']) ? url('/' . $settings['heade
 $footerLogo = !empty($settings['footer_logo_path']) ? url('/' . $settings['footer_logo_path']) : asset('img/logowhite.png');
 $activeLandingNav = 'publicaciones';
 $fecha = $post['published_at'] ?? $post['created_at'];
-$shareUrl = absolute_url('/publicacion?slug=' . $post['slug']);
+$shareUrl = absolute_url(lurl('/publicacion?slug=' . $post['slug']));
 $postTitle = localized_value($post, 'title');
 $postContent = localized_value($post, 'content');
+$postCategory = localized_value($post, 'category');
 $shareText = $postTitle . ' - ' . ($settings['cooperative_name'] ?? 'COOPAECA');
+$formatPostDate = static function (?string $value): string {
+    if (!$value) return '';
+    $timestamp = strtotime($value);
+    if ($timestamp === false) return '';
+    $months = landing_lang() === 'en'
+        ? [1 => 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        : [1 => 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    $month = $months[(int)date('n', $timestamp)];
+    return landing_lang() === 'en'
+        ? $month . ' ' . date('j, Y', $timestamp)
+        : date('j', $timestamp) . ' de ' . $month . ' de ' . date('Y', $timestamp);
+};
 ?>
 
 <?php require __DIR__ . '/partials/header.php'; ?>
@@ -64,23 +77,23 @@ $shareText = $postTitle . ' - ' . ($settings['cooperative_name'] ?? 'COOPAECA');
         <?php endif; ?>
 
         <div class="post-meta-row">
-            <span class="post-category-tag"><?= e($post['category'] ?: 'General') ?></span>
-            <span class="post-date"><?= e($fecha ? date('d \d\e F \d\e Y', strtotime($fecha)) : '') ?></span>
+            <span class="post-category-tag"><?= e($postCategory !== '' ? $postCategory : t('post.general')) ?></span>
+            <span class="post-date"><?= e($formatPostDate($fecha)) ?></span>
         </div>
 
         <h1 class="post-title"><?= e($postTitle) ?></h1>
 
         <div class="post-share">
             <span class="post-share-label"><?= e(t('post.share')) ?></span>
-            <a class="post-share-btn share-whatsapp" target="_blank" rel="noopener" aria-label="Compartir por WhatsApp"
-               href="https://api.whatsapp.com/send?text=<?= urlencode($shareText . ' ' . $shareUrl) ?>">
+            <a class="post-share-btn share-whatsapp" target="_blank" rel="noopener" aria-label="<?= e(t('post.share_whatsapp')) ?>"
+               href="<?= e(whatsapp_link('', $shareText . ' ' . $shareUrl)) ?>">
                 <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5C10 9 9.6 8 9.4 7.6c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.1 0 1.2.9 2.4 1 2.6.1.2 1.8 2.8 4.4 3.8.6.3 1.1.4 1.5.6.6.2 1.2.2 1.6.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.6-.3zM12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.7 1.5 5.2L2 22l4.9-1.4C8.4 21.5 10.2 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18c-1.7 0-3.3-.5-4.6-1.3l-.3-.2-3 .8.8-2.9-.2-.3C3.9 15 3.5 13.5 3.5 12c0-4.7 3.8-8.5 8.5-8.5s8.5 3.8 8.5 8.5-3.8 8.5-8.5 8.5z"/></svg>
             </a>
-            <a class="post-share-btn share-facebook" target="_blank" rel="noopener" aria-label="Compartir en Facebook"
+            <a class="post-share-btn share-facebook" target="_blank" rel="noopener" aria-label="<?= e(t('post.share_facebook')) ?>"
                href="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode($shareUrl) ?>">
                 <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.7-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg>
             </a>
-            <button type="button" class="post-share-btn share-copy" id="postCopyLink" aria-label="Copiar enlace" data-url="<?= e($shareUrl) ?>">
+            <button type="button" class="post-share-btn share-copy" id="postCopyLink" aria-label="<?= e(t('post.copy_link')) ?>" data-url="<?= e($shareUrl) ?>">
                 <svg viewBox="0 0 24 24"><path d="M17 7h-4a5 5 0 0 0 0 10h4a5 5 0 0 0 0-10zm-10 5a5 5 0 0 1 5-5h1v2H9a3 3 0 1 0 0 6h1v2H8a5 5 0 0 1-5-5zm10 3h-1v-2h1a3 3 0 1 0 0-6h-1V5h1a5 5 0 0 1 0 10z"/></svg>
             </button>
             <span class="post-copy-feedback" id="postCopyFeedback"><?= e(t('post.copied')) ?></span>
@@ -104,6 +117,7 @@ $shareText = $postTitle . ' - ' . ($settings['cooperative_name'] ?? 'COOPAECA');
             <?php
                 $rpTitle = localized_value($rp, 'title');
                 $rpExcerpt = localized_value($rp, 'excerpt');
+                $rpCategory = localized_value($rp, 'category');
             ?>
             <a href="<?= e(lurl('/publicacion?slug=' . $rp['slug'])) ?>" class="lp-news-card reveal">
                 <?php if (!empty($rp['image_path'])): ?>
@@ -112,7 +126,7 @@ $shareText = $postTitle . ' - ' . ($settings['cooperative_name'] ?? 'COOPAECA');
                     <div class="lp-news-image lp-gallery-placeholder lp-gallery-placeholder-<?= ((int)$rp['id'] % 6) + 1 ?>"></div>
                 <?php endif; ?>
                 <div class="lp-news-body">
-                    <span><?= e($rp['category'] ?: 'General') ?></span>
+                    <span><?= e($rpCategory !== '' ? $rpCategory : t('post.general')) ?></span>
                     <h3><?= e($rpTitle) ?></h3>
                     <p><?= e($rpExcerpt) ?></p>
                 </div>

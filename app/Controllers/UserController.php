@@ -12,6 +12,7 @@ final class UserController extends Controller
         'payment_methods' => 'Metodos de pago',
         'services' => 'Servicios',
         'galleries'=> 'Galería',
+        'sliders'  => 'Hero / Sliders',
         'social_networks' => 'Redes sociales',
         'pages'    => 'Nosotros',
         'contacts' => 'Contáctenos',

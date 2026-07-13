@@ -43,6 +43,19 @@
             <label>Orden
                 <input type="number" name="position" value="<?= e(old('position', 0)) ?>">
             </label>
+            <label class="pm-bank-field">Banco
+                <input type="text" name="bank_name" value="<?= e(old('bank_name')) ?>" placeholder="BCP, Interbank, BBVA...">
+            </label>
+            <label class="pm-bank-field">Moneda
+                <select name="currency">
+                    <option value="">Sin especificar</option>
+                    <option value="PEN" <?= old('currency') === 'PEN' ? 'selected' : '' ?>>Soles (S/)</option>
+                    <option value="USD" <?= old('currency') === 'USD' ? 'selected' : '' ?>>Dólares (US$)</option>
+                </select>
+            </label>
+            <label class="span-2 pm-bank-field">CCI (código interbancario)
+                <input type="text" name="cci" value="<?= e(old('cci')) ?>" maxlength="40" placeholder="20 dígitos">
+            </label>
             <label class="span-2">QR de pago
                 <input type="file" name="qr_image" accept="image/jpeg,image/png,image/webp">
                 <small>Opcional. Recomendado para Yape, Plin u otra billetera digital.</small>
@@ -83,6 +96,11 @@
                             <strong>QR activo</strong>
                             <span><?= e($method['qr_name'] ?? 'Imagen QR') ?></span>
                         </div>
+                        <form action="<?= e(url('/payment-methods/qr/delete')) ?>" method="post" data-confirm="¿Quitar el QR de este método de pago? El archivo se eliminará.">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="id" value="<?= (int)$method['id'] ?>">
+                            <button class="button small danger" type="submit">Quitar QR</button>
+                        </form>
                     </div>
                 <?php endif; ?>
 
@@ -111,6 +129,19 @@
                     <label>Orden
                         <input type="number" name="position" value="<?= (int)$method['position'] ?>">
                     </label>
+                    <label class="pm-bank-field">Banco
+                        <input type="text" name="bank_name" value="<?= e($method['bank_name'] ?? '') ?>" placeholder="BCP, Interbank, BBVA...">
+                    </label>
+                    <label class="pm-bank-field">Moneda
+                        <select name="currency">
+                            <option value="">Sin especificar</option>
+                            <option value="PEN" <?= ($method['currency'] ?? '') === 'PEN' ? 'selected' : '' ?>>Soles (S/)</option>
+                            <option value="USD" <?= ($method['currency'] ?? '') === 'USD' ? 'selected' : '' ?>>Dólares (US$)</option>
+                        </select>
+                    </label>
+                    <label class="span-2 pm-bank-field">CCI (código interbancario)
+                        <input type="text" name="cci" value="<?= e($method['cci'] ?? '') ?>" maxlength="40" placeholder="20 dígitos">
+                    </label>
                     <label class="span-2">Reemplazar QR
                         <input type="file" name="qr_image" accept="image/jpeg,image/png,image/webp">
                         <small>Si no seleccionas archivo, se conserva el QR actual.</small>
@@ -130,3 +161,19 @@
         <?php endforeach; ?>
     </div>
 </section>
+
+<script>
+// Los campos bancarios (banco, CCI, moneda) solo aplican a transferencias.
+(function () {
+    document.querySelectorAll('.payment-method-form').forEach(function (form) {
+        const type = form.querySelector('select[name="type"]');
+        const bankFields = form.querySelectorAll('.pm-bank-field');
+        if (!type || !bankFields.length) return;
+        function toggle() {
+            bankFields.forEach(function (field) { field.style.display = type.value === 'bank_transfer' ? '' : 'none'; });
+        }
+        type.addEventListener('change', toggle);
+        toggle();
+    });
+})();
+</script>

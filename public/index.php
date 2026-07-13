@@ -15,11 +15,13 @@ require dirname(__DIR__) . '/app/Controllers/InventoryController.php';
 require dirname(__DIR__) . '/app/Controllers/PaymentMethodController.php';
 require dirname(__DIR__) . '/app/Controllers/ServiceController.php';
 require dirname(__DIR__) . '/app/Controllers/GalleryController.php';
+require dirname(__DIR__) . '/app/Controllers/SliderController.php';
 require dirname(__DIR__) . '/app/Controllers/SocialNetworkController.php';
 require dirname(__DIR__) . '/app/Controllers/AboutController.php';
 require dirname(__DIR__) . '/app/Controllers/ContactController.php';
 require dirname(__DIR__) . '/app/Controllers/MediaController.php';
 require dirname(__DIR__) . '/app/Controllers/LandingController.php';
+require dirname(__DIR__) . '/app/Controllers/SitemapController.php';
 require dirname(__DIR__) . '/app/Controllers/CheckoutController.php';
 require dirname(__DIR__) . '/app/Controllers/IdentityController.php';
 require dirname(__DIR__) . '/app/Controllers/UbigeoController.php';
@@ -36,6 +38,7 @@ $router->get('/producto', [LandingController::class, 'productDetail']);
 $router->get('/publicacion', [LandingController::class, 'postDetail']);
 $router->get('/galeria', [LandingController::class, 'gallery']);
 $router->get('/buscar', [LandingController::class, 'search']);
+$router->get('/sitemap.xml', [SitemapController::class, 'xml']);
 $router->get('/checkout', [CheckoutController::class, 'cart']);
 $router->get('/checkout/success', [CheckoutController::class, 'success']);
 $router->get('/ubigeo/departments', [UbigeoController::class, 'departments']);
@@ -77,19 +80,30 @@ $router->group(['middleware' => ['AuthMiddleware', 'CsrfMiddleware']], function 
     $r->get('/products/pdf',    [ProductController::class, 'pdf'],    ['PermissionMiddleware:products.view']);
 
     $r->get('/orders',       [OrderController::class, 'index'],      ['PermissionMiddleware:orders.view']);
+    $r->get('/orders/pending-count', [OrderController::class, 'pendingCount'], ['PermissionMiddleware:orders.view']);
+    $r->get('/orders/rows', [OrderController::class, 'rows'], ['PermissionMiddleware:orders.view']);
+    $r->get('/orders/detail', [OrderController::class, 'detail'], ['PermissionMiddleware:orders.view']);
     $r->get('/orders/pdf',   [OrderController::class, 'pdf'],        ['PermissionMiddleware:orders.view']);
     $r->get('/orders/show',  [OrderController::class, 'show'],       ['PermissionMiddleware:orders.view']);
     $r->post('/orders/review',[OrderController::class, 'markReview'],['PermissionMiddleware:orders.edit']);
     $r->post('/orders/approve',[OrderController::class, 'approve'],  ['PermissionMiddleware:orders.approve']);
     $r->post('/orders/reject',[OrderController::class, 'reject'],    ['PermissionMiddleware:orders.reject']);
+    $r->post('/orders/receipt/email', [OrderController::class, 'emailReceipt'], ['PermissionMiddleware:orders.approve']);
+    $r->post('/orders/receipt/whatsapp', [OrderController::class, 'whatsappReceipt'], ['PermissionMiddleware:orders.approve']);
+    $r->get('/orders/voucher/view', [OrderController::class, 'viewVoucher'], ['PermissionMiddleware:orders.view']);
+    $r->get('/orders/ticket/view', [OrderController::class, 'viewTicket'], ['PermissionMiddleware:orders.view']);
+    $r->get('/orders/receipt/view', [OrderController::class, 'viewReceipt'], ['PermissionMiddleware:orders.view']);
+    $r->get('/orders/receipt/download', [OrderController::class, 'downloadReceipt'], ['PermissionMiddleware:orders.view']);
 
     $r->get('/sales',        [SalesController::class, 'index'],      ['PermissionMiddleware:sales.view']);
+    $r->get('/sales/pdf',    [SalesController::class, 'pdf'],        ['PermissionMiddleware:sales.view']);
     $r->get('/sales/create', [SalesController::class, 'create'],     ['PermissionMiddleware:sales.create']);
     $r->post('/sales/store', [SalesController::class, 'store'],      ['PermissionMiddleware:sales.create']);
     $r->get('/sales/show',   [SalesController::class, 'show'],       ['PermissionMiddleware:sales.view']);
     $r->post('/sales/cancel',[SalesController::class, 'cancel'],     ['PermissionMiddleware:sales.cancel']);
     $r->post('/sales/receipt/issue', [SalesController::class, 'issueReceipt'], ['PermissionMiddleware:sales.create']);
     $r->get('/sales/receipt/view',   [SalesController::class, 'viewReceipt'],  ['PermissionMiddleware:sales.view']);
+    $r->get('/sales/voucher/view',   [SalesController::class, 'viewVoucher'],  ['PermissionMiddleware:sales.view']);
     $r->post('/sales/receipt/email', [SalesController::class, 'emailReceipt'], ['PermissionMiddleware:sales.create']);
 
     $r->get('/inventory',            [InventoryController::class, 'index'],     ['PermissionMiddleware:inventory.view']);
@@ -100,6 +114,7 @@ $router->group(['middleware' => ['AuthMiddleware', 'CsrfMiddleware']], function 
     $r->get('/payment-methods',         [PaymentMethodController::class, 'index'],  ['PermissionMiddleware:payment_methods.view']);
     $r->post('/payment-methods/store',  [PaymentMethodController::class, 'store'],  ['PermissionMiddleware:payment_methods.edit']);
     $r->post('/payment-methods/update', [PaymentMethodController::class, 'update'], ['PermissionMiddleware:payment_methods.edit']);
+    $r->post('/payment-methods/qr/delete', [PaymentMethodController::class, 'deleteQr'], ['PermissionMiddleware:payment_methods.edit']);
 
     $r->get('/services',        [ServiceController::class, 'index'],  ['PermissionMiddleware:services.view']);
     $r->get('/services/create', [ServiceController::class, 'create'], ['PermissionMiddleware:services.create']);
@@ -116,6 +131,15 @@ $router->group(['middleware' => ['AuthMiddleware', 'CsrfMiddleware']], function 
     $r->post('/galleries/update',[GalleryController::class, 'update'], ['PermissionMiddleware:galleries.edit']);
     $r->post('/galleries/toggle',[GalleryController::class, 'toggle'], ['PermissionMiddleware:galleries.edit']);
     $r->post('/galleries/delete',[GalleryController::class, 'delete'], ['PermissionMiddleware:galleries.delete']);
+
+    $r->get('/sliders',        [SliderController::class, 'index'],  ['PermissionMiddleware:sliders.view']);
+    $r->get('/sliders/create', [SliderController::class, 'create'], ['PermissionMiddleware:sliders.create']);
+    $r->post('/sliders/store', [SliderController::class, 'store'],  ['PermissionMiddleware:sliders.create']);
+    $r->get('/sliders/edit',   [SliderController::class, 'edit'],   ['PermissionMiddleware:sliders.edit']);
+    $r->post('/sliders/update',[SliderController::class, 'update'], ['PermissionMiddleware:sliders.edit']);
+    $r->post('/sliders/toggle',[SliderController::class, 'toggle'], ['PermissionMiddleware:sliders.edit']);
+    $r->post('/sliders/move',  [SliderController::class, 'move'],   ['PermissionMiddleware:sliders.edit']);
+    $r->post('/sliders/delete',[SliderController::class, 'delete'], ['PermissionMiddleware:sliders.delete']);
 
     $r->get('/social-networks',        [SocialNetworkController::class, 'index'],  ['PermissionMiddleware:social_networks.view']);
     $r->post('/social-networks/store', [SocialNetworkController::class, 'store'],  ['PermissionMiddleware:social_networks.create']);

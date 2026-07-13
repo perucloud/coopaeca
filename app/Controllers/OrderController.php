@@ -18,6 +18,7 @@ final class OrderController extends Controller
     {
         $filters = self::parseFilters();
         $orders = self::filteredOrders($filters);
+        $latestDeliveries = ReceiptDeliveryService::latestBySaleIds(array_column($orders, 'sale_id'));
 
         $stats = Database::connection()->query(
             "SELECT status, COUNT(*) AS total FROM orders GROUP BY status"
@@ -30,6 +31,42 @@ final class OrderController extends Controller
             'status' => $filters['status'],
             'q' => $filters['q'],
             'filters' => $filters,
+            'latestDeliveries' => $latestDeliveries,
+        ]);
+    }
+
+    /**
+     * Cantidad de pedidos que aun no fueron atendidos (pendiente/voucher_enviado).
+     * Usado por el badge del sidebar y el polling de auto-actualizacion.
+     */
+    public function pendingCount(): void
+    {
+        $count = (int)Database::connection()->query(
+            "SELECT COUNT(*) FROM orders WHERE status IN ('pendiente', 'voucher_enviado')"
+        )->fetchColumn();
+
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['count' => $count]);
+    }
+
+    /**
+     * Fragmento HTML (solo filas de la tabla) para el auto-refresh de
+     * Pedidos sin recargar la pagina. Respeta los mismos filtros que index().
+     */
+    public function rows(): void
+    {
+        $filters = self::parseFilters();
+        $orders = self::filteredOrders($filters);
+        $latestDeliveries = ReceiptDeliveryService::latestBySaleIds(array_column($orders, 'sale_id'));
+
+        header('Content-Type: text/html; charset=utf-8');
+        view('orders/_rows', [
+            'orders' => $orders,
+            'latestDeliveries' => $latestDeliveries,
+            'statusLabels' => self::STATUS_LABELS,
+            'badgeClass' => ['aprobado' => 'ok', 'rechazado' => 'off', 'cancelado' => 'off', 'en_revision' => 'warn', 'voucher_enviado' => 'muted', 'pendiente' => 'muted'],
+            'deliveryLabels' => ['sent' => 'Enviado', 'failed' => 'Fallido', 'pending' => 'Pendiente', 'prepared' => 'WhatsApp preparado'],
+            'deliveryBadges' => ['sent' => 'ok', 'failed' => 'off', 'pending' => 'warn', 'prepared' => 'muted'],
         ]);
     }
 
@@ -91,7 +128,7 @@ final class OrderController extends Controller
             $params[] = $filters['to'];
         }
 
-        $sql = 'SELECT o.*, f.disk_path AS voucher_path,
+        $sql = 'SELECT o.*, f.disk_path AS voucher_path, f.mime_type AS voucher_mime,
                        COUNT(oi.id) AS items_count, COALESCE(SUM(oi.quantity), 0) AS units_count,
                        GROUP_CONCAT(DISTINCT oi.product_name ORDER BY oi.id SEPARATOR ", ") AS product_names,
                        s.id AS sale_id, s.code AS sale_code, s.receipt_file_id AS sale_receipt_file_id
@@ -136,7 +173,7 @@ final class OrderController extends Controller
             $color = $badgeColor[$order['status']] ?? '#475569';
 
             $rows .= '<tr>'
-                . '<td>' . e(short_code('PED', (int)$order['id'])) . '</td>'
+                . '<td>' . e(display_code('PED', (int)$order['id'], $order['code'] ?? null)) . '</td>'
                 . '<td>' . e((string)$order['customer_name']) . '</td>'
                 . '<td>' . e((string)$order['document_type']) . ' ' . e((string)$order['document_number']) . '</td>'
                 . '<td>' . $phoneLine . '</td>'
@@ -206,21 +243,41 @@ final class OrderController extends Controller
 HTML;
     }
 
-    public function show(): void
+    /** Datos completos del detalle de un pedido, reutilizados por show() (pagina completa) y detail() (fragmento AJAX para el modal). */
+    private function orderDetailData(int $id): array
     {
-        $id = (int)($_GET['id'] ?? 0);
         $order = OrderService::findOrder($id);
 
-        $saleStmt = Database::connection()->prepare('SELECT id, code, receipt_file_id FROM sales WHERE order_id = ? LIMIT 1');
+        $saleStmt = Database::connection()->prepare(
+            'SELECT id, code, receipt_file_id, receipt_issued_at, email, whatsapp FROM sales WHERE order_id = ? LIMIT 1'
+        );
         $saleStmt->execute([$id]);
         $sale = $saleStmt->fetch() ?: null;
+        $receiptDeliveries = $sale ? ReceiptDeliveryService::history((int)$sale['id']) : [];
 
-        render('orders/show', [
-            'title' => 'Pedido ' . short_code('PED', $id),
+        return [
             'order' => $order,
             'items' => OrderService::orderItems($id),
             'sale' => $sale,
-        ]);
+            'receiptDeliveries' => $receiptDeliveries,
+            'latestReceiptDelivery' => $receiptDeliveries[0] ?? null,
+        ];
+    }
+
+    public function show(): void
+    {
+        $id = (int)($_GET['id'] ?? 0);
+        $data = $this->orderDetailData($id);
+
+        render('orders/show', ['title' => 'Pedido ' . display_code('PED', $id, $data['order']['code'] ?? null)] + $data);
+    }
+
+    /** Fragmento HTML (sin layout) del detalle de un pedido, para el modal "Ver pedido" de /orders. */
+    public function detail(): void
+    {
+        $id = (int)($_GET['id'] ?? 0);
+        header('Content-Type: text/html; charset=utf-8');
+        view('orders/_detail', $this->orderDetailData($id));
     }
 
     public function markReview(): void
@@ -228,11 +285,10 @@ HTML;
         $id = (int)($_POST['id'] ?? 0);
         try {
             OrderService::markReview($id);
-            flash('status', 'Pedido marcado en revision.');
+            self::respondSuccess($id, 'Pedido marcado en revision.');
         } catch (Throwable $e) {
-            back_with_errors([$e->getMessage()], []);
+            self::respondError($id, [$e->getMessage()]);
         }
-        Response::redirect('/orders/show?id=' . $id);
     }
 
     public function approve(): void
@@ -241,11 +297,106 @@ HTML;
         try {
             $result = OrderService::approve($id, (int)user()['id']);
             activity('Aprobo pedido ' . $result['order']['code'], 'orders');
-            flash('status', 'Pedido aprobado. Venta generada correctamente.');
+            $saleId = (int)$result['sale_id'];
+            $userId = (int)user()['id'];
+            $notes = [];
+            try {
+                $delivery = ReceiptDeliveryService::automaticEmail($saleId, $userId);
+                $notes[] = !empty($delivery['receipt_file_id']) ? 'Nota de venta emitida.' : 'La nota de venta requiere reintento.';
+                $notes[] = ($delivery['status'] ?? '') === 'sent'
+                    ? 'Enviado automaticamente por correo.'
+                    : 'No se pudo enviar por correo; queda disponible para reintento o WhatsApp manual.';
+            } catch (Throwable $postCommitError) {
+                app_log('receipt_post_approval', $postCommitError->getMessage(), ['order_id' => $id, 'sale_id' => $saleId]);
+                $notes[] = 'La venta quedo aprobada, pero la nota de venta requiere reintento.';
+            }
+            self::respondSuccess($id, 'Pedido aprobado. Venta generada correctamente. ' . implode(' ', $notes));
+        } catch (Throwable $e) {
+            self::respondError($id, [$e->getMessage()]);
+        }
+    }
+
+    public function emailReceipt(): void
+    {
+        $orderId = (int)($_POST['id'] ?? 0);
+        $email = trim((string)($_POST['email'] ?? ''));
+        try {
+            $delivery = ReceiptDeliveryService::resendEmail(self::saleIdForOrder($orderId), $email, (int)user()['id']);
+            if (($delivery['status'] ?? '') !== 'sent') {
+                throw new RuntimeException((string)($delivery['error_message'] ?? 'No se pudo enviar la nota de venta.'));
+            }
+            flash('status', 'Nota de venta enviada a ' . $email . '.');
         } catch (Throwable $e) {
             back_with_errors([$e->getMessage()], []);
         }
-        Response::redirect('/orders/show?id=' . $id);
+        Response::redirect('/orders/show?id=' . $orderId);
+    }
+
+    public function whatsappReceipt(): void
+    {
+        $orderId = (int)($_POST['id'] ?? 0);
+        try {
+            $result = ReceiptDeliveryService::prepareWhatsApp(
+                self::saleIdForOrder($orderId),
+                (string)($_POST['whatsapp'] ?? ''),
+                (int)user()['id']
+            );
+            // Es una preparacion manual: el administrador debe adjuntar el PDF y pulsar Enviar.
+            Response::redirect($result['url']);
+        } catch (Throwable $e) {
+            back_with_errors([$e->getMessage()], []);
+        }
+        Response::redirect('/orders/show?id=' . $orderId);
+    }
+
+    /**
+     * Ticket de pedido (boton "TCK-PEDIDO" en /orders): resumen del pedido
+     * tal como lo registro el cliente. Se regenera al vuelo con los datos
+     * actuales; disponible para cualquier pedido, sin depender de que exista
+     * una venta aprobada. No confundir con la nota de venta (viewReceipt).
+     */
+    public function viewTicket(): void
+    {
+        $id = (int)($_GET['id'] ?? 0);
+        $order = OrderService::findOrder($id);
+        $pdf = OrderConfirmationService::renderPdfBytes($order, OrderService::orderItems($id));
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="' . display_code('PED', $id, $order['code'] ?? null) . '.pdf"');
+        echo $pdf;
+        exit;
+    }
+
+    public function downloadReceipt(): void
+    {
+        $orderId = (int)($_GET['id'] ?? 0);
+        $saleId = self::saleIdForOrder($orderId);
+        $sale = SaleService::find($saleId);
+        if (!$sale['receipt_file_id']) Response::abort(404, 'El comprobante aun no ha sido emitido.');
+        SecureDocumentService::stream((int)$sale['receipt_file_id'], 'receipt', true, ReceiptService::referenceCode($sale) . '.pdf');
+    }
+
+    public function viewReceipt(): void
+    {
+        $saleId = self::saleIdForOrder((int)($_GET['id'] ?? 0));
+        $sale = SaleService::find($saleId);
+        if (!$sale['receipt_file_id']) Response::abort(404, 'El comprobante aun no ha sido emitido.');
+        SecureDocumentService::stream((int)$sale['receipt_file_id'], 'receipt', false, ReceiptService::referenceCode($sale) . '.pdf');
+    }
+
+    public function viewVoucher(): void
+    {
+        $order = OrderService::findOrder((int)($_GET['id'] ?? 0));
+        SecureDocumentService::stream((int)$order['voucher_file_id'], 'voucher', false, (string)$order['voucher_name']);
+    }
+
+    private static function saleIdForOrder(int $orderId): int
+    {
+        $stmt = Database::connection()->prepare('SELECT id FROM sales WHERE order_id = ? LIMIT 1');
+        $stmt->execute([$orderId]);
+        $saleId = (int)($stmt->fetchColumn() ?: 0);
+        if ($saleId <= 0) throw new RuntimeException('El pedido aun no tiene una venta asociada.');
+        return $saleId;
     }
 
     public function reject(): void
@@ -253,10 +404,37 @@ HTML;
         $id = (int)($_POST['id'] ?? 0);
         try {
             OrderService::reject($id, (int)user()['id'], (string)($_POST['admin_notes'] ?? ''));
-            flash('status', 'Pedido rechazado.');
+            self::respondSuccess($id, 'Pedido rechazado.');
         } catch (Throwable $e) {
-            back_with_errors([$e->getMessage()], []);
+            self::respondError($id, [$e->getMessage()]);
         }
-        Response::redirect('/orders/show?id=' . $id);
+    }
+
+    /**
+     * Respuesta de una accion (aprobar/rechazar/marcar en revision): si viene
+     * del modal "Ver pedido" (fetch AJAX), responde JSON sin recargar nada;
+     * si viene de un formulario normal (pagina completa /orders/show), sigue
+     * el flujo clasico de flash + redirect.
+     */
+    private static function respondSuccess(int $orderId, string $message): void
+    {
+        if (is_ajax()) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['ok' => true, 'message' => $message]);
+            exit;
+        }
+        flash('status', $message);
+        Response::redirect('/orders/show?id=' . $orderId);
+    }
+
+    private static function respondError(int $orderId, array $errors): void
+    {
+        if (is_ajax()) {
+            http_response_code(422);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['ok' => false, 'errors' => $errors]);
+            exit;
+        }
+        back_with_errors($errors, []);
     }
 }

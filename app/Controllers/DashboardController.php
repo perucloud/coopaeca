@@ -191,7 +191,7 @@ final class DashboardController extends Controller
                     'permission' => $query['permission'],
                     'icon' => $query['icon'],
                     'url' => $query['url'] === '/media' ? $query['url'] : $query['url'] . $row['id'],
-                    'name' => isset($query['code_prefix']) ? short_code($query['code_prefix'], (int)$row['id']) : $row['name'],
+                    'name' => isset($query['code_prefix']) ? display_code($query['code_prefix'], (int)$row['id'], (string)$row['name']) : $row['name'],
                     'status' => $row['status'],
                     'changed_at' => $row['changed_at'],
                 ];

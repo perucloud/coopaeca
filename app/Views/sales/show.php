@@ -1,11 +1,11 @@
 <?php
-$voucherUrl = !empty($sale['voucher_path']) ? url('/' . $sale['voucher_path']) : null;
+$voucherUrl = !empty($sale['voucher_path']) ? url('/sales/voucher/view?id=' . (int)$sale['id']) : null;
 ?>
 
 <section class="page-card">
     <div class="page-header">
         <div>
-            <h2><?= e(short_code('VEN', (int)$sale['id'])) ?></h2>
+            <h2><?= e(display_code('VEN', (int)$sale['id'], $sale['code'] ?? null)) ?></h2>
             <span><?= e(ucfirst($sale['status'])) ?> · S/ <?= number_format((float)$sale['total'], 2) ?></span>
         </div>
         <a class="button ghost" href="<?= e(url('/sales')) ?>"><?= icon('arrow-left') ?> Volver</a>
@@ -24,11 +24,11 @@ $voucherUrl = !empty($sale['voucher_path']) ? url('/' . $sale['voucher_path']) :
         <article class="detail-panel">
             <h3>Operacion</h3>
             <dl class="detail-list">
-                <div><dt>Pedido</dt><dd><?= $sale['order_id'] ? e(short_code('PED', (int)$sale['order_id'])) : '-' ?></dd></div>
+                <div><dt>Pedido</dt><dd><?= $sale['order_id'] ? '<a href="' . e(url('/orders/show?id=' . (int)$sale['order_id'])) . '" title="Ver pedido origen">' . e(display_code('PED', (int)$sale['order_id'], $sale['order_code'] ?? null)) . '</a>' : '-' ?></dd></div>
                 <div><dt>Origen</dt><dd><?= e($sale['source']) ?></dd></div>
                 <div><dt>Metodo</dt><dd><?= e($sale['payment_method']) ?></dd></div>
                 <div><dt>Operacion</dt><dd><?= e($sale['payment_operation_number']) ?></dd></div>
-                <div><dt>Voucher</dt><dd><?= $voucherUrl ? '<a href="' . e($voucherUrl) . '" target="_blank" rel="noopener">Ver archivo</a>' : '-' ?></dd></div>
+                <div><dt>Voucher</dt><dd><?php if ($voucherUrl): ?><button class="voucher-inline-button" type="button" data-voucher-open data-voucher-url="<?= e($voucherUrl) ?>" data-voucher-code="<?= e(display_code('VEN', (int)$sale['id'], $sale['code'] ?? null)) ?>" data-voucher-mime="<?= e((string)($sale['voucher_mime'] ?? '')) ?>">Ver voucher</button><?php else: ?>-<?php endif; ?></dd></div>
             </dl>
         </article>
     </div>
@@ -59,11 +59,11 @@ $voucherUrl = !empty($sale['voucher_path']) ? url('/' . $sale['voucher_path']) :
                 <?= csrf_field() ?>
                 <input type="hidden" name="id" value="<?= (int)$sale['id'] ?>">
                 <input type="hidden" name="redirect" value="<?= e(url('/sales/show?id=' . (int)$sale['id'])) ?>">
-                <button class="button primary" type="submit"><?= icon('printer') ?> Emitir ticket</button>
+                <button class="button primary" type="submit"><?= icon('printer') ?> Emitir comprobante</button>
             </form>
             <?php endif; ?>
         <?php else: ?>
-            <a class="button ghost" href="<?= e(url('/sales/receipt/view?id=' . (int)$sale['id'])) ?>" target="_blank" rel="noopener"><?= icon('file') ?> Ver ticket</a>
+            <a class="button ghost" href="<?= e(url('/sales/receipt/view?id=' . (int)$sale['id'])) ?>" target="_blank" rel="noopener"><?= icon('file') ?> Ver comprobante</a>
             <?php if (can('sales', 'create')): ?>
             <button type="button" class="button ghost" id="openEmailReceiptModal"><?= icon('mail') ?> Enviar por correo</button>
             <?php endif; ?>
@@ -85,7 +85,7 @@ $voucherUrl = !empty($sale['voucher_path']) ? url('/' . $sale['voucher_path']) :
 <div class="modal-overlay" id="emailReceiptModal" style="display:none">
     <div class="modal-box modal-sm">
         <div class="modal-header">
-            <h3>Enviar ticket por correo</h3>
+            <h3>Enviar comprobante por correo</h3>
             <button type="button" class="modal-close" id="emailReceiptModalClose">&times;</button>
         </div>
         <form method="post" action="<?= e(url('/sales/receipt/email')) ?>">
@@ -118,3 +118,5 @@ $voucherUrl = !empty($sale['voucher_path']) ? url('/' . $sale['voucher_path']) :
 })();
 </script>
 <?php endif; ?>
+
+<?php require __DIR__ . '/../orders/voucher-modal.php'; ?>

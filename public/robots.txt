@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /orders
+Disallow: /sales
+Disallow: /products
+Disallow: /inventory
+Disallow: /users
+Disallow: /settings
+Disallow: /mail
+Disallow: /profile
+Disallow: /checkout
+
+Sitemap: https://coopaeca.org.pe/sitemap.xml

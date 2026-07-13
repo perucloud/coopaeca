@@ -41,7 +41,7 @@ final class SaleService
                 ];
             }
 
-            $code = self::nextCode('VEN', 'sales');
+            $code = 'TMP-' . strtoupper(bin2hex(random_bytes(12)));
             $pdo->prepare(
                 'INSERT INTO sales
                  (code, order_id, source, status, customer_name, document_type, document_number, phone, whatsapp, email,
@@ -66,6 +66,8 @@ final class SaleService
             ]);
 
             $saleId = (int)$pdo->lastInsertId();
+            $pdo->prepare('UPDATE sales SET code = ? WHERE id = ?')
+                ->execute([new_entity_code('VEN', $saleId), $saleId]);
             $stmt = $pdo->prepare(
                 'INSERT INTO sale_items (sale_id, product_id, product_name, product_sku, presentation, quantity, unit_price, subtotal)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
@@ -270,17 +272,5 @@ final class SaleService
         $value = strtoupper(trim($value));
         $value = preg_replace('/[^A-Z0-9\-]/', '', $value) ?? '';
         return substr($value, 0, 60);
-    }
-
-    private static function nextCode(string $prefix, string $table): string
-    {
-        $pdo = Database::connection();
-        do {
-            $code = $prefix . '-' . date('Ymd') . '-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
-            $stmt = $pdo->prepare("SELECT 1 FROM {$table} WHERE code = ? LIMIT 1");
-            $stmt->execute([$code]);
-        } while ($stmt->fetch());
-
-        return $code;
     }
 }

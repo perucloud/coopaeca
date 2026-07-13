@@ -1,5 +1,21 @@
 const hasGsap = typeof window.gsap !== 'undefined';
 
+// Enlace de WhatsApp segun dispositivo (mismo criterio que whatsapp_link() en PHP):
+// celular -> wa.me (app instalada) / escritorio -> WhatsApp Web directo al chat.
+window.lpWhatsAppLink = function (phone, text) {
+  const isMobile = /android|iphone|ipad|ipod|windows phone|opera mini|mobile/i.test(navigator.userAgent);
+  const digits = String(phone || '').replace(/\D+/g, '');
+  const encoded = text ? encodeURIComponent(text) : '';
+  if (isMobile) {
+    if (!digits) return 'https://api.whatsapp.com/send' + (encoded ? '?text=' + encoded : '');
+    return 'https://wa.me/' + digits + (encoded ? '?text=' + encoded : '');
+  }
+  const params = [];
+  if (digits) params.push('phone=' + digits);
+  if (encoded) params.push('text=' + encoded);
+  return 'https://web.whatsapp.com/send' + (params.length ? '?' + params.join('&') : '');
+};
+
 function onScroll() {
   document.body.classList.toggle('lp-scrolled', window.scrollY > 40);
 }

@@ -39,8 +39,8 @@ final class PostController extends Controller
     {
         $data = $this->validated();
         Database::connection()->prepare(
-            'INSERT INTO posts (author_id, title, title_en, slug, excerpt, excerpt_en, category, content, content_en, featured_image_id, status, published_at, meta_title, meta_title_en, meta_description, meta_description_en, meta_keywords, meta_keywords_en)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            'INSERT INTO posts (author_id, title, title_en, slug, excerpt, excerpt_en, category, category_en, content, content_en, featured_image_id, status, published_at, meta_title, meta_title_en, meta_description, meta_description_en, meta_keywords, meta_keywords_en)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         )->execute([
             user()['id'],
             $data['title'],
@@ -49,6 +49,7 @@ final class PostController extends Controller
             $data['excerpt'],
             $data['excerpt_en'],
             $data['category'],
+            $data['category_en'],
             $data['content'],
             $data['content_en'],
             $this->resolveFeaturedImage(),
@@ -79,7 +80,7 @@ final class PostController extends Controller
         $data = $this->validated();
         $imageId = $this->resolveFeaturedImage($item['featured_image_id'] ? (int)$item['featured_image_id'] : null);
         Database::connection()->prepare(
-            'UPDATE posts SET title = ?, title_en = ?, slug = ?, excerpt = ?, excerpt_en = ?, category = ?, content = ?, content_en = ?, featured_image_id = ?, status = ?, published_at = IF(? = "published" AND published_at IS NULL, NOW(), published_at), meta_title = ?, meta_title_en = ?, meta_description = ?, meta_description_en = ?, meta_keywords = ?, meta_keywords_en = ?, updated_at = NOW() WHERE id = ?'
+            'UPDATE posts SET title = ?, title_en = ?, slug = ?, excerpt = ?, excerpt_en = ?, category = ?, category_en = ?, content = ?, content_en = ?, featured_image_id = ?, status = ?, published_at = IF(? = "published" AND published_at IS NULL, NOW(), published_at), meta_title = ?, meta_title_en = ?, meta_description = ?, meta_description_en = ?, meta_keywords = ?, meta_keywords_en = ?, updated_at = NOW() WHERE id = ?'
         )->execute([
             $data['title'],
             $data['title_en'],
@@ -87,6 +88,7 @@ final class PostController extends Controller
             $data['excerpt'],
             $data['excerpt_en'],
             $data['category'],
+            $data['category_en'],
             $data['content'],
             $data['content_en'],
             $imageId,
@@ -122,6 +124,7 @@ final class PostController extends Controller
         $excerpt = trim((string)($_POST['excerpt'] ?? ''));
         $excerptEn = trim((string)($_POST['excerpt_en'] ?? ''));
         $category = trim((string)($_POST['category'] ?? 'General'));
+        $categoryEn = trim((string)($_POST['category_en'] ?? ''));
         $slug = trim((string)($_POST['slug'] ?? ''));
         $content = $this->sanitizeHtml(trim((string)($_POST['content'] ?? '')));
         $contentEn = $this->sanitizeHtml(trim((string)($_POST['content_en'] ?? '')));
@@ -152,6 +155,7 @@ final class PostController extends Controller
             'excerpt' => $excerpt ?: null,
             'excerpt_en' => $excerptEn ?: null,
             'category' => $category,
+            'category_en' => $categoryEn ?: null,
             'content' => $content ?: null,
             'content_en' => $contentEn ?: null,
             'status' => $status,

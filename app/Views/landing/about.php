@@ -1,13 +1,13 @@
 <?php
 $headerLogo = !empty($settings['header_logo_path']) ? url('/' . $settings['header_logo_path']) : asset('img/logo-ccopaeca.png');
 $footerLogo = !empty($settings['footer_logo_path']) ? url('/' . $settings['footer_logo_path']) : asset('img/logowhite.png');
-$aboutTitle = $settings['about_more_title'] ?? t('about.more_title');
-$aboutBody = $settings['about_more_body'] ?? t('about.more_body');
-$historyTitle = $settings['about_history_title'] ?? t('about.history_title');
-$historyBody = $settings['about_history_body'] ?? t('about.history_body');
-$mission = $settings['about_mission'] ?? t('about.mission_text');
-$vision = $settings['about_vision'] ?? t('about.vision_text');
-$values = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $settings['about_values'] ?? t('about.values')))));
+$aboutTitle = localized_setting($settings, 'about_more_title', t('about.more_title'));
+$aboutBody = localized_setting($settings, 'about_more_body', t('about.more_body'));
+$historyTitle = localized_setting($settings, 'about_history_title', t('about.history_title'));
+$historyBody = localized_setting($settings, 'about_history_body', t('about.history_body'));
+$mission = localized_setting($settings, 'about_mission', t('about.mission_text'));
+$vision = localized_setting($settings, 'about_vision', t('about.vision_text'));
+$values = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', localized_setting($settings, 'about_values', t('about.values'))))));
 $activeLandingNav = 'nosotros';
 ?>
 

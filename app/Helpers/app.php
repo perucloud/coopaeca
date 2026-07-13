@@ -120,6 +120,66 @@ function short_code(string $prefix, int $id): string
     return $prefix . '-' . str_pad((string)$id, 6, '0', STR_PAD_LEFT);
 }
 
+/**
+ * Codigo definitivo de pedidos/ventas NUEVOS: PED-000007-10-07-26
+ * (correlativo = id autoincremental de la tabla + fecha DD-MM-YY).
+ * Se fija al crear el registro y es unico por construccion.
+ */
+function new_entity_code(string $prefix, int $id): string
+{
+    return short_code($prefix, $id) . '-' . date('d-m-y');
+}
+
+/**
+ * Codigo visible en todo el flujo (dashboard, PDF, correo, WhatsApp).
+ * Los registros nuevos guardan el formato PED-000007-10-07-26 y se muestran
+ * tal cual; los historicos (PED-YYYYMMDD-HEX) no se modifican en BD y se
+ * siguen mostrando como codigo corto (PED-000005).
+ */
+function display_code(string $prefix, int $id, ?string $code): string
+{
+    $code = trim((string)$code);
+    if (preg_match('/^(PED|VEN)-\d{6}-\d{2}-\d{2}-\d{2}$/', $code)) {
+        return $code;
+    }
+    return short_code($prefix, $id);
+}
+
+function is_mobile_ua(): bool
+{
+    return (bool)preg_match('/android|iphone|ipad|ipod|windows phone|opera mini|mobile/i', (string)($_SERVER['HTTP_USER_AGENT'] ?? ''));
+}
+
+/**
+ * Enlace de WhatsApp segun dispositivo (criterio unico de todo el sistema):
+ * celular/tablet -> wa.me (abre la app instalada directamente);
+ * escritorio -> web.whatsapp.com (abre WhatsApp Web directo al chat,
+ * sin la pagina intermedia de wa.me).
+ * Con $phone vacio genera un enlace de compartir (solo texto).
+ */
+function whatsapp_link(string $phone, string $message = ''): string
+{
+    $phone = preg_replace('/\D+/', '', $phone) ?: '';
+    $text = $message !== '' ? rawurlencode($message) : '';
+
+    if (is_mobile_ua()) {
+        if ($phone === '') {
+            return 'https://api.whatsapp.com/send?text=' . $text;
+        }
+        return 'https://wa.me/' . $phone . ($text !== '' ? '?text=' . $text : '');
+    }
+
+    $query = [];
+    if ($phone !== '') {
+        $query[] = 'phone=' . $phone;
+    }
+    if ($text !== '') {
+        $query[] = 'text=' . $text;
+    }
+
+    return 'https://web.whatsapp.com/send' . ($query ? '?' . implode('&', $query) : '');
+}
+
 function slugify(string $value): string
 {
     $value = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value) ?: $value;
@@ -166,6 +226,12 @@ function back_with_errors(array $errors, array $old = []): never
     Response::redirect($_SERVER['HTTP_REFERER'] ?? '/');
 }
 
+/** Peticion disparada por fetch()/XHR del propio dashboard (modales con carga AJAX). */
+function is_ajax(): bool
+{
+    return strtolower((string)($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '')) === 'xmlhttprequest';
+}
+
 function is_active(string ...$paths): string
 {
     $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
@@ -186,4 +252,24 @@ function errors(): array
     $errors = $_SESSION['_errors'] ?? [];
     unset($_SESSION['_errors']);
     return $errors;
+}
+
+/**
+ * Elimina de forma segura un archivo fisico de public/uploads: normaliza el
+ * path, exige el prefijo uploads/ y verifica con realpath que el destino siga
+ * dentro de public antes de borrar. Unica rutina de borrado fisico del
+ * sistema (Media, sliders, etc.).
+ */
+function delete_public_upload(string $diskPath): void
+{
+    $normalized = str_replace('\\', '/', ltrim($diskPath, '/'));
+    if (!str_starts_with($normalized, 'uploads/')) {
+        return;
+    }
+
+    $publicRoot = realpath(dirname(__DIR__, 2) . '/public');
+    $target = $publicRoot ? realpath($publicRoot . '/' . $normalized) : false;
+    if ($publicRoot && $target && str_starts_with($target, $publicRoot) && is_file($target)) {
+        unlink($target);
+    }
 }

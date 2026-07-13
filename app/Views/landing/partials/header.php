@@ -7,7 +7,7 @@ $nosotrosUrl = $activeLandingNav === 'nosotros' ? lurl('/nosotros') : $sectionUr
 $currentLang = landing_lang();
 
 $navProducts = Database::connection()->query(
-    "SELECT name, slug FROM products WHERE status = 'published' ORDER BY is_featured DESC, name ASC LIMIT 12"
+    "SELECT name, name_en, slug FROM products WHERE status = 'published' ORDER BY is_featured DESC, name ASC LIMIT 12"
 )->fetchAll();
 ?>
 
@@ -48,7 +48,7 @@ $navProducts = Database::connection()->query(
                 <?php if ($navProducts): ?>
                 <div class="lp-submenu lp-submenu-products">
                     <?php foreach ($navProducts as $np): ?>
-                        <a href="<?= e(lurl('/producto?slug=' . $np['slug'])) ?>" class="lp-submenu-link"><?= icon('package') ?><span><?= e($np['name']) ?></span></a>
+                        <a href="<?= e(lurl('/producto?slug=' . $np['slug'])) ?>" class="lp-submenu-link"><?= icon('package') ?><span><?= e(localized_value($np, 'name')) ?></span></a>
                     <?php endforeach; ?>
                     <a href="<?= e($sectionUrl('productos')) ?>" class="lp-submenu-link lp-submenu-all"><?= icon('grid') ?><span><?= e(t('nav.all_products')) ?></span></a>
                 </div>
@@ -68,7 +68,7 @@ $navProducts = Database::connection()->query(
                 <a href="<?= e(lang_switch_url('es')) ?>" class="<?= $currentLang === 'es' ? 'is-active' : '' ?>"><?= e(t('lang.es')) ?></a>
                 <a href="<?= e(lang_switch_url('en')) ?>" class="<?= $currentLang === 'en' ? 'is-active' : '' ?>"><?= e(t('lang.en')) ?></a>
             </div>
-            <button class="lp-icon-btn" id="searchTriggerLp" aria-label="Buscar"><?= icon('search') ?></button>
+            <button class="lp-icon-btn" id="searchTriggerLp" aria-label="<?= e(t('search.open')) ?>"><?= icon('search') ?></button>
         </div>
         <button class="lp-burger" id="lpBurger" aria-label="<?= e(t('nav.menu')) ?>" aria-expanded="false" aria-controls="lpMenu"><?= icon('menu') ?></button>
     </div>

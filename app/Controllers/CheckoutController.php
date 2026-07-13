@@ -40,6 +40,15 @@ final class CheckoutController extends Controller
         try {
             $order = OrderService::createFromCheckout($_POST, $_FILES['voucher'] ?? [], Request::capture());
             $_SESSION['_last_order_id'] = (int)$order['id'];
+
+            // Confirmacion inmediata al cliente (si dejo correo). No debe
+            // frenar el checkout si el envio falla: el pedido ya quedo creado.
+            try {
+                OrderConfirmationService::send($order, OrderService::orderItems((int)$order['id']), landing_lang() === 'en');
+            } catch (Throwable $mailError) {
+                app_log('order_confirmation_failed', $mailError->getMessage(), ['order_id' => (int)$order['id']]);
+            }
+
             Response::redirect(lurl('/checkout/success?code=' . urlencode((string)$order['code'])));
         } catch (Throwable $e) {
             $errors = array_filter(array_map('trim', explode("\n", $e->getMessage())));

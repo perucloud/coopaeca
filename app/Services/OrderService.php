@@ -44,7 +44,9 @@ final class OrderService
                 InventoryService::assertAvailable($item['product_id'], $item['quantity']);
             }
 
-            $code = self::nextCode('PED', 'orders');
+            // Codigo temporal unico; el definitivo (PED-000007-10-07-26) se
+            // fija con el id autoincremental dentro de la misma transaccion.
+            $code = 'TMP-' . strtoupper(bin2hex(random_bytes(12)));
             $pdo->prepare(
                 'INSERT INTO orders
                  (code, source, status, customer_name, document_type, document_number, phone, whatsapp, email,
@@ -77,6 +79,8 @@ final class OrderService
             ]);
 
             $orderId = (int)$pdo->lastInsertId();
+            $pdo->prepare('UPDATE orders SET code = ? WHERE id = ?')
+                ->execute([new_entity_code('PED', $orderId), $orderId]);
             $stmt = $pdo->prepare(
                 'INSERT INTO order_items (order_id, product_id, product_name, product_sku, presentation, quantity, unit_price, subtotal)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
@@ -122,7 +126,7 @@ final class OrderService
                 InventoryService::assertAvailable((int)$item['product_id'], (int)$item['quantity']);
             }
 
-            $saleCode = self::nextCode('VEN', 'sales');
+            $saleCode = 'TMP-' . strtoupper(bin2hex(random_bytes(12)));
             $pdo->prepare(
                 'INSERT INTO sales
                  (code, order_id, source, status, customer_name, document_type, document_number, phone, whatsapp, email,
@@ -148,6 +152,8 @@ final class OrderService
             ]);
 
             $saleId = (int)$pdo->lastInsertId();
+            $pdo->prepare('UPDATE sales SET code = ? WHERE id = ?')
+                ->execute([new_entity_code('VEN', $saleId), $saleId]);
             $saleItem = $pdo->prepare(
                 'INSERT INTO sale_items (sale_id, product_id, product_name, product_sku, presentation, quantity, unit_price, subtotal)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
@@ -357,17 +363,5 @@ final class OrderService
         $value = strtoupper(trim($value));
         $value = preg_replace('/[^A-Z0-9\-]/', '', $value) ?? '';
         return substr($value, 0, 60);
-    }
-
-    private static function nextCode(string $prefix, string $table): string
-    {
-        $pdo = Database::connection();
-        do {
-            $code = $prefix . '-' . date('Ymd') . '-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
-            $stmt = $pdo->prepare("SELECT 1 FROM {$table} WHERE code = ? LIMIT 1");
-            $stmt->execute([$code]);
-        } while ($stmt->fetch());
-
-        return $code;
     }
 }

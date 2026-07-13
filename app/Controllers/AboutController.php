@@ -23,6 +23,10 @@ final class AboutController extends Controller
             'about_mission',
             'about_vision',
         ];
+        $allowed = array_merge($allowed, array_map(
+            static fn (string $key): string => $key . '_en',
+            $allowed
+        ));
         $stmt = Database::connection()->prepare(
             'INSERT INTO settings (setting_key, setting_value) VALUES (?, ?)
              ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)'

@@ -552,6 +552,47 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
 }
 .orders-table th { font-size: 10.5px; }
 .orders-table .badge { font-size: 10.5px; padding: 3px 7px; }
+.orders-page .orders-table td { vertical-align: top; }
+.orders-page .orders-table td small { display:block; margin-top:4px; color:var(--muted); max-width:220px; overflow:hidden; text-overflow:ellipsis; }
+.order-actions { display:flex; flex-wrap:wrap; gap:6px; min-width:220px; }
+.order-actions .button { margin:0; white-space:nowrap; }
+.order-title-line { display:flex; align-items:center; gap:10px; }
+.order-title-line h2 { margin:0; }
+.process-panel,.receipt-center { margin-top:22px; border:1px solid #dce7df; border-radius:14px; padding:18px; background:#fbfdfb; }
+.process-panel { display:flex; align-items:center; justify-content:space-between; gap:18px; }
+.process-panel h3,.process-panel p,.receipt-center h3,.receipt-center p { margin:0; }
+.process-panel p,.receipt-center p { margin-top:5px; color:var(--muted); }
+.receipt-center-head { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+.eyebrow { display:block; color:#157347; font-size:11px; font-weight:800; letter-spacing:.08em; margin-bottom:5px; }
+.delivery-summary { min-width:165px; padding:12px 14px; border-radius:10px; background:#fff; border:1px solid #e3e9e5; }
+.delivery-summary>span,.delivery-summary>small { display:block; color:var(--muted); font-size:11px; }
+.delivery-summary>strong { display:inline-flex; margin:5px 0; }
+.receipt-actions { display:flex; flex-wrap:wrap; gap:8px; padding-top:18px; margin-top:18px; border-top:1px solid #e4ebe6; }
+.button.whatsapp { color:#fff; background:#168a46; border-color:#168a46; }
+.delivery-history { margin-top:22px; }
+.delivery-history h4 { margin:0 0 10px; }
+.delivery-history table { background:#fff; }
+.delivery-error { max-width:260px; white-space:normal; color:#7f1d1d; }
+.modal-icon.success { width:48px; height:48px; display:grid; place-items:center; margin:0 auto 12px; border-radius:50%; color:#137744; background:#e7f7ed; }
+.modal-icon.success svg { width:25px; height:25px; }
+.modal-icon.danger { width:48px; height:48px; display:grid; place-items:center; margin:0 auto 12px; border-radius:50%; color:#b91c1c; background:#fef2f2; }
+.modal-icon.danger svg { width:25px; height:25px; }
+.notice-list { display:grid; gap:10px; margin:16px 0; }
+.notice-list>div,.manual-warning { display:flex; align-items:flex-start; gap:10px; padding:12px; border-radius:10px; background:#f3f7f4; }
+.notice-list svg,.manual-warning svg { width:20px; flex:none; color:#157347; }
+.notice-list span,.notice-list strong { display:block; }
+.notice-list span { font-size:13px; color:#52635a; }
+.notice-list strong { color:#20372a; margin-bottom:2px; }
+.manual-warning { background:#ecf9f0; margin-bottom:16px; }
+.manual-warning p { margin:0; font-size:13px; }
+.manual-warning strong { display:block; margin-bottom:3px; color:#126b38; }
+@media (max-width: 760px) {
+  .process-panel,.receipt-center-head { align-items:stretch; flex-direction:column; }
+  .process-panel .action-row,.receipt-actions { width:100%; }
+  .process-panel .button,.receipt-actions .button,.receipt-actions form,.receipt-actions form .button { width:100%; justify-content:center; }
+  .delivery-summary { width:auto; }
+  .order-actions { min-width:0; }
+}
 
 .badge {
   display: inline-flex;
@@ -3748,13 +3789,130 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
 .products-actions .action-delete { background: #dc2626; color: #fff; }
 .products-actions .action-delete:hover { background: #b91c1c; }
 
+/* Pedidos: botones de accion coloreados (mismo estilo que Productos/Inventario) */
+.order-actions .button { border: none; border-radius: 10px; font-weight: 800; box-shadow: 0 2px 0 rgba(0, 0, 0, .12); color: #fff; }
+.order-actions .action-view { background: #2563eb; }
+.order-actions .action-view:hover { background: #1d4ed8; }
+.order-actions .action-voucher { background: #16a34a; }
+.order-actions .action-voucher:hover { background: #15803d; }
+.order-actions .action-sale { background: #0d9488; }
+.order-actions .action-sale:hover { background: #0f766e; }
+.order-actions .action-receipt { background: #7c3aed; }
+.order-actions .action-receipt:hover { background: #6d28d9; }
+.order-actions .action-issue { background: #f59e0b; }
+.order-actions .action-issue:hover { background: #d97706; }
+.order-actions .action-cancel-sale { background: #dc2626; }
+.order-actions .action-cancel-sale:hover { background: #b91c1c; }
+.order-actions .action-print { background: #0f766e; }
+.order-actions .action-print:hover { background: #115e59; }
+.order-actions .button:disabled,
+.order-actions .button.is-disabled { opacity: .4; cursor: not-allowed; box-shadow: none; pointer-events: none; }
+.order-actions .button:disabled:hover,
+.order-actions .button.is-disabled:hover { background-color: inherit; }
+
+/* "Ver pedido" en pedidos sin aprobar: parpadeo tipo sirena para llamar la atencion. */
+.order-actions .action-view-siren {
+  animation: order-siren-blink 1s infinite;
+}
+.order-actions .action-view-siren:hover {
+  animation-play-state: paused;
+  background: #b91c1c;
+}
+@keyframes order-siren-blink {
+  0%, 100% { background: #dc2626; box-shadow: 0 2px 0 rgba(0, 0, 0, .12), 0 0 0 0 rgba(220, 38, 38, .55); }
+  50% { background: #f59e0b; box-shadow: 0 2px 0 rgba(0, 0, 0, .12), 0 0 0 5px rgba(245, 158, 11, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .order-actions .action-view-siren { animation: none; background: #dc2626; }
+}
+
 /* PDF: modal de previsualizacion */
 .pdf-modal-body { padding: 0; display: flex; }
 .pdf-frame { width: 100%; height: 72vh; border: 0; }
+body.modal-open { overflow:hidden; }
+.voucher-viewer { z-index:320; background:rgba(3,15,10,.78); backdrop-filter:blur(8px); }
+.voucher-viewer-box { width:min(1040px,96vw); height:min(860px,92vh); max-height:92vh; border-radius:20px; box-shadow:0 32px 90px rgba(0,0,0,.48); }
+.voucher-viewer-header { padding:14px 20px; background:linear-gradient(135deg,#0d4b2d,#12653c); color:#fff; border:0; display:flex; align-items:center; gap:16px; }
+.voucher-viewer-header .modal-close { color:#fff; background:rgba(255,255,255,.14); flex:none; }
+.voucher-viewer-brand { display:flex; align-items:center; gap:12px; min-width:0; }
+.voucher-viewer-logo { display:flex; align-items:center; justify-content:center; width:48px; height:48px; background:#fff; border-radius:10px; padding:5px; flex:none; box-shadow:0 2px 8px rgba(0,0,0,.25); }
+.voucher-viewer-logo img { max-width:100%; max-height:100%; object-fit:contain; display:block; }
+.voucher-viewer-brand-info { display:flex; flex-direction:column; line-height:1.3; min-width:0; }
+.voucher-viewer-brand-info strong { font-size:15px; letter-spacing:.02em; }
+.voucher-viewer-brand-info small { color:rgba(255,255,255,.72); font-size:11px; }
+.voucher-viewer-title { margin-left:auto; text-align:right; }
+.voucher-viewer-eyebrow { display:block; color:#f7c64a; font-size:10px; font-weight:800; letter-spacing:.14em; }
+.voucher-viewer-header h3 span { color:rgba(255,255,255,.72); font-size:13px; }
+.voucher-viewer-body { position:relative; padding:12px; display:flex; align-items:center; justify-content:center; min-height:300px; background:#17201b; overflow:hidden; }
+.voucher-viewer-frame { width:100%; height:100%; border:0; border-radius:10px; background:#fff; opacity:0; transition:opacity .2s; }
+.voucher-viewer-frame.is-ready { opacity:1; }
+.voucher-viewer-frame[hidden] { display:none; }
+/* Imagenes (Yape/Plin): encajan completas dentro del recuadro sin desbordar. */
+.voucher-viewer-image { max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; margin:auto; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,.45); opacity:0; transition:opacity .2s; }
+.voucher-viewer-image.is-ready { opacity:1; }
+.voucher-viewer-image[hidden] { display:none; }
+.voucher-viewer-loader { position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:#fff; }
+.voucher-viewer-loader[hidden] { display:none; }
+.voucher-viewer-loader small { color:rgba(255,255,255,.66); }
+.voucher-spinner { width:38px; height:38px; border:3px solid rgba(255,255,255,.2); border-top-color:#f7c64a; border-radius:50%; animation:voucher-spin .75s linear infinite; }
+@keyframes voucher-spin { to { transform:rotate(360deg); } }
+.voucher-viewer-footer { align-items:center; justify-content:space-between; padding:12px 18px; }
+.voucher-viewer-footer>div { display:flex; gap:8px; }
+.voucher-viewer-hint { color:var(--muted); font-size:12px; }
+.voucher-inline-button { padding:0; border:0; background:none; color:var(--primary); font:inherit; font-weight:700; cursor:pointer; text-decoration:underline; }
 
 @media (max-width: 720px) {
   .header-actions { width: 100%; }
   .header-actions .button { flex: 1 1 auto; }
   .bulk-stock-bar { flex-direction: column; align-items: stretch; }
   .pdf-frame { height: 60vh; }
+  .voucher-viewer { padding:0; align-items:flex-end; }
+  .voucher-viewer-box { width:100%; height:94vh; max-height:94vh; border-radius:18px 18px 0 0; }
+  .voucher-viewer-header { flex-wrap:wrap; row-gap:8px; }
+  .voucher-viewer-title { margin-left:0; text-align:left; order:3; flex-basis:100%; }
+  .voucher-viewer-header .modal-close { margin-left:auto; }
+  .voucher-viewer-body { padding:8px; }
+  .voucher-viewer-footer { flex-direction:column; align-items:stretch; }
+  .voucher-viewer-hint { text-align:center; }
+  .voucher-viewer-footer>div { display:grid; grid-template-columns:1fr 1fr; }
 }
+
+/* Pedidos: fila de alerta (por revisar/aprobar) y badge accionable */
+.orders-table tbody tr.order-row-pending { background: #fef2f2; }
+.orders-table tbody tr.order-row-pending:hover { background: #fee2e2; }
+[data-theme="dark"] .orders-table tbody tr.order-row-pending { background: rgba(239, 68, 68, .12); }
+[data-theme="dark"] .orders-table tbody tr.order-row-pending:hover { background: rgba(239, 68, 68, .18); }
+.badge.alert { background: #fee2e2; color: #b91c1c; display: inline-flex; align-items: center; gap: 4px; font-weight: 800; }
+.badge.alert svg { width: 13px; height: 13px; }
+/* Estados finales de un pedido: badge solido (no pastel) para que resalten mas que los intermedios. */
+.badge.badge-strong-ok,
+.badge.badge-strong-off { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; color: #fff; box-shadow: 0 1px 0 rgba(0, 0, 0, .08); }
+.badge.badge-strong-ok { background: #16a34a; }
+.badge.badge-strong-off { background: #dc2626; }
+.badge.badge-strong-ok svg,
+.badge.badge-strong-off svg { width: 13px; height: 13px; }
+
+/* Modal "Ver pedido" (/orders): detalle cargado por AJAX, sin salir de la lista. */
+.order-detail-viewer { z-index: 300; background: rgba(3, 15, 10, .72); backdrop-filter: blur(6px); padding: 20px; }
+.order-detail-viewer-box { width: min(960px, 96vw); max-height: 90vh; border-radius: 18px; box-shadow: 0 32px 90px rgba(0, 0, 0, .4); display: flex; flex-direction: column; overflow: hidden; }
+.order-detail-viewer-header { padding: 16px 20px; background: linear-gradient(135deg, #0d4b2d, #12653c); color: #fff; border: 0; flex: none; }
+.order-detail-viewer-header h3 { margin: 0; font-size: 16px; }
+.order-detail-viewer-header .modal-close { color: #fff; background: rgba(255, 255, 255, .14); }
+.order-detail-viewer-body { position: relative; padding: 0; overflow-y: auto; flex: 1; background: var(--body-bg, #f4f6f5); }
+.order-detail-viewer-loader { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--muted); background: var(--body-bg, #f4f6f5); }
+.order-detail-viewer-loader[hidden] { display: none; }
+.order-detail-viewer-loader .voucher-spinner { border-color: rgba(15, 75, 45, .18); border-top-color: #12653c; }
+.order-detail-viewer-content { padding: 18px; }
+.order-detail-viewer-content .order-detail-page { padding: 0; box-shadow: none; background: none; }
+@media (max-width: 720px) {
+  .order-detail-viewer { padding: 0; align-items: flex-end; }
+  .order-detail-viewer-box { width: 100%; max-height: 94vh; border-radius: 18px 18px 0 0; }
+}
+
+/* Sub-modales dentro del detalle de un pedido (aprobar/rechazar/reenviar):
+   deben quedar por encima del modal "Ver pedido" que los contiene. */
+.modal-overlay.order-submodal { z-index: 310; }
+
+/* Boton "Imprimir PDF" de Pedidos: resaltado para que sea notorio junto al titulo. */
+.button.pdf-report { background: #4f46e5; border-color: #4f46e5; color: #fff; font-weight: 800; box-shadow: 0 2px 0 rgba(0, 0, 0, .12); }
+.button.pdf-report:hover { background: #4338ca; border-color: #4338ca; }

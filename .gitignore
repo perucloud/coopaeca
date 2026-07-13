@@ -22,6 +22,9 @@
 /public/uploads/vouchers/*
 /public/uploads/payment-methods/*
 /public/uploads/receipts/*
+/public/uploads/sliders/*
+!/public/uploads/vouchers/.htaccess
+!/public/uploads/receipts/.htaccess
 !/public/uploads/**/.gitkeep
 
 # Local tool/cache folders
@@ -38,7 +41,12 @@ desktop.ini
 .vscode/
 
 # Archives and local deployment bundles
+coopaeca-deploy.zip
 *.zip
 *.tar
 *.tar.gz
 *.rar
+
+# Database exports (contienen datos reales de clientes/contrasenas, no subir a git)
+database/*_export.sql
+database/*.dump.sql

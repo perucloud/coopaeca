@@ -75,3 +75,29 @@ function localized_value(array $row, string $field, ?string $lang = null): strin
 
     return (string)($value ?? '');
 }
+
+function localized_setting(array $settings, string $key, string $fallback = '', ?string $lang = null): string
+{
+    $lang = $lang ?: landing_lang();
+    if ($lang === 'en') {
+        $translated = trim((string)($settings[$key . '_en'] ?? ''));
+        if ($translated !== '') return $translated;
+    }
+    $value = trim((string)($settings[$key] ?? ''));
+    return $value !== '' ? $value : $fallback;
+}
+
+function localized_map_embed_html(string $html, ?string $lang = null): string
+{
+    $lang = $lang ?: landing_lang();
+    if ($html === '' || $lang !== 'en') return $html;
+
+    return preg_replace_callback('/\bsrc="([^"]+)"/i', static function (array $match): string {
+        $src = html_entity_decode($match[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $separator = str_contains($src, '?') ? '&' : '?';
+        $src = preg_match('/(?:\?|&)hl=[a-z-]+/i', $src)
+            ? preg_replace('/((?:\?|&)hl=)[a-z-]+/i', '${1}en', $src)
+            : $src . $separator . 'hl=en';
+        return 'src="' . htmlspecialchars((string)$src, ENT_QUOTES | ENT_HTML5, 'UTF-8') . '"';
+    }, $html) ?? $html;
+}

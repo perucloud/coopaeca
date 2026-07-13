@@ -15,12 +15,15 @@ final class MediaController extends Controller
     public function index(): void
     {
         $pdo = Database::connection();
+        // Se excluyen las imagenes del modulo Hero / Sliders: son derivados
+        // autogenerados que se administran (y eliminan) desde ese modulo.
         $items = $pdo->query(
-            'SELECT f.*, u.name AS uploader_name
+            "SELECT f.*, u.name AS uploader_name
              FROM files f
              LEFT JOIN users u ON u.id = f.uploaded_by
+             WHERE f.disk_path NOT LIKE 'uploads/sliders/%'
              ORDER BY f.id DESC
-             LIMIT 400'
+             LIMIT 400"
         )->fetchAll();
 
         $stats = [
@@ -74,6 +77,11 @@ final class MediaController extends Controller
         $stmt->execute([$id]);
         $item = $stmt->fetch();
         if ($item) {
+            // Las imagenes del hero se eliminan desde el modulo Hero / Sliders:
+            // borrarlas aqui eliminaria el slide en cascada (FK image_id).
+            if (str_starts_with(str_replace('\\', '/', (string)$item['disk_path']), 'uploads/sliders/')) {
+                back_with_errors(['Esta imagen pertenece al módulo Hero / Sliders. Elimínala desde ese módulo.'], []);
+            }
             $this->deletePhysicalFile((string)$item['disk_path']);
             Database::connection()->prepare('DELETE FROM files WHERE id = ?')->execute([$id]);
             activity('Elimino archivo ' . $item['original_name'], 'files');
@@ -85,7 +93,8 @@ final class MediaController extends Controller
     public function picker(): void
     {
         $type = trim((string)($_GET['type'] ?? 'image'));
-        $where = $type === 'file' ? '1=1' : "mime_type LIKE 'image/%'";
+        $where = ($type === 'file' ? '1=1' : "mime_type LIKE 'image/%'")
+            . " AND disk_path NOT LIKE 'uploads/sliders/%'";
         $items = Database::connection()->query(
             "SELECT id, disk_path, original_name, mime_type, size_bytes, width, height, alt_text, created_at
              FROM files
@@ -236,16 +245,7 @@ final class MediaController extends Controller
 
     private function deletePhysicalFile(string $diskPath): void
     {
-        $normalized = str_replace('\\', '/', ltrim($diskPath, '/'));
-        if (!str_starts_with($normalized, 'uploads/')) {
-            return;
-        }
-
-        $publicRoot = realpath(dirname(__DIR__, 2) . '/public');
-        $target = realpath($publicRoot . '/' . $normalized);
-        if ($publicRoot && $target && str_starts_with($target, $publicRoot) && is_file($target)) {
-            unlink($target);
-        }
+        delete_public_upload($diskPath);
     }
 
     private function json(array $payload, int $status = 200): never

@@ -16,6 +16,7 @@ final class AuthController extends Controller
             back_with_errors(['Ingresa un correo y contrasena validos.'], $_POST);
         }
 
+        
         $stmt = Database::connection()->prepare(
             'SELECT * FROM users WHERE email = ? AND active = 1 LIMIT 1'
         );

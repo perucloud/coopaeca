@@ -18,7 +18,7 @@ final class LandingController extends Controller
             $ids = array_column($products, 'id');
             $placeholders = implode(',', array_fill(0, count($ids), '?'));
             $catRows = Database::connection()->prepare(
-                "SELECT pc.product_id, c.name AS cat_name, c.slug AS cat_slug
+                "SELECT pc.product_id, c.name AS cat_name, c.name_en AS cat_name_en, c.slug AS cat_slug
                  FROM product_category pc
                  JOIN categories c ON c.id = pc.category_id
                  WHERE pc.product_id IN ({$placeholders}) AND c.type = 'product'
@@ -27,7 +27,7 @@ final class LandingController extends Controller
             $catRows->execute($ids);
             $catMap = [];
             foreach ($catRows->fetchAll() as $r) {
-                $catMap[(int)$r['product_id']][] = ['name' => $r['cat_name'], 'slug' => $r['cat_slug']];
+                $catMap[(int)$r['product_id']][] = ['name' => $r['cat_name'], 'name_en' => $r['cat_name_en'], 'slug' => $r['cat_slug']];
             }
             foreach ($products as &$p) {
                 $p['categories'] = $catMap[(int)$p['id']] ?? [];
@@ -54,13 +54,35 @@ final class LandingController extends Controller
             ->query('SELECT setting_key, setting_value FROM settings')
             ->fetchAll(PDO::FETCH_KEY_PAIR);
 
+        // Slides administrables del hero (modulo Hero / Sliders). Si no hay
+        // activos, o las tablas aun no existen, la vista usa el hero por
+        // defecto como fallback: el landing publico nunca debe caer por esto.
+        try {
+            $stmt = Database::connection()->prepare(
+                'SELECT si.*, f.disk_path AS image_path
+                 FROM slider_items si
+                 JOIN sliders s ON s.id = si.slider_id
+                 JOIN files f ON f.id = si.image_id
+                 WHERE s.slug = ? AND si.is_active = 1
+                   AND (si.starts_at IS NULL OR si.starts_at <= NOW())
+                   AND (si.ends_at IS NULL OR si.ends_at >= NOW())
+                 ORDER BY si.position ASC, si.id ASC'
+            );
+            $stmt->execute([SliderController::HERO_SLUG]);
+            $heroSlides = $stmt->fetchAll();
+        } catch (PDOException $e) {
+            app_log('landing', 'No se pudieron cargar los slides del hero: ' . $e->getMessage());
+            $heroSlides = [];
+        }
+
         render('landing/index', [
-            'title'    => $settings['site_title'] ?? config_app('name'),
-            'products' => $products,
-            'services' => $services,
-            'posts'    => $posts,
-            'socials'  => $socials,
-            'settings' => $settings,
+            'title'      => $settings['site_title'] ?? config_app('name'),
+            'products'   => $products,
+            'services'   => $services,
+            'posts'      => $posts,
+            'socials'    => $socials,
+            'settings'   => $settings,
+            'heroSlides' => $heroSlides,
         ], 'layouts/landing');
     }
 
@@ -81,7 +103,7 @@ final class LandingController extends Controller
     {
         $slug = trim((string)($_GET['slug'] ?? ''));
         if ($slug === '') {
-            Response::abort(404, t('search.product') . ' no encontrado.');
+            Response::abort(404, t('product.not_found'));
         }
 
         $stmt = Database::connection()->prepare(
@@ -94,12 +116,12 @@ final class LandingController extends Controller
         $product = $stmt->fetch();
 
         if (!$product) {
-            Response::abort(404, t('search.product') . ' no encontrado.');
+            Response::abort(404, t('product.not_found'));
         }
 
         // Categories
         $cats = Database::connection()->prepare(
-            "SELECT c.name, c.slug FROM product_category pc
+            "SELECT c.name, c.name_en, c.slug FROM product_category pc
              JOIN categories c ON c.id = pc.category_id
              WHERE pc.product_id = ? AND c.type = 'product' ORDER BY c.position ASC"
         );
@@ -136,7 +158,7 @@ final class LandingController extends Controller
     {
         $slug = trim((string)($_GET['slug'] ?? ''));
         if ($slug === '') {
-            Response::abort(404, 'Publicación no encontrada.');
+            Response::abort(404, t('post.not_found'));
         }
 
         $stmt = Database::connection()->prepare(
@@ -149,14 +171,14 @@ final class LandingController extends Controller
         $post = $stmt->fetch();
 
         if (!$post) {
-            Response::abort(404, 'Publicación no encontrada.');
+            Response::abort(404, t('post.not_found'));
         }
 
         Database::connection()->prepare('UPDATE posts SET views_count = views_count + 1 WHERE id = ?')
             ->execute([(int)$post['id']]);
 
         $related = Database::connection()->prepare(
-            'SELECT p.id, p.title, p.title_en, p.slug, p.excerpt, p.excerpt_en, p.category, f.disk_path AS image_path
+            'SELECT p.id, p.title, p.title_en, p.slug, p.excerpt, p.excerpt_en, p.category, p.category_en, f.disk_path AS image_path
              FROM posts p
              LEFT JOIN files f ON f.id = p.featured_image_id
              WHERE p.status = ? AND p.id != ? AND (p.published_at IS NULL OR p.published_at <= NOW())

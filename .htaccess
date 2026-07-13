@@ -2,11 +2,12 @@ Options -Indexes
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteRule ^(app|database|storage)(/|$) - [F,L]
+    RewriteRule ^(app|database|storage|vendor|docs)(/|$) - [F,L]
+    RewriteRule ^(\.git|\.codex|\.agents|\.claude|\.tmp_sessions)(/|$) - [F,L]
     RewriteRule ^$ public/ [L]
     RewriteRule (.*) public/$1 [L]
 </IfModule>
 
-<FilesMatch "(\.env|\.env\.example|composer\.(json|lock)|README\.md)$">
+<FilesMatch "(\.env|\.env\.example|composer\.(json|lock)|README\.md|\.sql|\.md)$">
     Require all denied
 </FilesMatch>

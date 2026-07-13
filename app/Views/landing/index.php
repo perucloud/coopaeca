@@ -1,15 +1,48 @@
 <?php
 $headerLogo = !empty($settings['header_logo_path']) ? url('/' . $settings['header_logo_path']) : asset('img/logo-ccopaeca.png');
 $footerLogo = !empty($settings['footer_logo_path']) ? url('/' . $settings['footer_logo_path']) : asset('img/logowhite.png');
-$aboutTitle = $settings['about_title'] ?? t('about.title');
-$aboutBody = $settings['about_body'] ?? t('about.body');
-$aboutValues = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $settings['about_values'] ?? t('about.values')))));
+$aboutTitle = localized_setting($settings, 'about_title', t('about.title'));
+$aboutBody = localized_setting($settings, 'about_body', t('about.body'));
+$aboutValues = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', localized_setting($settings, 'about_values', t('about.values'))))));
 $activeLandingNav = 'inicio';
 ?>
 
 <?php require __DIR__ . '/partials/header.php'; ?>
 
+<?php $heroSlides = $heroSlides ?? []; ?>
 <section class="lp-hero" id="inicio">
+    <?php if ($heroSlides): ?>
+    <?php // Slides administrables (dashboard > Hero / Sliders): variante mobile
+          // por defecto y variante desktop (1800x650) desde 768px. ?>
+    <style>
+        <?php foreach ($heroSlides as $s): ?>
+        .lp-hs-<?= (int)$s['id'] ?> { background-image: url('<?= e(url('/' . ImageOptimizerService::mobileVariantPath((string)$s['image_path']))) ?>'); }
+        @media (min-width: 768px) { .lp-hs-<?= (int)$s['id'] ?> { background-image: url('<?= e(url('/' . $s['image_path'])) ?>'); } }
+        <?php endforeach; ?>
+    </style>
+    <div class="lp-hero-slides" id="lpHeroSlides">
+        <?php foreach ($heroSlides as $idx => $s): ?>
+        <div class="lp-hero-slide lp-hs-<?= (int)$s['id'] ?> <?= $idx === 0 ? 'is-active' : '' ?>"></div>
+        <?php endforeach; ?>
+    </div>
+    <div class="lp-hero-overlay"></div>
+    <div class="lp-hero-inner" id="lpHeroTexts">
+        <?php foreach ($heroSlides as $idx => $s): ?>
+        <?php $slideSubtitle = localized_value($s, 'subtitle'); $slideBadge = localized_value($s, 'badge'); ?>
+        <div class="lp-hero-text <?= $idx === 0 ? 'is-active' : '' ?>" data-slide="<?= $idx ?>">
+            <h1><?= nl2br(e(localized_value($s, 'title'))) ?></h1>
+            <div class="lp-hero-divider"><?= icon('layers') ?></div>
+            <?php if ($slideSubtitle !== ''): ?>
+            <p><?= e($slideSubtitle) ?></p>
+            <?php endif; ?>
+            <?php if ($slideBadge !== ''): ?>
+            <div class="lp-hero-badge"><?= icon('check-circle') ?> <?= e($slideBadge) ?></div>
+            <?php endif; ?>
+        </div>
+        <?php endforeach; ?>
+    </div>
+    <?php else: ?>
+    <?php // Fallback: hero por defecto cuando no hay slides activos en BD. ?>
     <div class="lp-hero-slides" id="lpHeroSlides">
         <div class="lp-hero-slide is-active" style="background-image:url('<?= e(asset('img/hero/aereo.png')) ?>')"></div>
         <div class="lp-hero-slide" style="background-image:url('<?= e(asset('img/hero/cacao1.png')) ?>')"></div>
@@ -26,7 +59,10 @@ $activeLandingNav = 'inicio';
         </div>
         <?php endfor; ?>
     </div>
+    <?php endif; ?>
+    <?php if (!$heroSlides || count($heroSlides) > 1): ?>
     <button class="lp-hero-next" id="lpHeroNext" aria-label="<?= e(t('hero.next')) ?>"><?= icon('chevron-right') ?></button>
+    <?php endif; ?>
 </section>
 
 <section class="lp-features">
@@ -68,7 +104,7 @@ $activeLandingNav = 'inicio';
                 $pSalePrice = isset($p['sale_price']) && $p['sale_price'] !== null ? (float)$p['sale_price'] : null;
                 $pFeatured = !empty($p['is_featured']);
                 $pCats = $p['categories'] ?? [];
-                $pCatName = !empty($pCats) ? $pCats[0]['name'] : null;
+                $pCatName = !empty($pCats) ? localized_value($pCats[0], 'name') : null;
                 $pSlug = $p['slug'] ?? null;
                 $cardTag = ($isFromDB && $pSlug) ? 'a href="' . e(lurl('/producto?slug=' . $pSlug)) . '"' : 'div';
                 $cardClose = ($isFromDB && $pSlug) ? 'a' : 'div';
@@ -186,7 +222,7 @@ $activeLandingNav = 'inicio';
                         <div class="lp-news-image lp-gallery-placeholder lp-gallery-placeholder-<?= ($i % 6) + 1 ?>"></div>
                     <?php endif; ?>
                     <div class="lp-news-body">
-                        <span><?= e($post['category'] ?? 'General') ?></span>
+                        <span><?= e(localized_value($post, 'category') ?: t('post.category_general')) ?></span>
                         <h3><?= e($postTitle) ?></h3>
                         <p><?= e($excerpt) ?></p>
                     </div>
@@ -198,12 +234,12 @@ $activeLandingNav = 'inicio';
 
 <section class="lp-section lp-section-dark" id="ubicanos">
     <div class="lp-container lp-export-inner reveal">
-        <span class="lp-tag lp-tag-light"><?= e($settings['map_tag'] ?? t('map.tag')) ?></span>
-        <h2><?= e($settings['map_title'] ?? t('map.title')) ?></h2>
-        <p><?= e($settings['map_description'] ?? t('map.text')) ?></p>
+        <span class="lp-tag lp-tag-light"><?= e(localized_setting($settings, 'map_tag', t('map.tag'))) ?></span>
+        <h2><?= e(localized_setting($settings, 'map_title', t('map.title'))) ?></h2>
+        <p><?= e(localized_setting($settings, 'map_description', t('map.text'))) ?></p>
         <?php if (!empty($settings['map_embed_html'])): ?>
             <div class="lp-map-placeholder">
-                <?= $settings['map_embed_html'] ?>
+                <?= localized_map_embed_html($settings['map_embed_html']) ?>
             </div>
         <?php else: ?>
             <div class="lp-map-placeholder lp-cacao-map-placeholder"></div>
@@ -239,7 +275,7 @@ $activeLandingNav = 'inicio';
 </section>
 
 <a
-    href="https://wa.me/<?= e($settings['whatsapp_landing'] ?? '51999999999') ?>?text=<?= urlencode(t('whatsapp.landing_text')) ?>"
+    href="<?= e(whatsapp_link((string)($settings['whatsapp_landing'] ?? '51999999999'), t('whatsapp.landing_text'))) ?>"
     class="lp-whatsapp-float"
     target="_blank"
     rel="noopener"

@@ -173,6 +173,17 @@
             <label>Descripción del mapa
                 <textarea name="map_description" rows="2"><?= e($settings['map_description'] ?? 'Visítenos y conozca dónde nace la calidad de nuestros productos. Estamos listos para atenderlo y brindarle información sobre nuestros servicios, productos y oportunidades de negocio.') ?></textarea>
             </label>
+            <div class="form-grid-2">
+                <label>Etiqueta en inglés
+                    <input name="map_tag_en" value="<?= e($settings['map_tag_en'] ?? '') ?>" placeholder="Find us">
+                </label>
+                <label>Título en inglés
+                    <input name="map_title_en" value="<?= e($settings['map_title_en'] ?? '') ?>" placeholder="Locate our company">
+                </label>
+            </div>
+            <label>Descripción en inglés
+                <textarea name="map_description_en" rows="2" placeholder="Visit us and discover where the quality of our products begins..."><?= e($settings['map_description_en'] ?? '') ?></textarea>
+            </label>
             <label>Código del mapa (iframe)
                 <textarea name="map_embed_html" rows="4" placeholder='&lt;iframe src="https://www.google.com/maps/embed?..." ...&gt;&lt;/iframe&gt;'><?= e($settings['map_embed_html'] ?? '') ?></textarea>
             </label>

@@ -12,7 +12,7 @@ final class SettingsController extends Controller
 
     public function update(): void
     {
-        $allowed = ['app_name', 'cooperative_name', 'ruc', 'support_email', 'whatsapp_landing', 'whatsapp_products', 'map_tag', 'map_title', 'map_description', 'topbar_phone', 'topbar_email', 'topbar_address', 'site_title'];
+        $allowed = ['app_name', 'cooperative_name', 'ruc', 'support_email', 'whatsapp_landing', 'whatsapp_products', 'map_tag', 'map_tag_en', 'map_title', 'map_title_en', 'map_description', 'map_description_en', 'topbar_phone', 'topbar_email', 'topbar_address', 'site_title'];
         $stmt = Database::connection()->prepare(
             'INSERT INTO settings (setting_key, setting_value) VALUES (?, ?)
              ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)'

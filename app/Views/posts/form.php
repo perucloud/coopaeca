@@ -2,6 +2,7 @@
 $editing = is_array($item);
 $status = old('status', $item['status'] ?? 'draft');
 $category = old('category', $item['category'] ?? 'General');
+$categoryEn = old('category_en', $item['category_en'] ?? '');
 $contentValue = old('content', $item['content'] ?? '');
 $contentEnValue = old('content_en', $item['content_en'] ?? '');
 $authorName = $item['author_name'] ?? user()['name'] ?? 'Admin';
@@ -82,6 +83,9 @@ $featuredId = (int)old('featured_image_id', $item['featured_image_id'] ?? 0);
                 <option value="published" <?= $status === 'published' ? 'selected' : '' ?>>Publicado</option>
                 <option value="scheduled" <?= $status === 'scheduled' ? 'selected' : '' ?>>Programado</option>
             </select>
+
+            <label for="categoryEn">Categoría en inglés</label>
+            <input name="category_en" id="categoryEn" value="<?= e($categoryEn) ?>" maxlength="100" placeholder="Ex: Sourcing, Quality, Community">
 
             <label for="category">Categoria</label>
             <select name="category" id="category">

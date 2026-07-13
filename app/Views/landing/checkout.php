@@ -155,13 +155,23 @@ $hasUbigeo = !empty($departments);
                             <input type="radio" name="payment_method" value="<?= e($name) ?>" <?= old('payment_method', $index === 0 ? $name : '') === $name ? 'checked' : '' ?> required>
                             <span>
                                 <strong><?= e($name) ?></strong>
+                                <?php if (($method['type'] ?? '') === 'bank_transfer' && (!empty($method['bank_name']) || !empty($method['currency']))): ?>
+                                    <?php $currencyLabel = ($method['currency'] ?? '') === 'PEN' ? ($isEn ? 'Soles (S/)' : 'Soles (S/)') : ((($method['currency'] ?? '') === 'USD') ? ($isEn ? 'Dollars (US$)' : 'Dólares (US$)') : ''); ?>
+                                    <small><?= e(trim(($method['bank_name'] ?? '') . ($currencyLabel !== '' ? ' · ' . $currencyLabel : ''))) ?></small>
+                                <?php endif; ?>
                                 <?php if (!empty($method['account_label']) || !empty($method['account_number'])): ?>
                                     <small><?= e(trim(($method['account_label'] ?? '') . ' ' . ($method['account_number'] ?? ''))) ?></small>
+                                <?php endif; ?>
+                                <?php if (!empty($method['cci'])): ?>
+                                    <small>CCI: <?= e($method['cci']) ?></small>
                                 <?php endif; ?>
                                 <?php if (!empty($method['holder_name'])): ?><small><?= e($method['holder_name']) ?></small><?php endif; ?>
                                 <?php if (!empty($method['instructions'])): ?><small><?= e($method['instructions']) ?></small><?php endif; ?>
                                 <?php if (!empty($method['qr_path'])): ?>
-                                    <img class="payment-option-qr" src="<?= e(url('/' . $method['qr_path'])) ?>" alt="QR <?= e($name) ?>">
+                                    <button type="button" class="payment-option-qr-btn" data-qr-zoom="<?= e(url('/' . $method['qr_path'])) ?>" data-qr-name="<?= e($name) ?>">
+                                        <img class="payment-option-qr" src="<?= e(url('/' . $method['qr_path'])) ?>" alt="QR <?= e($name) ?>" loading="lazy">
+                                        <small class="payment-qr-hint"><?= e($isEn ? 'Tap to enlarge QR' : 'Toca para ampliar el QR') ?></small>
+                                    </button>
                                 <?php endif; ?>
                             </span>
                         </label>
@@ -213,5 +223,38 @@ $hasUbigeo = !empty($departments);
         </div>
     </div>
 </div>
+
+<!-- Lightbox: QR ampliado para escanear (Yape, Plin, etc.) -->
+<div class="qr-zoom-overlay" id="qrZoomOverlay" role="dialog" aria-modal="true" aria-label="QR">
+    <div class="qr-zoom-box">
+        <button type="button" class="qr-zoom-close" id="qrZoomClose" aria-label="<?= e($isEn ? 'Close' : 'Cerrar') ?>">&times;</button>
+        <img id="qrZoomImg" src="" alt="QR">
+        <strong id="qrZoomName"></strong>
+        <span><?= e($isEn ? 'Scan the QR with your phone camera or wallet app' : 'Escanea el QR con la cámara de tu celular o tu app de billetera') ?></span>
+    </div>
+</div>
+
+<script>
+(function () {
+    var overlay = document.getElementById('qrZoomOverlay');
+    var img = document.getElementById('qrZoomImg');
+    var name = document.getElementById('qrZoomName');
+    if (!overlay) return;
+    document.querySelectorAll('[data-qr-zoom]').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            img.src = btn.dataset.qrZoom;
+            name.textContent = btn.dataset.qrName || '';
+            overlay.classList.add('is-open');
+            document.body.classList.add('qr-zoom-open');
+        });
+    });
+    function close() { overlay.classList.remove('is-open'); document.body.classList.remove('qr-zoom-open'); }
+    document.getElementById('qrZoomClose').addEventListener('click', close);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+})();
+</script>
 
 <?php require __DIR__ . '/partials/footer.php'; ?>

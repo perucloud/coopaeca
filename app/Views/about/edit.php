@@ -8,6 +8,15 @@ $historyTitle = old('about_history_title', $settings['about_history_title'] ?? '
 $historyBody = old('about_history_body', $settings['about_history_body'] ?? 'La cooperativa nace como una iniciativa de productores organizados que buscaban mejores oportunidades para su cacao. Con el paso del tiempo, fortalecimos nuestros procesos de acopio, fermentacion, secado y trazabilidad para conectar el esfuerzo del campo con mercados mas exigentes.');
 $mission = old('about_mission', $settings['about_mission'] ?? 'Impulsar el desarrollo de nuestros socios mediante servicios de calidad, comercializacion justa y mejora continua del cacao.');
 $vision = old('about_vision', $settings['about_vision'] ?? 'Ser una cooperativa referente en cacao sostenible, trazable y de alta calidad.');
+$landingTitleEn = old('about_title_en', $settings['about_title_en'] ?? '');
+$landingBodyEn = old('about_body_en', $settings['about_body_en'] ?? '');
+$landingValuesEn = old('about_values_en', $settings['about_values_en'] ?? '');
+$pageTitleEn = old('about_more_title_en', $settings['about_more_title_en'] ?? '');
+$pageBodyEn = old('about_more_body_en', $settings['about_more_body_en'] ?? '');
+$historyTitleEn = old('about_history_title_en', $settings['about_history_title_en'] ?? '');
+$historyBodyEn = old('about_history_body_en', $settings['about_history_body_en'] ?? '');
+$missionEn = old('about_mission_en', $settings['about_mission_en'] ?? '');
+$visionEn = old('about_vision_en', $settings['about_vision_en'] ?? '');
 $valuesList = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', (string)$landingValues))));
 ?>
 
@@ -77,6 +86,17 @@ $valuesList = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\
                         <label>Checks del landing, uno por linea
                             <textarea name="about_values" rows="5" data-preview-source="landing-values"><?= e($landingValues) ?></textarea>
                         </label>
+                        <hr>
+                        <h4>English</h4>
+                        <label>Main title
+                            <input name="about_title_en" value="<?= e($landingTitleEn) ?>">
+                        </label>
+                        <label>Short description
+                            <textarea name="about_body_en" rows="6"><?= e($landingBodyEn) ?></textarea>
+                        </label>
+                        <label>Landing checks, one per line
+                            <textarea name="about_values_en" rows="5"><?= e($landingValuesEn) ?></textarea>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -105,6 +125,22 @@ $valuesList = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\
                                 <textarea name="about_history_body" rows="8" data-preview-source="history-body"><?= e($historyBody) ?></textarea>
                             </label>
                         </div>
+                        <hr>
+                        <h4>English</h4>
+                        <label>Page title
+                            <input name="about_more_title_en" value="<?= e($pageTitleEn) ?>">
+                        </label>
+                        <label>Institutional text
+                            <textarea name="about_more_body_en" rows="8"><?= e($pageBodyEn) ?></textarea>
+                        </label>
+                        <div class="about-field-grid">
+                            <label>History title
+                                <input name="about_history_title_en" value="<?= e($historyTitleEn) ?>">
+                            </label>
+                            <label>Cooperative history
+                                <textarea name="about_history_body_en" rows="8"><?= e($historyBodyEn) ?></textarea>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -125,6 +161,16 @@ $valuesList = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\
                             </label>
                             <label>Vision
                                 <textarea name="about_vision" rows="7" data-preview-source="vision"><?= e($vision) ?></textarea>
+                            </label>
+                        </div>
+                        <hr>
+                        <h4>English</h4>
+                        <div class="about-field-grid">
+                            <label>Mission
+                                <textarea name="about_mission_en" rows="7"><?= e($missionEn) ?></textarea>
+                            </label>
+                            <label>Vision
+                                <textarea name="about_vision_en" rows="7"><?= e($visionEn) ?></textarea>
                             </label>
                         </div>
                     </div>

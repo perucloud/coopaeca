@@ -30,14 +30,17 @@ final class PaymentMethodController extends Controller
         $qrImageId = $this->storeQr($_FILES['qr_image'] ?? null);
         Database::connection()->prepare(
             'INSERT INTO payment_methods
-             (name, type, account_label, account_number, holder_name, instructions, qr_image_id, is_active, position)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+             (name, type, account_label, account_number, holder_name, bank_name, cci, currency, instructions, qr_image_id, is_active, position)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         )->execute([
             $data['name'],
             $data['type'],
             $data['account_label'],
             $data['account_number'],
             $data['holder_name'],
+            $data['bank_name'],
+            $data['cci'],
+            $data['currency'],
             $data['instructions'],
             $qrImageId,
             $data['is_active'],
@@ -52,6 +55,9 @@ final class PaymentMethodController extends Controller
     {
         $id = (int)($_POST['id'] ?? 0);
         $data = $this->validate($_POST);
+        $oldQrImageId = (int)(Database::connection()
+            ->query('SELECT qr_image_id FROM payment_methods WHERE id = ' . $id)
+            ->fetchColumn() ?: 0);
         $qrImageId = $this->storeQr($_FILES['qr_image'] ?? null);
         $qrSql = $qrImageId !== null ? ', qr_image_id = ?' : '';
         $params = [
@@ -60,6 +66,9 @@ final class PaymentMethodController extends Controller
             $data['account_label'],
             $data['account_number'],
             $data['holder_name'],
+            $data['bank_name'],
+            $data['cci'],
+            $data['currency'],
             $data['instructions'],
             $data['is_active'],
             $data['position'],
@@ -72,12 +81,59 @@ final class PaymentMethodController extends Controller
         Database::connection()->prepare(
             'UPDATE payment_methods
              SET name = ?, type = ?, account_label = ?, account_number = ?, holder_name = ?,
+                 bank_name = ?, cci = ?, currency = ?,
                  instructions = ?, is_active = ?, position = ?' . $qrSql . ', updated_at = NOW()
              WHERE id = ?'
         )->execute($params);
 
+        // Si se reemplazo el QR, eliminar el archivo anterior.
+        if ($qrImageId !== null && $oldQrImageId > 0 && $oldQrImageId !== $qrImageId) {
+            $this->deleteQrFile($oldQrImageId);
+        }
+
         flash('status', 'Metodo de pago actualizado.');
         Response::redirect('/payment-methods');
+    }
+
+    /** Quita el QR de un metodo: limpia la referencia y borra el archivo. */
+    public function deleteQr(): void
+    {
+        $id = (int)($_POST['id'] ?? 0);
+        $stmt = Database::connection()->prepare('SELECT id, name, qr_image_id FROM payment_methods WHERE id = ? LIMIT 1');
+        $stmt->execute([$id]);
+        $method = $stmt->fetch();
+        if (!$method) {
+            Response::abort(404, 'Metodo de pago no encontrado.');
+        }
+
+        if ($method['qr_image_id']) {
+            Database::connection()->prepare('UPDATE payment_methods SET qr_image_id = NULL, updated_at = NOW() WHERE id = ?')
+                ->execute([$id]);
+            $this->deleteQrFile((int)$method['qr_image_id']);
+            activity('Quito el QR del metodo de pago ' . $method['name'], 'payment_methods');
+        }
+
+        flash('status', 'QR eliminado del metodo de pago.');
+        Response::redirect('/payment-methods');
+    }
+
+    /** Borra registro y archivo fisico de un QR si ningun otro metodo lo usa. */
+    private function deleteQrFile(int $fileId): void
+    {
+        $pdo = Database::connection();
+        $inUse = $pdo->prepare('SELECT 1 FROM payment_methods WHERE qr_image_id = ? LIMIT 1');
+        $inUse->execute([$fileId]);
+        if ($inUse->fetch()) {
+            return;
+        }
+
+        $stmt = $pdo->prepare('SELECT disk_path FROM files WHERE id = ? LIMIT 1');
+        $stmt->execute([$fileId]);
+        $diskPath = (string)($stmt->fetchColumn() ?: '');
+        if ($diskPath !== '' && str_starts_with(str_replace('\\', '/', $diskPath), 'uploads/payment-methods/')) {
+            delete_public_upload($diskPath);
+            $pdo->prepare('DELETE FROM files WHERE id = ?')->execute([$fileId]);
+        }
     }
 
     private function validate(array $input): array
@@ -97,12 +153,23 @@ final class PaymentMethodController extends Controller
             back_with_errors($errors, $input);
         }
 
+        $currency = trim((string)($input['currency'] ?? ''));
+        if (!in_array($currency, ['PEN', 'USD'], true)) {
+            $currency = null;
+        }
+
+        // Los datos bancarios solo aplican a transferencias.
+        $isBank = $type === 'bank_transfer';
+
         return [
             'name' => $name,
             'type' => $type,
             'account_label' => trim((string)($input['account_label'] ?? '')) ?: null,
             'account_number' => trim((string)($input['account_number'] ?? '')) ?: null,
             'holder_name' => trim((string)($input['holder_name'] ?? '')) ?: null,
+            'bank_name' => $isBank ? (trim((string)($input['bank_name'] ?? '')) ?: null) : null,
+            'cci' => $isBank ? (substr(preg_replace('/[^0-9\- ]/', '', (string)($input['cci'] ?? '')) ?? '', 0, 40) ?: null) : null,
+            'currency' => $isBank ? $currency : null,
             'instructions' => trim((string)($input['instructions'] ?? '')) ?: null,
             'is_active' => !empty($input['is_active']) ? 1 : 0,
             'position' => (int)($input['position'] ?? 0),
