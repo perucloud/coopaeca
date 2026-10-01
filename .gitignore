@@ -32,6 +32,8 @@
 /.claude/
 /.tmp_sessions/
 sess_*
+.phpunit.cache/
+/dashboard_base.sql
 
 # OS/editor files
 .DS_Store
