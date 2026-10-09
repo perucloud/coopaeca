@@ -1,0 +1,19 @@
+{
+  "name": "ccopaeca-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aplicación híbrida Android del panel COOPAECA",
+  "scripts": {
+    "cap:sync": "cap sync android",
+    "cap:open": "cap open android",
+    "android:debug": "cd android && gradlew.bat assembleDebug",
+    "android:release": "cd android && gradlew.bat bundleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.2",
+    "@capacitor/core": "8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.2"
+  }
+}

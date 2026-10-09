@@ -33,7 +33,6 @@
 /.tmp_sessions/
 sess_*
 .phpunit.cache/
-/dashboard_base.sql
 
 # OS/editor files
 .DS_Store
@@ -52,3 +51,7 @@ coopaeca-deploy.zip
 # Database exports (contienen datos reales de clientes/contrasenas, no subir a git)
 database/*_export.sql
 database/*.dump.sql
+/*.sql
+
+# Build artifacts (se distribuyen por Releases, no dentro del codigo fuente)
+/dist/

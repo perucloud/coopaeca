@@ -3,7 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#004d2e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title><?= e($title ?? config_app('name')) ?></title>
+    <link rel="manifest" href="<?= e(url('/manifest.webmanifest')) ?>">
+    <link rel="apple-touch-icon" href="<?= e(url('/assets/icons/pwa-192.png')) ?>">
     <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>">
 </head>
 <body class="guest-body">
@@ -27,5 +32,6 @@
             <?= $content ?>
         </section>
     </main>
+    <script src="<?= e(asset('js/pwa.js')) ?>"></script>
 </body>
 </html>

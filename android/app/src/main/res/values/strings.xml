@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">COOPAECA</string>
+    <string name="title_activity_main">COOPAECA</string>
+    <string name="package_name">com.ccopaeca.app</string>
+    <string name="custom_url_scheme">com.ccopaeca.app</string>
+</resources>

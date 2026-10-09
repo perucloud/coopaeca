@@ -1,0 +1,426 @@
+{\rtf1\ansi\deff0{\fonttbl{\f0 Arial;}}\paperw11906\paperh16838\margl1417\margr1417\margt1417\margb1417\f0\fs24 \pard\sl360\slmult1\sa120 \b [NOMBRE DE LA UNIVERSIDAD]\b0\par
+\pard\sl360\slmult1\sa120 [FACULTAD Y ESCUELA PROFESIONAL]\par
+\pard\sl360\slmult1\sa120 \b PRODUCTO ACAD\u201?MICO N.\u176? 2\b0\par
+\pard\sl360\slmult1\sa120 \b COOPAECA: aplicaci\u243?n web de gesti\u243?n comercial y contenidos con extensi\u243?n h\u237?brida para Android\b0\par
+\pard\sl360\slmult1\sa120 Asignatura: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Docente: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Integrantes: [APELLIDOS Y NOMBRES DE CADA INTEGRANTE]\par
+\pard\sl360\slmult1\sa120 Periodo acad\u233?mico: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Lugar y fecha de presentaci\u243?n: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Nombre de archivo de entrega: PA2_Apellido1_Apellido2_Apellido3\par
+\page \pard\sl360\slmult1\sa120 \b Orientaciones para completar el documento\b0\par
+\pard\sl360\slmult1\sa120 Este documento desarrolla el proyecto existente y deja espacios para incorporar evidencias acad\u233?micas. Sustituir los campos entre corchetes y los marcadores antes de entregar. El nombre del archivo debe reemplazar Apellido1, Apellido2 y Apellido3 por los apellidos de los integrantes, seg\u250?n la consigna.\par
+\pard\sl360\slmult1\sa120 Cada captura debe mostrar la fecha y hora reales del computador. Capturar la ventana de la aplicaci\u243?n junto con la barra de tareas o el panel del reloj del sistema, sin agregar una fecha artificial sobre la imagen. Utilizar datos de prueba y ocultar informaci\u243?n personal, contrase\u241?as y claves. Registrar debajo de cada captura el m\u243?dulo, procedimiento, resultado, fecha y hora.\par
+\pard\sl360\slmult1\sa120 Las funciones descritas se apoyan en el c\u243?digo del repositorio. Los resultados comprobados se distinguen de las pruebas propuestas. La revisi\u243?n local no acredita una auditor\u237?a integral de seguridad ni la validaci\u243?n de todas las operaciones comerciales. La metodolog\u237?a se presenta como una reconstrucci\u243?n t\u233?cnica coherente con la organizaci\u243?n del proyecto; el equipo debe ajustarla a su proceso real.\par
+\pard\sl360\slmult1\sa120 \b Contenido\b0\par
+\pard\sl360\slmult1\sa120 1. Nombre del proyecto\par
+\pard\sl360\slmult1\sa120 2. Descripci\u243?n del proyecto\par
+\pard\sl360\slmult1\sa120 3. Definici\u243?n del producto\par
+\pard\sl360\slmult1\sa120 4. Arquitectura\par
+\pard\sl360\slmult1\sa120 5. Plan de trabajo\par
+\pard\sl360\slmult1\sa120 6. An\u225?lisis y dise\u241?o\par
+\pard\sl360\slmult1\sa120 7. Interfaces\par
+\pard\sl360\slmult1\sa120 8. M\u233?todo, metodolog\u237?a y estrategia\par
+\pard\sl360\slmult1\sa120 9. Modelo de calidad\par
+\pard\sl360\slmult1\sa120 10. Pruebas de validaci\u243?n\par
+\pard\sl360\slmult1\sa120 11. Seguridad y contramedidas\par
+\pard\sl360\slmult1\sa120 12. Conclusiones\par
+\pard\sl360\slmult1\sa120 13. Anexos y referencias\par
+\page \pard\sl360\slmult1\sa120 \b 1. Nombre del proyecto\b0\par
+\pard\sl360\slmult1\sa120 COOPAECA: sistema web de gesti\u243?n comercial, administraci\u243?n de contenidos y comunicaci\u243?n institucional, con extensi\u243?n h\u237?brida para Android.\par
+\pard\sl360\slmult1\sa120 \b 2. Descripci\u243?n del proyecto\b0\par
+\pard\sl360\slmult1\sa120 El proyecto proporciona una plataforma para la Cooperativa Agraria de Exportaci\u243?n y de Calidad Ashaninka. Integra un sitio p\u250?blico para presentar la organizaci\u243?n, productos, publicaciones y galer\u237?as, y un panel privado para administrar informaci\u243?n y operaciones comerciales. Su prop\u243?sito es centralizar el registro de contenidos, pedidos, ventas, existencias y documentos, reduciendo la dispersi\u243?n de informaci\u243?n y facilitando el seguimiento de las operaciones.\par
+\pard\sl360\slmult1\sa120 El visitante puede consultar el cat\u225?logo y contenido institucional, enviar consultas y registrar un pedido mediante el proceso de compra. Los usuarios autorizados administran los m\u243?dulos disponibles de acuerdo con sus permisos. El superadministrador dispone de acceso general; otros usuarios reciben acceso expl\u237?cito por m\u243?dulo.\par
+\pard\sl360\slmult1\sa120 Objetivo general: implementar una soluci\u243?n accesible desde navegador y Android que apoye la difusi\u243?n institucional y el control comercial de COOPAECA, con trazabilidad, validaci\u243?n de datos y controles de acceso.\par
+\pard\sl360\slmult1\sa120 Objetivos espec\u237?ficos: administrar cat\u225?logo y contenidos; registrar y revisar pedidos; gestionar ventas y movimientos de inventario; organizar comprobantes y archivos; controlar usuarios y permisos; y verificar la calidad del producto mediante pruebas documentadas.\par
+\pard\sl360\slmult1\sa120 Alcance: la soluci\u243?n comprende presentaci\u243?n p\u250?blica, autenticaci\u243?n, administraci\u243?n, comercio, documentos y comunicaci\u243?n. La aplicaci\u243?n Android consume el servidor web; PHP y MySQL no se ejecutan dentro del tel\u233?fono. Las consultas externas de identidad, el correo y los env\u237?os de documentos dependen de sus servicios y configuraciones. Un comprobante generado por el sistema no debe describirse como comprobante electr\u243?nico autorizado por SUNAT sin demostrar esa integraci\u243?n.\par
+\pard\sl360\slmult1\sa120 \b 3. Definici\u243?n del producto del proyecto\b0\par
+\pard\sl360\slmult1\sa120 El producto es una aplicaci\u243?n web responsive desarrollada con HTML, CSS y JavaScript, un backend PHP con organizaci\u243?n MVC y una base MySQL. Incorpora recursos de PWA \u8212?manifiesto, Service Worker y pantalla sin conexi\u243?n\u8212? y un proyecto Android basado en Capacitor. Sus entregables son el c\u243?digo, la base de datos, la documentaci\u243?n y el proyecto m\u243?vil; la compilaci\u243?n, firma y funcionamiento del paquete Android deben respaldarse con evidencia independiente.\par
+\pard\sl360\slmult1\sa120 \b 3.1. Sustento: aplicativo nativo o h\u237?brido\b0\par
+\pard\sl360\slmult1\sa120 La versi\u243?n m\u243?vil se clasifica como h\u237?brida porque reutiliza la interfaz web dentro de un contenedor nativo Android provisto por Capacitor. La configuraci\u243?n capacitor.config.json identifica la aplicaci\u243?n como com.ccopaeca.app y dirige su WebView al servidor HTTPS de COOPAECA. La interfaz y la l\u243?gica del servidor conservan las tecnolog\u237?as web, mientras el contenedor permite su distribuci\u243?n en Android. La existencia de archivos Gradle y del proyecto android sustenta esta arquitectura, pero no reemplaza una prueba de instalaci\u243?n del APK.\par
+\pard\sl360\slmult1\sa120 La versi\u243?n que se abre en coopaeca.test es la aplicaci\u243?n web. Una PWA instalable y una aplicaci\u243?n h\u237?brida son entregables relacionados, pero distintos: la PWA se instala desde el navegador y el contenedor Capacitor produce el paquete Android. En el repositorio actual, el contenedor apunta al dominio de producci\u243?n; no apunta a coopaeca.test. Las pruebas m\u243?viles requieren un servidor accesible desde el dispositivo.\par
+\pard\sl360\slmult1\sa120 Esta elecci\u243?n permite reutilizar la interfaz y mantener una l\u243?gica de negocio centralizada. Como limitaci\u243?n, las consultas y transacciones necesitan conexi\u243?n al servidor. La pantalla offline informa la ausencia de conectividad; no demuestra que puedan registrarse ventas o pedidos sin Internet.\par
+\pard\sl360\slmult1\sa120 (AQUI VA CUADRO 1)\par
+\pard\sl360\slmult1\sa120 Comparaci\u243?n a insertar: aplicaci\u243?n nativa \u8212? interfaz y l\u243?gica espec\u237?ficas de Android; aplicaci\u243?n web \u8212? ejecuci\u243?n en navegador; aplicaci\u243?n h\u237?brida COOPAECA \u8212? interfaz web en contenedor Capacitor, backend remoto y acceso HTTPS.\par
+\pard\sl360\slmult1\sa120 \b 4. Esquema de la arquitectura utilizada\b0\par
+\pard\sl360\slmult1\sa120 Se utiliza una arquitectura cliente-servidor con separaci\u243?n l\u243?gica MVC. El navegador o WebView env\u237?a solicitudes HTTP/HTTPS a Apache. public/index.php registra las rutas; Router despacha la solicitud y aplica middleware. Los controladores coordinan la operaci\u243?n, los servicios implementan reglas de negocio y Database proporciona la conexi\u243?n PDO. Las vistas generan la respuesta y MySQL almacena los datos.\par
+\pard\sl360\slmult1\sa120 Flujo representativo: usuario \u8594? navegador/WebView \u8594? servidor Apache \u8594? ruta y middleware \u8594? controlador \u8594? servicio \u8594? PDO/MySQL \u8594? vista o respuesta JSON \u8594? usuario. El sistema combina p\u225?ginas renderizadas en el servidor y consultas JSON; no se presenta como una API REST completa.\par
+\pard\sl360\slmult1\sa120 Capas: presentaci\u243?n en app/Views y public/assets; entrada y control en public/index.php, app/Core y app/Controllers; negocio en app/Services; persistencia mediante PDO, SQL y el esquema de database. La presencia de una clase base Model no implica que todas las entidades tengan modelos propios: varios controladores y servicios consultan directamente mediante PDO.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 1)\par
+\pard\sl360\slmult1\sa120 Arquitectura: dibujar los clientes navegador y Android/Capacitor, conexi\u243?n HTTPS de producci\u243?n, Apache/PHP, Router/middleware, controladores, servicios, vistas, PDO, MySQL y almacenamiento de archivos. A\u241?adir servicios externos IMAP/SMTP e identidad como dependencias externas. Diferenciar el entorno local HTTP del entorno productivo HTTPS.\par
+\pard\sl360\slmult1\sa120 Entorno local: carpeta C:/laragon/www/ccopaeca; DocumentRoot dirigido a public; URL prevista http://coopaeca.test; base restaurada coopaeca_local_20261007. La comprobaci\u243?n directa del dominio fall\u243? por falta de resoluci\u243?n local; forzando el dominio a 127.0.0.1, inicio, login y ubigeo respondieron HTTP 200. El registro en hosts sigue siendo necesario para el acceso normal mientras no se complete ese ajuste.\par
+\pard\sl360\slmult1\sa120 \b 5. Plan de trabajo\b0\par
+\pard\sl360\slmult1\sa120 Se propone un cronograma de seis semanas. Es un plan de organizaci\u243?n acad\u233?mica y cierre del proyecto, no una afirmaci\u243?n de fechas hist\u243?ricas. Incorporar responsables y fechas reales del equipo.\par
+\pard\sl360\slmult1\sa120 Semana 1 \u8212? Requisitos y alcance. Actividades: Identificar actores, operaciones y reglas; revisar m\u243?dulos y dependencias. Entregable: Lista de requisitos y criterios de aceptaci\u243?n. Responsable: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 Semana 2 \u8212? An\u225?lisis y dise\u241?o. Actividades: Modelar casos de uso, clases conceptuales, navegaci\u243?n y estructura de datos. Entregable: Diagramas revisados y dise\u241?o de interfaces. Responsable: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 Semana 3 \u8212? Implementaci\u243?n del sitio y acceso. Actividades: Revisar sitio p\u250?blico, contenidos, autenticaci\u243?n y permisos. Entregable: M\u243?dulos accesibles y validaciones b\u225?sicas. Responsable: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 Semana 4 \u8212? Implementaci\u243?n comercial. Actividades: Revisar pedidos, ventas, inventario, pagos y documentos. Entregable: Flujos integrados y consistencia de datos. Responsable: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 Semana 5 \u8212? Calidad y seguridad. Actividades: Ejecutar pruebas unitarias, integraci\u243?n, permisos, archivos y compatibilidad. Entregable: Matriz de resultados e incidencias corregidas. Responsable: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 Semana 6 \u8212? M\u243?vil y entrega. Actividades: Validar PWA/Android, elaborar capturas con reloj y completar anexos. Entregable: Informe final y evidencias reproducibles. Responsable: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 (AQUI VA CUADRO 2)\par
+\pard\sl360\slmult1\sa120 Cronograma: columnas semana/fecha, actividad, responsable, dependencia, entregable y estado. Convertir las seis fases anteriores en tabla o diagrama de Gantt.\par
+\pard\sl360\slmult1\sa120 Criterio de cierre: cada requisito prioritario debe vincularse con una prueba, cada incidencia cr\u237?tica debe corregirse y comprobarse nuevamente, y cada m\u243?dulo debe disponer de c\u243?digo y captura de evidencia. Mantener copia de seguridad antes de alterar datos o configuraci\u243?n.\par
+\pard\sl360\slmult1\sa120 \b 6. Presentaci\u243?n del an\u225?lisis y dise\u241?o\b0\par
+\pard\sl360\slmult1\sa120 \b 6.1. Actores y requisitos\b0\par
+\pard\sl360\slmult1\sa120 Actores: visitante/cliente, usuario administrativo autorizado y superadministrador. Los servicios de identidad y correo son sistemas externos. Un cliente puede realizar un pedido desde la parte p\u250?blica; no se presume una cuenta de cliente si el flujo implementado no la exige.\par
+\pard\sl360\slmult1\sa120 Requisitos funcionales: RF01 consultar informaci\u243?n p\u250?blica; RF02 iniciar/cerrar sesi\u243?n y recuperar acceso; RF03 administrar usuarios y permisos; RF04 mantener contenidos y archivos; RF05 administrar productos y medios de pago; RF06 registrar/revisar pedidos; RF07 registrar/cancelar ventas y consultar comprobantes; RF08 gestionar movimientos y existencias; RF09 atender contactos y correo; RF10 modificar configuraci\u243?n institucional.\par
+\pard\sl360\slmult1\sa120 Requisitos no funcionales: controlar acceso en el servidor; mantener integridad de operaciones; adaptar interfaces a diferentes pantallas; proteger datos sensibles; registrar errores; conservar trazabilidad; y documentar restauraci\u243?n y despliegue. Los objetivos medibles se definen en el apartado de calidad y se validan antes de declararlos alcanzados.\par
+\pard\sl360\slmult1\sa120 \b 6.2. Casos de uso y clases por m\u243?dulo\b0\par
+\pard\sl360\slmult1\sa120 En los diagramas UML de casos de uso, ubicar a los actores fuera del l\u237?mite del sistema y asociarlos a sus acciones. Utilizar \u171?include\u187? para comportamiento obligatorio reutilizado y \u171?extend\u187? \u250?nicamente para comportamiento opcional con condici\u243?n. Las verificaciones de sesi\u243?n y permisos pueden indicarse como precondiciones.\par
+\pard\sl360\slmult1\sa120 Los diagramas de clases siguientes son modelos de an\u225?lisis y dise\u241?o: las entidades representan conceptos y tablas, no necesariamente clases PHP ya implementadas. Diferenciar entidades, controladores y servicios. Para el c\u243?digo real usar los nombres del repositorio y evitar inventar m\u233?todos. Representar asociaciones, atributos principales y multiplicidades respaldadas por el esquema.\par
+\pard\sl360\slmult1\sa120 \b 6.2.1. Sitio p\u250?blico y compra\b0\par
+\pard\sl360\slmult1\sa120 Actores: Visitante/cliente. Casos de uso: Consultar inicio, nosotros, cat\u225?logo, publicaciones y galer\u237?a; buscar contenido; gestionar compra y registrar pedido; enviar consulta.\par
+\pard\sl360\slmult1\sa120 Precondici\u243?n: sesi\u243?n y permisos cuando corresponda. Resultado esperado: operaci\u243?n autorizada, datos v\u225?lidos y respuesta comprensible. Ante error, conservar consistencia y mostrar un mensaje sin exponer informaci\u243?n sensible.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 2)\par
+\pard\sl360\slmult1\sa120 Diagrama de casos de uso del m\u243?dulo Sitio p\u250?blico y compra: representar los actores y las acciones descritas.\par
+\pard\sl360\slmult1\sa120 Clases y asociaciones propuestas: LandingController, CheckoutController, Producto, Pedido, DetallePedido y MensajeContacto. Pedido 1 \u8594? 1..* DetallePedido; Producto 1 \u8594? 0..* DetallePedido.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 3)\par
+\pard\sl360\slmult1\sa120 Diagrama de clases del m\u243?dulo Sitio p\u250?blico y compra: incluir atributos, asociaciones y multiplicidades; distinguir entidades conceptuales de clases existentes.\par
+\pard\sl360\slmult1\sa120 Referencia de implementaci\u243?n: app/Controllers/LandingController.php; app/Controllers/CheckoutController.php.\par
+\pard\sl360\slmult1\sa120 \b 6.2.2. Autenticaci\u243?n y perfil\b0\par
+\pard\sl360\slmult1\sa120 Actores: Usuario y superadministrador. Casos de uso: Iniciar sesi\u243?n, cerrar sesi\u243?n, solicitar recuperaci\u243?n y actualizar perfil.\par
+\pard\sl360\slmult1\sa120 Precondici\u243?n: sesi\u243?n y permisos cuando corresponda. Resultado esperado: operaci\u243?n autorizada, datos v\u225?lidos y respuesta comprensible. Ante error, conservar consistencia y mostrar un mensaje sin exponer informaci\u243?n sensible.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 4)\par
+\pard\sl360\slmult1\sa120 Diagrama de casos de uso del m\u243?dulo Autenticaci\u243?n y perfil: representar los actores y las acciones descritas.\par
+\pard\sl360\slmult1\sa120 Clases y asociaciones propuestas: AuthController, ProfileController, Usuario, Rol, TokenRecordatorio y Recuperaci\u243?nAcceso. Rol 1 \u8594? 0..* Usuario.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 5)\par
+\pard\sl360\slmult1\sa120 Diagrama de clases del m\u243?dulo Autenticaci\u243?n y perfil: incluir atributos, asociaciones y multiplicidades; distinguir entidades conceptuales de clases existentes.\par
+\pard\sl360\slmult1\sa120 Referencia de implementaci\u243?n: app/Controllers/AuthController.php; app/Controllers/ProfileController.php; app/Helpers/auth.php.\par
+\pard\sl360\slmult1\sa120 \b 6.2.3. Usuarios y permisos\b0\par
+\pard\sl360\slmult1\sa120 Actores: Superadministrador o usuario autorizado. Casos de uso: Listar, crear, editar y activar/desactivar usuarios; asignar acceso por m\u243?dulo.\par
+\pard\sl360\slmult1\sa120 Precondici\u243?n: sesi\u243?n y permisos cuando corresponda. Resultado esperado: operaci\u243?n autorizada, datos v\u225?lidos y respuesta comprensible. Ante error, conservar consistencia y mostrar un mensaje sin exponer informaci\u243?n sensible.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 6)\par
+\pard\sl360\slmult1\sa120 Diagrama de casos de uso del m\u243?dulo Usuarios y permisos: representar los actores y las acciones descritas.\par
+\pard\sl360\slmult1\sa120 Clases y asociaciones propuestas: UserController, Usuario, Rol y AccesoModulo. Usuario 1 \u8594? 0..* AccesoModulo; el permiso efectivo se eval\u250?a por usuario.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 7)\par
+\pard\sl360\slmult1\sa120 Diagrama de clases del m\u243?dulo Usuarios y permisos: incluir atributos, asociaciones y multiplicidades; distinguir entidades conceptuales de clases existentes.\par
+\pard\sl360\slmult1\sa120 Referencia de implementaci\u243?n: app/Controllers/UserController.php; app/Helpers/auth.php.\par
+\pard\sl360\slmult1\sa120 \b 6.2.4. Productos y medios de pago\b0\par
+\pard\sl360\slmult1\sa120 Actores: Usuario autorizado. Casos de uso: Mantener productos, im\u225?genes y categor\u237?as; configurar m\u233?todos de pago, cuenta y moneda.\par
+\pard\sl360\slmult1\sa120 Precondici\u243?n: sesi\u243?n y permisos cuando corresponda. Resultado esperado: operaci\u243?n autorizada, datos v\u225?lidos y respuesta comprensible. Ante error, conservar consistencia y mostrar un mensaje sin exponer informaci\u243?n sensible.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 8)\par
+\pard\sl360\slmult1\sa120 Diagrama de casos de uso del m\u243?dulo Productos y medios de pago: representar los actores y las acciones descritas.\par
+\pard\sl360\slmult1\sa120 Clases y asociaciones propuestas: ProductController, PaymentMethodController, Producto, Categoria, Archivo y MetodoPago. Producto y Categoria presentan relaci\u243?n muchos a muchos mediante product_category.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 9)\par
+\pard\sl360\slmult1\sa120 Diagrama de clases del m\u243?dulo Productos y medios de pago: incluir atributos, asociaciones y multiplicidades; distinguir entidades conceptuales de clases existentes.\par
+\pard\sl360\slmult1\sa120 Referencia de implementaci\u243?n: app/Controllers/ProductController.php; app/Controllers/PaymentMethodController.php.\par
+\pard\sl360\slmult1\sa120 \b 6.2.5. Pedidos\b0\par
+\pard\sl360\slmult1\sa120 Actores: Cliente y usuario autorizado. Casos de uso: Registrar pedido desde compra; listar, revisar, aprobar o rechazar; consultar documentos y gestionar env\u237?o.\par
+\pard\sl360\slmult1\sa120 Precondici\u243?n: sesi\u243?n y permisos cuando corresponda. Resultado esperado: operaci\u243?n autorizada, datos v\u225?lidos y respuesta comprensible. Ante error, conservar consistencia y mostrar un mensaje sin exponer informaci\u243?n sensible.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 10)\par
+\pard\sl360\slmult1\sa120 Diagrama de casos de uso del m\u243?dulo Pedidos: representar los actores y las acciones descritas.\par
+\pard\sl360\slmult1\sa120 Clases y asociaciones propuestas: OrderController, OrderService, Pedido, DetallePedido, Producto y Archivo. Relacionar el pedido con sus detalles y su documentaci\u243?n; comprobar la relaci\u243?n con ventas en el esquema.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 11)\par
+\pard\sl360\slmult1\sa120 Diagrama de clases del m\u243?dulo Pedidos: incluir atributos, asociaciones y multiplicidades; distinguir entidades conceptuales de clases existentes.\par
+\pard\sl360\slmult1\sa120 Referencia de implementaci\u243?n: app/Controllers/OrderController.php; app/Services/OrderService.php.\par
+\pard\sl360\slmult1\sa120 \b 6.2.6. Ventas y comprobantes\b0\par
+\pard\sl360\slmult1\sa120 Actores: Usuario autorizado. Casos de uso: Registrar venta, consultar detalle, cancelar venta y emitir/consultar comprobante.\par
+\pard\sl360\slmult1\sa120 Precondici\u243?n: sesi\u243?n y permisos cuando corresponda. Resultado esperado: operaci\u243?n autorizada, datos v\u225?lidos y respuesta comprensible. Ante error, conservar consistencia y mostrar un mensaje sin exponer informaci\u243?n sensible.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 12)\par
+\pard\sl360\slmult1\sa120 Diagrama de casos de uso del m\u243?dulo Ventas y comprobantes: representar los actores y las acciones descritas.\par
+\pard\sl360\slmult1\sa120 Clases y asociaciones propuestas: SalesController, SaleService, ReceiptService, Venta, DetalleVenta y Archivo. Venta 1 \u8594? 1..* DetalleVenta; Producto 1 \u8594? 0..* DetalleVenta.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 13)\par
+\pard\sl360\slmult1\sa120 Diagrama de clases del m\u243?dulo Ventas y comprobantes: incluir atributos, asociaciones y multiplicidades; distinguir entidades conceptuales de clases existentes.\par
+\pard\sl360\slmult1\sa120 Referencia de implementaci\u243?n: app/Controllers/SalesController.php; app/Services/SaleService.php; app/Services/ReceiptService.php.\par
+\pard\sl360\slmult1\sa120 \b 6.2.7. Inventario\b0\par
+\pard\sl360\slmult1\sa120 Actores: Usuario autorizado. Casos de uso: Consultar existencias y movimientos; registrar operaciones de inventario seg\u250?n las acciones disponibles.\par
+\pard\sl360\slmult1\sa120 Precondici\u243?n: sesi\u243?n y permisos cuando corresponda. Resultado esperado: operaci\u243?n autorizada, datos v\u225?lidos y respuesta comprensible. Ante error, conservar consistencia y mostrar un mensaje sin exponer informaci\u243?n sensible.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 14)\par
+\pard\sl360\slmult1\sa120 Diagrama de casos de uso del m\u243?dulo Inventario: representar los actores y las acciones descritas.\par
+\pard\sl360\slmult1\sa120 Clases y asociaciones propuestas: InventoryController, InventoryService, Producto y MovimientoStock. Producto 1 \u8594? 0..* MovimientoStock; las operaciones comerciales interact\u250?an con InventoryService.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 15)\par
+\pard\sl360\slmult1\sa120 Diagrama de clases del m\u243?dulo Inventario: incluir atributos, asociaciones y multiplicidades; distinguir entidades conceptuales de clases existentes.\par
+\pard\sl360\slmult1\sa120 Referencia de implementaci\u243?n: app/Controllers/InventoryController.php; app/Services/InventoryService.php.\par
+\pard\sl360\slmult1\sa120 \b 6.2.8. Publicaciones y servicios\b0\par
+\pard\sl360\slmult1\sa120 Actores: Editor autorizado y visitante. Casos de uso: Crear, editar y eliminar publicaciones y servicios; mostrar contenidos p\u250?blicos.\par
+\pard\sl360\slmult1\sa120 Precondici\u243?n: sesi\u243?n y permisos cuando corresponda. Resultado esperado: operaci\u243?n autorizada, datos v\u225?lidos y respuesta comprensible. Ante error, conservar consistencia y mostrar un mensaje sin exponer informaci\u243?n sensible.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 16)\par
+\pard\sl360\slmult1\sa120 Diagrama de casos de uso del m\u243?dulo Publicaciones y servicios: representar los actores y las acciones descritas.\par
+\pard\sl360\slmult1\sa120 Clases y asociaciones propuestas: PostController, ServiceController, Publicacion, Categoria, Etiqueta y Servicio. Publicacion y Categoria se relacionan mediante post_category.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 17)\par
+\pard\sl360\slmult1\sa120 Diagrama de clases del m\u243?dulo Publicaciones y servicios: incluir atributos, asociaciones y multiplicidades; distinguir entidades conceptuales de clases existentes.\par
+\pard\sl360\slmult1\sa120 Referencia de implementaci\u243?n: app/Controllers/PostController.php; app/Controllers/ServiceController.php.\par
+\pard\sl360\slmult1\sa120 \b 6.2.9. Galer\u237?as, sliders y archivos\b0\par
+\pard\sl360\slmult1\sa120 Actores: Editor autorizado y visitante. Casos de uso: Administrar galer\u237?as, im\u225?genes, sliders y archivos; visualizar recursos p\u250?blicos.\par
+\pard\sl360\slmult1\sa120 Precondici\u243?n: sesi\u243?n y permisos cuando corresponda. Resultado esperado: operaci\u243?n autorizada, datos v\u225?lidos y respuesta comprensible. Ante error, conservar consistencia y mostrar un mensaje sin exponer informaci\u243?n sensible.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 18)\par
+\pard\sl360\slmult1\sa120 Diagrama de casos de uso del m\u243?dulo Galer\u237?as, sliders y archivos: representar los actores y las acciones descritas.\par
+\pard\sl360\slmult1\sa120 Clases y asociaciones propuestas: GalleryController, SliderController, MediaController, Galeria, ImagenGaleria, Slider, ElementoSlider y Archivo. Galeria 1 \u8594? 0..* ImagenGaleria; Slider 1 \u8594? 0..* ElementoSlider.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 19)\par
+\pard\sl360\slmult1\sa120 Diagrama de clases del m\u243?dulo Galer\u237?as, sliders y archivos: incluir atributos, asociaciones y multiplicidades; distinguir entidades conceptuales de clases existentes.\par
+\pard\sl360\slmult1\sa120 Referencia de implementaci\u243?n: app/Controllers/GalleryController.php; app/Controllers/SliderController.php; app/Controllers/MediaController.php.\par
+\pard\sl360\slmult1\sa120 \b 6.2.10. Contactos y correo\b0\par
+\pard\sl360\slmult1\sa120 Actores: Visitante y usuario autorizado; servidor de correo externo. Casos de uso: Enviar contacto, revisar mensajes, administrar cuenta de correo, consultar buz\u243?n, redactar y gestionar borradores.\par
+\pard\sl360\slmult1\sa120 Precondici\u243?n: sesi\u243?n y permisos cuando corresponda. Resultado esperado: operaci\u243?n autorizada, datos v\u225?lidos y respuesta comprensible. Ante error, conservar consistencia y mostrar un mensaje sin exponer informaci\u243?n sensible.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 20)\par
+\pard\sl360\slmult1\sa120 Diagrama de casos de uso del m\u243?dulo Contactos y correo: representar los actores y las acciones descritas.\par
+\pard\sl360\slmult1\sa120 Clases y asociaciones propuestas: ContactController, MailboxController, MailAccountController, MailComposeController, ImapService, SmtpService, MensajeContacto, CuentaCorreo y Borrador. CuentaCorreo se asocia con datos de correo seg\u250?n las claves reales del esquema.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 21)\par
+\pard\sl360\slmult1\sa120 Diagrama de clases del m\u243?dulo Contactos y correo: incluir atributos, asociaciones y multiplicidades; distinguir entidades conceptuales de clases existentes.\par
+\pard\sl360\slmult1\sa120 Referencia de implementaci\u243?n: app/Controllers/ContactController.php; app/Controllers/Mail/; app/Services/ImapService.php; app/Services/SmtpService.php.\par
+\pard\sl360\slmult1\sa120 \b 6.2.11. Configuraci\u243?n y presentaci\u243?n institucional\b0\par
+\pard\sl360\slmult1\sa120 Actores: Usuario autorizado. Casos de uso: Actualizar configuraci\u243?n, informaci\u243?n institucional y redes sociales; consultar indicadores del panel.\par
+\pard\sl360\slmult1\sa120 Precondici\u243?n: sesi\u243?n y permisos cuando corresponda. Resultado esperado: operaci\u243?n autorizada, datos v\u225?lidos y respuesta comprensible. Ante error, conservar consistencia y mostrar un mensaje sin exponer informaci\u243?n sensible.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 22)\par
+\pard\sl360\slmult1\sa120 Diagrama de casos de uso del m\u243?dulo Configuraci\u243?n y presentaci\u243?n institucional: representar los actores y las acciones descritas.\par
+\pard\sl360\slmult1\sa120 Clases y asociaciones propuestas: SettingsController, AboutController, SocialNetworkController, DashboardController, Configuracion y RedSocial. La configuraci\u243?n se representa como claves/valores.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 23)\par
+\pard\sl360\slmult1\sa120 Diagrama de clases del m\u243?dulo Configuraci\u243?n y presentaci\u243?n institucional: incluir atributos, asociaciones y multiplicidades; distinguir entidades conceptuales de clases existentes.\par
+\pard\sl360\slmult1\sa120 Referencia de implementaci\u243?n: app/Controllers/SettingsController.php; app/Controllers/AboutController.php; app/Controllers/SocialNetworkController.php; app/Controllers/DashboardController.php.\par
+\pard\sl360\slmult1\sa120 \b 6.3. Mapa de navegaci\u243?n web\b0\par
+\pard\sl360\slmult1\sa120 Navegaci\u243?n p\u250?blica: Inicio \u8594? Nosotros / Producto / Publicaci\u243?n / Galer\u237?a / Buscar / Compra. El acceso a administraci\u243?n parte de Login y conduce a Dashboard. Las pantallas privadas incluyen perfil, usuarios, productos, pedidos, ventas, inventario, medios de pago, publicaciones, servicios, galer\u237?as, sliders, medios, contactos, correo, configuraci\u243?n, informaci\u243?n institucional y redes sociales; su visibilidad depende de los permisos. Cerrar sesi\u243?n devuelve al usuario al contexto p\u250?blico.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 24)\par
+\pard\sl360\slmult1\sa120 Mapa de navegaci\u243?n: separar \u225?rea p\u250?blica y privada. Mostrar login como entrada al panel; anotar permisos y relacionar listados con formularios de creaci\u243?n, edici\u243?n y detalle. Contrastar las rutas exactas con public/index.php.\par
+\pard\sl360\slmult1\sa120 \b 6.4. Dise\u241?o de datos y reglas de negocio\b0\par
+\pard\sl360\slmult1\sa120 Las entidades comerciales principales son products, orders, order_items, sales, sale_items y stock_movements. Los archivos se registran en files; usuarios y accesos en users, roles y user_module_access. Las claves for\u225?neas vinculan registros y las transacciones coordinan cambios relacionados. InventoryService utiliza SELECT ... FOR UPDATE para bloquear registros durante operaciones sensibles; los servicios comerciales abren transacciones. Esto aporta un mecanismo para controlar concurrencia, pero su funcionamiento completo debe probarse con operaciones simult\u225?neas.\par
+\pard\sl360\slmult1\sa120 (AQUI VA GRAFICO 25)\par
+\pard\sl360\slmult1\sa120 Diagrama entidad-relaci\u243?n: productos, pedidos/detalles, ventas/detalles, movimientos, usuarios y archivos. Obtener las claves y cardinalidades exactas de dashboard_base.sql. Omitir datos personales del volcado.\par
+\pard\sl360\slmult1\sa120 \b 7. Explicaci\u243?n e ilustraci\u243?n de las interfaces\b0\par
+\pard\sl360\slmult1\sa120 La interfaz p\u250?blica facilita la consulta institucional y comercial; el panel organiza acciones administrativas mediante navegaci\u243?n lateral, listados y formularios. Las siguientes im\u225?genes deben sustituirse por capturas reales. En cada una mantener visible la fecha y hora del computador y explicar qu\u233? acci\u243?n puede realizar el usuario.\par
+\pard\sl360\slmult1\sa120 \b 7.1. Inicio p\u250?blico\b0\par
+\pard\sl360\slmult1\sa120 Presenta identidad institucional, contenido destacado y accesos al cat\u225?logo. Capturar la cabecera y una secci\u243?n principal.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 1)\par
+\pard\sl360\slmult1\sa120 Captura de Inicio p\u250?blico. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.2. Nosotros\b0\par
+\pard\sl360\slmult1\sa120 Presenta informaci\u243?n de la organizaci\u243?n y su identidad. Capturar el contenido institucional disponible.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 2)\par
+\pard\sl360\slmult1\sa120 Captura de Nosotros. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.3. Cat\u225?logo y detalle de producto\b0\par
+\pard\sl360\slmult1\sa120 Muestra productos, im\u225?genes e informaci\u243?n comercial. Capturar listado y un detalle con datos de prueba.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 3)\par
+\pard\sl360\slmult1\sa120 Captura de Cat\u225?logo y detalle de producto. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.4. Publicaciones y galer\u237?a\b0\par
+\pard\sl360\slmult1\sa120 Permite consultar noticias y recursos visuales. Capturar una publicaci\u243?n y una galer\u237?a.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 4)\par
+\pard\sl360\slmult1\sa120 Captura de Publicaciones y galer\u237?a. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.5. Compra y confirmaci\u243?n\b0\par
+\pard\sl360\slmult1\sa120 Recoge informaci\u243?n del pedido y muestra el resultado del registro. Capturar formulario y confirmaci\u243?n, sin datos personales reales.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 5)\par
+\pard\sl360\slmult1\sa120 Captura de Compra y confirmaci\u243?n. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.6. Login y recuperaci\u243?n\b0\par
+\pard\sl360\slmult1\sa120 Permite autenticaci\u243?n y recuperaci\u243?n de acceso. Capturar formulario y un mensaje de validaci\u243?n, sin mostrar contrase\u241?as.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 6)\par
+\pard\sl360\slmult1\sa120 Captura de Login y recuperaci\u243?n. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.7. Dashboard y perfil\b0\par
+\pard\sl360\slmult1\sa120 Presenta el \u225?rea privada y edici\u243?n del perfil. Capturar indicadores visibles y formulario de perfil con datos anonimizados.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 7)\par
+\pard\sl360\slmult1\sa120 Captura de Dashboard y perfil. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.8. Usuarios y permisos\b0\par
+\pard\sl360\slmult1\sa120 Gestiona usuarios y accesos por m\u243?dulo. Capturar listado y asignaci\u243?n de permisos con cuenta de prueba.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 8)\par
+\pard\sl360\slmult1\sa120 Captura de Usuarios y permisos. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.9. Productos y medios de pago\b0\par
+\pard\sl360\slmult1\sa120 Gestiona cat\u225?logo y formas de pago. Capturar listado, formulario y configuraci\u243?n con n\u250?meros de cuenta ficticios.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 9)\par
+\pard\sl360\slmult1\sa120 Captura de Productos y medios de pago. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.10. Pedidos\b0\par
+\pard\sl360\slmult1\sa120 Organiza revisi\u243?n, detalle y acciones autorizadas. Capturar un pedido de prueba y su estado.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 10)\par
+\pard\sl360\slmult1\sa120 Captura de Pedidos. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.11. Ventas y comprobantes\b0\par
+\pard\sl360\slmult1\sa120 Muestra ventas, detalle y documentos. Capturar una venta y un comprobante de prueba, sin atribuir validez fiscal no demostrada.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 11)\par
+\pard\sl360\slmult1\sa120 Captura de Ventas y comprobantes. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.12. Inventario\b0\par
+\pard\sl360\slmult1\sa120 Presenta existencias y movimientos. Capturar producto y movimientos que permitan explicar la trazabilidad.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 12)\par
+\pard\sl360\slmult1\sa120 Captura de Inventario. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.13. Contenidos y recursos\b0\par
+\pard\sl360\slmult1\sa120 Permite administrar publicaciones, servicios, galer\u237?as, sliders y archivos. Agregar una captura por pantalla implementada.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 13)\par
+\pard\sl360\slmult1\sa120 Captura de Contenidos y recursos. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.14. Contactos y correo\b0\par
+\pard\sl360\slmult1\sa120 Centraliza consultas y operaciones de correo. Capturar datos de prueba; ocultar credenciales y comunicaciones privadas.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 14)\par
+\pard\sl360\slmult1\sa120 Captura de Contactos y correo. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 7.15. Configuraci\u243?n institucional\b0\par
+\pard\sl360\slmult1\sa120 Permite actualizar par\u225?metros, informaci\u243?n y redes sociales. Capturar las opciones del proyecto sin exponer secretos.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 15)\par
+\pard\sl360\slmult1\sa120 Captura de Configuraci\u243?n institucional. Fecha/hora visible: [COMPLETAR]. Explicaci\u243?n de la acci\u243?n mostrada: [COMPLETAR].\par
+\pard\sl360\slmult1\sa120 \b 8. M\u233?todo, metodolog\u237?a y estrategia de implementaci\u243?n\b0\par
+\pard\sl360\slmult1\sa120 \b 8.1. M\u233?todo\b0\par
+\pard\sl360\slmult1\sa120 Se plantea un m\u233?todo de desarrollo aplicado: identificar el problema de gesti\u243?n, analizar los procesos, dise\u241?ar una soluci\u243?n, implementarla y verificarla mediante evidencia reproducible. Para cada requisito se establece una operaci\u243?n esperada, una regla de negocio y un criterio de aceptaci\u243?n. Esta secuencia permite relacionar las necesidades de la cooperativa con decisiones concretas del sistema.\par
+\pard\sl360\slmult1\sa120 \b 8.2. Metodolog\u237?a\b0\par
+\pard\sl360\slmult1\sa120 La organizaci\u243?n modular y el avance por funcionalidades son compatibles con una metodolog\u237?a iterativa e incremental. Cada incremento comprende an\u225?lisis, dise\u241?o, implementaci\u243?n, prueba y ajuste; por ejemplo, completar autenticaci\u243?n antes de habilitar administraci\u243?n y completar productos antes de integrar ventas e inventario. Esta descripci\u243?n debe confirmarse con el historial real del equipo. No se afirma que se aplic\u243? Scrum formal porque no se han acreditado sus roles, eventos y artefactos.\par
+\pard\sl360\slmult1\sa120 \b 8.3. Estrategia\b0\par
+\pard\sl360\slmult1\sa120 La estrategia prioriza componentes comunes \u8212?conexi\u243?n, rutas, sesiones, permisos y vistas\u8212? y posteriormente integra m\u243?dulos. Se reutiliza la interfaz web en Android mediante Capacitor; se mantiene una copia local de datos para verificar cambios; se emplea Git para controlar versiones y se revisan dependencias con Composer. Las pruebas deben acompa\u241?ar cada incremento y enfocarse primero en permisos, integridad comercial y archivos.\par
+\pard\sl360\slmult1\sa120 (AQUI VA CUADRO 3)\par
+\pard\sl360\slmult1\sa120 Trazabilidad a insertar: requisito \u8594? m\u243?dulo \u8594? archivo/controlador \u8594? prueba \u8594? resultado \u8594? captura. Ejemplo: RF02 \u8594? autenticaci\u243?n \u8594? AuthController.php \u8594? acceso inv\u225?lido \u8594? pendiente \u8594? imagen de evidencia.\par
+\pard\sl360\slmult1\sa120 Evidencias metodol\u243?gicas a completar: historial de cambios, lista de tareas, decisiones de dise\u241?o, registro de incidencias y revisiones del equipo. La existencia del repositorio aporta control de versiones; no demuestra por s\u237? misma las reuniones o validaciones con usuarios.\par
+\pard\sl360\slmult1\sa120 \b 9. Modelo de calidad del proyecto\b0\par
+\pard\sl360\slmult1\sa120 Se propone ISO/IEC 25010:2023 como marco para organizar la evaluaci\u243?n de calidad del producto. Se utiliza como referencia para establecer criterios verificables; no se declara certificaci\u243?n ni cumplimiento integral. Fuente oficial: https://www.iso.org/standard/78176.html. Las m\u233?tricas siguientes son objetivos propuestos para COOPAECA, no resultados ya obtenidos.\par
+\pard\sl360\slmult1\sa120 Adecuaci\u243?n funcional: Cubrir consulta, administraci\u243?n y operaciones comerciales. Criterio: Aprobar el 100 % de casos cr\u237?ticos priorizados antes de la entrega.\par
+\pard\sl360\slmult1\sa120 Eficiencia de desempe\u241?o: Responder adecuadamente bajo una carga definida. Criterio: Objetivo inicial: percentil 95 menor o igual a 3 s con 10 usuarios concurrentes; documentar equipo, datos y escenario.\par
+\pard\sl360\slmult1\sa120 Compatibilidad: Mantener comportamiento entre navegadores y servicios. Criterio: Validar flujos prioritarios en Chrome y Edge y en el WebView Android usado en pruebas.\par
+\pard\sl360\slmult1\sa120 Capacidad de interacci\u243?n: Facilitar comprensi\u243?n y ejecuci\u243?n de tareas. Criterio: Tres usuarios de prueba completan consulta y registro sin errores bloqueantes; comprobar etiquetas, mensajes y navegaci\u243?n por teclado.\par
+\pard\sl360\slmult1\sa120 Fiabilidad: Conservar integridad ante errores y concurrencia. Criterio: No producir operaciones parciales ni stock incoherente en los escenarios definidos de fallo y simultaneidad.\par
+\pard\sl360\slmult1\sa120 Seguridad: Proteger acceso, datos y archivos. Criterio: Aprobar casos de permisos, CSRF, consultas parametrizadas y archivos; corregir hallazgos cr\u237?ticos identificados.\par
+\pard\sl360\slmult1\sa120 Mantenibilidad: Facilitar comprensi\u243?n y cambios. Criterio: Vincular m\u243?dulos con archivos, documentar instalaci\u243?n y ejecutar las pruebas existentes tras cada cambio relevante.\par
+\pard\sl360\slmult1\sa120 Flexibilidad: Adaptarse a entorno y tama\u241?o de pantalla. Criterio: Validar pantallas principales en escritorio y m\u243?vil y documentar despliegue en otra instalaci\u243?n.\par
+\pard\sl360\slmult1\sa120 Safety: prevenci\u243?n del da\u241?o: Evitar efectos perjudiciales de operaciones incorrectas. Criterio: Comprobar validaciones de cantidades y totales, confirmaciones de operaciones sensibles y capacidad de recuperar datos.\par
+\pard\sl360\slmult1\sa120 (AQUI VA CUADRO 4)\par
+\pard\sl360\slmult1\sa120 Matriz de calidad: caracter\u237?stica, criterio, m\u233?trica, instrumento, responsable, resultado y evidencia. Mantener en pendiente los objetivos a\u250?n no medidos.\par
+\pard\sl360\slmult1\sa120 \b 10. Pruebas de validaci\u243?n del proyecto\b0\par
+\pard\sl360\slmult1\sa120 \b 10.1. Estrategia y tipos de pruebas\b0\par
+\pard\sl360\slmult1\sa120 Las pruebas se realizar\u225?n sobre una copia controlada de la base, con usuarios de prueba y datos ficticios. Incluir casos positivos, negativos, valores l\u237?mite y operaciones repetidas. Registrar versi\u243?n del c\u243?digo, ambiente, datos, pasos, resultado esperado, resultado observado y evidencia. No ejecutar escenarios de carga o seguridad sobre servicios externos sin autorizaci\u243?n.\par
+\pard\sl360\slmult1\sa120 Pruebas unitarias: verifican unidades concretas; existen pruebas de formato de c\u243?digos de pedidos/ventas y selecci\u243?n de idioma. Pruebas de integraci\u243?n: verifican controlador, servicio y base conjuntamente. Pruebas de sistema: recorren procesos completos. Pruebas de aceptaci\u243?n: un usuario del negocio confirma que la operaci\u243?n responde a su necesidad. Pruebas de regresi\u243?n: comprueban que un cambio no rompe funcionalidades previamente validadas.\par
+\pard\sl360\slmult1\sa120 Pruebas adicionales propuestas: adaptaci\u243?n a pantallas y navegadores, carga controlada, simultaneidad de inventario, restauraci\u243?n de respaldo, permisos y archivos, instalaci\u243?n PWA/Android y recuperaci\u243?n al reconectar. El tipo de prueba se elige por el riesgo: una venta requiere consistencia transaccional; una p\u225?gina p\u250?blica requiere presentaci\u243?n y navegaci\u243?n; el acceso requiere verificaci\u243?n de autenticaci\u243?n y autorizaci\u243?n.\par
+\pard\sl360\slmult1\sa120 \b 10.2. Casos de prueba propuestos por m\u243?dulo\b0\par
+\pard\sl360\slmult1\sa120 PV-01 \u8212? Sitio p\u250?blico y compra. Procedimiento: Abrir cat\u225?logo, seleccionar producto, registrar pedido de prueba y comprobar confirmaci\u243?n. Resultado esperado: la funci\u243?n v\u225?lida se completa y la entrada inv\u225?lida o no autorizada se rechaza sin alterar datos indebidamente. Estado: pendiente de ejecuci\u243?n y captura formal.\par
+\pard\sl360\slmult1\sa120 PV-02 \u8212? Autenticaci\u243?n y perfil. Procedimiento: Probar credenciales v\u225?lidas e inv\u225?lidas y comprobar que una ruta privada no abre sin sesi\u243?n. Resultado esperado: la funci\u243?n v\u225?lida se completa y la entrada inv\u225?lida o no autorizada se rechaza sin alterar datos indebidamente. Estado: pendiente de ejecuci\u243?n y captura formal.\par
+\pard\sl360\slmult1\sa120 PV-03 \u8212? Usuarios y permisos. Procedimiento: Asignar acceso a un m\u243?dulo a una cuenta de prueba y contrastar acceso permitido y denegado. Resultado esperado: la funci\u243?n v\u225?lida se completa y la entrada inv\u225?lida o no autorizada se rechaza sin alterar datos indebidamente. Estado: pendiente de ejecuci\u243?n y captura formal.\par
+\pard\sl360\slmult1\sa120 PV-04 \u8212? Productos y medios de pago. Procedimiento: Registrar y editar producto de prueba; validar precio, datos obligatorios y presentaci\u243?n del medio de pago. Resultado esperado: la funci\u243?n v\u225?lida se completa y la entrada inv\u225?lida o no autorizada se rechaza sin alterar datos indebidamente. Estado: pendiente de ejecuci\u243?n y captura formal.\par
+\pard\sl360\slmult1\sa120 PV-05 \u8212? Pedidos. Procedimiento: Registrar pedido, revisar detalle y probar aprobaci\u243?n/rechazo en una copia de pruebas; verificar estado e inventario. Resultado esperado: la funci\u243?n v\u225?lida se completa y la entrada inv\u225?lida o no autorizada se rechaza sin alterar datos indebidamente. Estado: pendiente de ejecuci\u243?n y captura formal.\par
+\pard\sl360\slmult1\sa120 PV-06 \u8212? Ventas y comprobantes. Procedimiento: Crear venta con stock disponible, verificar total y documento; cancelar y comprobar restituci\u243?n conforme a la regla implementada. Resultado esperado: la funci\u243?n v\u225?lida se completa y la entrada inv\u225?lida o no autorizada se rechaza sin alterar datos indebidamente. Estado: pendiente de ejecuci\u243?n y captura formal.\par
+\pard\sl360\slmult1\sa120 PV-07 \u8212? Inventario. Procedimiento: Comparar existencias antes/despu\u233?s de una operaci\u243?n; intentar cantidad superior al disponible y comprobar consistencia. Resultado esperado: la funci\u243?n v\u225?lida se completa y la entrada inv\u225?lida o no autorizada se rechaza sin alterar datos indebidamente. Estado: pendiente de ejecuci\u243?n y captura formal.\par
+\pard\sl360\slmult1\sa120 PV-08 \u8212? Publicaciones y servicios. Procedimiento: Publicar contenido de prueba, comprobar visualizaci\u243?n p\u250?blica y validar entradas inv\u225?lidas. Resultado esperado: la funci\u243?n v\u225?lida se completa y la entrada inv\u225?lida o no autorizada se rechaza sin alterar datos indebidamente. Estado: pendiente de ejecuci\u243?n y captura formal.\par
+\pard\sl360\slmult1\sa120 PV-09 \u8212? Galer\u237?as, sliders y archivos. Procedimiento: Subir imagen permitida, comprobar presentaci\u243?n e intentar archivo no permitido en el entorno de pruebas. Resultado esperado: la funci\u243?n v\u225?lida se completa y la entrada inv\u225?lida o no autorizada se rechaza sin alterar datos indebidamente. Estado: pendiente de ejecuci\u243?n y captura formal.\par
+\pard\sl360\slmult1\sa120 PV-10 \u8212? Contactos y correo. Procedimiento: Registrar consulta local y comprobar su almacenamiento; probar correo \u250?nicamente con cuenta de pruebas y servicio autorizado. Resultado esperado: la funci\u243?n v\u225?lida se completa y la entrada inv\u225?lida o no autorizada se rechaza sin alterar datos indebidamente. Estado: pendiente de ejecuci\u243?n y captura formal.\par
+\pard\sl360\slmult1\sa120 PV-11 \u8212? Configuraci\u243?n y presentaci\u243?n institucional. Procedimiento: Cambiar un valor en la copia de pruebas y comprobar su efecto en la interfaz; verificar restricciones de acceso. Resultado esperado: la funci\u243?n v\u225?lida se completa y la entrada inv\u225?lida o no autorizada se rechaza sin alterar datos indebidamente. Estado: pendiente de ejecuci\u243?n y captura formal.\par
+\pard\sl360\slmult1\sa120 PV-12 \u8212? CSRF. Pasos: Enviar una operaci\u243?n POST sin token y con token inv\u225?lido. Resultado esperado: Rechazo 419 y ausencia de modificaci\u243?n. Estado: propuesto, pendiente.\par
+\pard\sl360\slmult1\sa120 PV-13 \u8212? Fuerza bruta. Pasos: Repetir intentos inv\u225?lidos de acceso en la misma sesi\u243?n. Resultado esperado: Rechazo 429 al superar el l\u237?mite; repetir con sesi\u243?n nueva para documentar la limitaci\u243?n del control actual. Estado: propuesto, pendiente.\par
+\pard\sl360\slmult1\sa120 PV-14 \u8212? XSS. Pasos: Guardar texto con etiquetas de script en campos de prueba y revisar salida. Resultado esperado: No ejecutar scripts; evaluar cada contexto de salida y contenido enriquecido. Estado: propuesto, pendiente.\par
+\pard\sl360\slmult1\sa120 PV-15 \u8212? Inyecci\u243?n SQL. Pasos: Introducir cadenas especiales como datos en formularios de prueba. Resultado esperado: No alterar la consulta ni revelar SQL; rechazo o tratamiento como valor literal. Estado: propuesto, pendiente.\par
+\pard\sl360\slmult1\sa120 PV-16 \u8212? Concurrencia. Pasos: Dos sesiones intentan vender el \u250?ltimo stock disponible. Resultado esperado: Solo se completan operaciones compatibles con la existencia; no hay stock negativo. Estado: propuesto, pendiente.\par
+\pard\sl360\slmult1\sa120 PV-17 \u8212? Integridad y rollback. Pasos: Provocar un fallo controlado durante una operaci\u243?n de prueba. Resultado esperado: No conservar venta o movimiento parcial; documentar el mecanismo utilizado. Estado: propuesto, pendiente.\par
+\pard\sl360\slmult1\sa120 PV-18 \u8212? PWA y Android. Pasos: Instalar, navegar, usar bot\u243?n Atr\u225?s, desconectar y reconectar. Resultado esperado: Interfaz usable y aviso offline; las operaciones remotas no simulan \u233?xito sin conexi\u243?n. Estado: propuesto, pendiente.\par
+\pard\sl360\slmult1\sa120 PV-19 \u8212? Restauraci\u243?n. Pasos: Restaurar respaldo en una base independiente y comparar registros. Resultado esperado: Datos y relaciones recuperados y aplicaci\u243?n conectada correctamente. Estado: propuesto, pendiente.\par
+\pard\sl360\slmult1\sa120 PV-20 \u8212? Desempe\u241?o. Pasos: Ejecutar carga controlada seg\u250?n el objetivo del apartado 9. Resultado esperado: Registrar percentiles, errores y recursos; comparar con el objetivo propuesto. Estado: propuesto, pendiente.\par
+\pard\sl360\slmult1\sa120 (AQUI VA CUADRO 5)\par
+\pard\sl360\slmult1\sa120 Matriz de ejecuci\u243?n: ID, requisito/m\u243?dulo, precondiciones, datos, pasos, esperado, observado, aprobado/fallido, fecha/hora y evidencia. No rellenar observado ni aprobado antes de ejecutar.\par
+\pard\sl360\slmult1\sa120 \b 10.3. Resultados realmente comprobados en el entorno local\b0\par
+\pard\sl360\slmult1\sa120 En la revisi\u243?n local se ejecut\u243? PHPUnit: cuatro pruebas y cuatro aserciones correctas. Su alcance se limita a formato de c\u243?digos y traducciones; no valida por s\u237? mismo ventas, pagos ni seguridad integral. Las dependencias instaladas superaron la comprobaci\u243?n de requisitos de plataforma de Composer.\par
+\pard\sl360\slmult1\sa120 La restauraci\u243?n de dashboard_base.sql produjo 45 tablas y 60 relaciones de clave for\u225?nea. Se encontraron 2 usuarios, 6 productos, 18 pedidos, 17 ventas y 1892 registros de ubigeo. Los 75 registros de archivos ten\u237?an su archivo f\u237?sico. Estas cantidades describen la copia revisada, no un objetivo funcional del sistema.\par
+\pard\sl360\slmult1\sa120 Inicio, login y consulta de departamentos respondieron HTTP 200 al forzar coopaeca.test hacia 127.0.0.1. La consulta de ubigeo devolvi\u243? una respuesta JSON v\u225?lida. Una sesi\u243?n local de prueba permiti\u243? revisar dashboard, productos y configuraci\u243?n; pedidos, ventas e inventario devolvieron 403 para el usuario admin seleccionado, coherente con su acceso restringido. Esto no reemplaza la ejecuci\u243?n de esos m\u243?dulos con un usuario autorizado.\par
+\pard\sl360\slmult1\sa120 La resoluci\u243?n normal de coopaeca.test no funcion\u243? en la \u250?ltima revisi\u243?n por falta de registro en hosts. Debe corregirse y repetirse la prueba desde el navegador. No se tomaron capturas formales de estas verificaciones: se incorporar\u225?n con el reloj visible. Tampoco se acreditaron env\u237?o de correo, integraciones externas, prueba de carga ni instalaci\u243?n Android.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 16)\par
+\pard\sl360\slmult1\sa120 Captura de PHPUnit con cuatro pruebas correctas y fecha/hora visible. Ejecutar: php vendor/bin/phpunit --configuration phpunit.xml.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 17)\par
+\pard\sl360\slmult1\sa120 Captura de navegaci\u243?n en coopaeca.test despu\u233?s de registrar el dominio, con fecha/hora visible. Mostrar inicio y acceso al panel.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 18)\par
+\pard\sl360\slmult1\sa120 Captura de una operaci\u243?n permitida y otra denegada por permisos, indicando el tipo de usuario de prueba.\par
+\pard\sl360\slmult1\sa120 \b 11. Medidas y contramedidas de seguridad\b0\par
+\pard\sl360\slmult1\sa120 El objetivo es reducir la probabilidad y el impacto de ataques. Ninguna lista de controles garantiza vulnerabilidad cero. Se documentan medidas presentes en el c\u243?digo y mejoras propuestas; su eficacia debe verificarse mediante pruebas. OWASP ASVS se propone como referencia de requisitos y verificaci\u243?n: https://owasp.org/projects/asvs.\par
+\pard\sl360\slmult1\sa120 \b 11.1. Medidas presentes en la implementaci\u243?n\b0\par
+\pard\sl360\slmult1\sa120 Autenticaci\u243?n y contrase\u241?as: AuthController utiliza password_verify y password_hash; se evita almacenar la contrase\u241?a en texto plano. La sesi\u243?n se regenera al iniciar sesi\u243?n. Verificar pol\u237?tica de contrase\u241?as y recuperaci\u243?n mediante pruebas.\par
+\pard\sl360\slmult1\sa120 Autorizaci\u243?n en el servidor: AuthMiddleware y PermissionMiddleware protegen rutas. El superadministrador tiene acceso general y otros usuarios se eval\u250?an mediante user_module_access. Ocultar opciones del men\u250? no reemplaza la comprobaci\u243?n del servidor.\par
+\pard\sl360\slmult1\sa120 Consultas parametrizadas: La conexi\u243?n PDO desactiva la emulaci\u243?n de preparaciones y el c\u243?digo utiliza prepare/execute para valores. Los identificadores SQL din\u225?micos, como columnas u ordenamientos, requieren listas permitidas; no se afirma que PDO asegure autom\u225?ticamente cualquier consulta.\par
+\pard\sl360\slmult1\sa120 Protecci\u243?n CSRF: Se genera un token aleatorio de sesi\u243?n y se compara con hash_equals. Las solicitudes modificadoras incorporan validaci\u243?n mediante middleware.\par
+\pard\sl360\slmult1\sa120 Sesiones y cookies: Se configuran HttpOnly, SameSite=Lax, modo estricto y cookies de sesi\u243?n. El atributo Secure depende de APP_SECURE_COOKIES; en el entorno HTTP local est\u225? desactivado y debe habilitarse junto con HTTPS en producci\u243?n.\par
+\pard\sl360\slmult1\sa120 Salida y contenido: La aplicaci\u243?n dispone del helper e() para escapar HTML y de la dependencia HTMLPurifier. Debe comprobarse el uso efectivo de escape o sanitizaci\u243?n en cada campo y contexto; instalar una biblioteca no prueba protecci\u243?n completa frente a XSS.\par
+\pard\sl360\slmult1\sa120 Limitaci\u243?n de intentos: RateLimitMiddleware limita acceso y otras operaciones; login usa cinco intentos por 60 segundos. El registro de intentos reside en la sesi\u243?n y combina una clave con la IP: iniciar otra sesi\u243?n puede eludir esa memoria, por lo que no es un bloqueo global por IP.\par
+\pard\sl360\slmult1\sa120 Cifrado de secretos de correo: app/Helpers/crypto.php utiliza libsodium y una clave definida en el entorno para cifrar credenciales de cuentas de correo. Esta clave no debe incluirse en el informe; su protecci\u243?n y respaldo son necesarios.\par
+\pard\sl360\slmult1\sa120 Documentos y archivos: SecureDocumentService comprueba rutas y tipo MIME de documentos privados. Las reglas .htaccess protegen ubicaciones sensibles y los directorios de documentos. Deben validarse tambi\u233?n los controladores de subida y las comprobaciones de propiedad/permisos por documento.\par
+\pard\sl360\slmult1\sa120 Configuraci\u243?n del servidor: El DocumentRoot local apunta a public. Se deshabilita el listado de directorios y se incorporan cabeceras como X-Frame-Options y X-Content-Type-Options. Los secretos de .env permanecen fuera del directorio p\u250?blico.\par
+\pard\sl360\slmult1\sa120 Transacciones y trazabilidad: Los servicios comerciales utilizan transacciones y bloqueos de filas para mantener consistencia; el sistema dispone de registros de actividad y errores. Se deben verificar cobertura de auditor\u237?a y ausencia de informaci\u243?n sensible en logs.\par
+\pard\sl360\slmult1\sa120 Cliente h\u237?brido y cach\u233?: Capacitor configura servidor HTTPS, cleartext=false, allowMixedContent=false y depuraci\u243?n WebView desactivada. La PWA limita la cach\u233? a recursos est\u225?ticos; revisar Service Worker y acceso offline como parte de las pruebas.\par
+\pard\sl360\slmult1\sa120 \b 11.2. Contramedidas adicionales propuestas\b0\par
+\pard\sl360\slmult1\sa120 Prioridad alta \u8212? despliegue: Forzar HTTPS, activar cookies Secure y desactivar APP_DEBUG en producci\u243?n; verificar certificado y errores gen\u233?ricos. Evidencia: inspecci\u243?n de configuraci\u243?n, cookies y respuesta ante fallo controlado.\par
+\pard\sl360\slmult1\sa120 Prioridad alta \u8212? privilegios de base: Crear usuario MySQL exclusivo del sistema con los privilegios m\u237?nimos. La cuenta local actual dispone de permisos amplios y no debe reutilizarse en producci\u243?n. Evidencia: revisar permisos del usuario dedicado.\par
+\pard\sl360\slmult1\sa120 Prioridad alta \u8212? ataques al acceso: Persistir l\u237?mites en base de datos o cach\u233? del servidor; combinar cuenta e IP, aplicar espera progresiva y alertas; incorporar MFA para cuentas privilegiadas. Evidencia: intentos desde sesiones distintas y acceso con segundo factor.\par
+\pard\sl360\slmult1\sa120 Prioridad alta \u8212? secretos y archivos: Rotar secretos si fueron expuestos, restringir lectura de .env y mantener credenciales fuera de repositorios y anexos. Endurecer subidas con tama\u241?o m\u225?ximo, tipos permitidos, nombres aleatorios y bloqueo de ejecuci\u243?n. Evidencia: archivos v\u225?lidos/ilegales y revisi\u243?n de permisos.\par
+\pard\sl360\slmult1\sa120 Prioridad alta \u8212? recuperaci\u243?n: Programar respaldos cifrados de base y archivos, guardar copia separada y realizar restauraci\u243?n de ensayo. Definir responsables, frecuencia y objetivos de recuperaci\u243?n. Evidencia: restauraci\u243?n y comparaci\u243?n de registros.\par
+\pard\sl360\slmult1\sa120 Prioridad media \u8212? XSS y superficie web: Revisar contextos de escape, sanitizaci\u243?n de HTML y enlaces; incorporar Content-Security-Policy tras evaluar recursos utilizados. Evidencia: casos XSS controlados y revisi\u243?n de cabeceras.\par
+\pard\sl360\slmult1\sa120 Prioridad media \u8212? dependencias: Auditar Composer y npm, evaluar avisos y actualizar componentes en una rama con pruebas. Evidencia: reporte de auditor\u237?a y regresi\u243?n posterior; la comprobaci\u243?n de plataforma no sustituye la auditor\u237?a.\par
+\pard\sl360\slmult1\sa120 Prioridad media \u8212? monitoreo e incidentes: Centralizar logs, alertar intentos repetidos y operaciones sensibles, definir procedimiento de contenci\u243?n, recuperaci\u243?n y revisi\u243?n de causas. Evidencia: simulaci\u243?n controlada de alerta y registro de respuesta.\par
+\pard\sl360\slmult1\sa120 Prioridad media \u8212? documentos y concurrencia: Comprobar autorizaci\u243?n por objeto en toda descarga y prevenir duplicaci\u243?n de operaciones sensibles mediante idempotencia cuando corresponda. Evidencia: cambio de identificadores, doble env\u237?o y operaci\u243?n simult\u225?nea.\par
+\pard\sl360\slmult1\sa120 Prioridad media \u8212? Android: Validar navegaci\u243?n permitida, enlaces externos, firma del paquete y configuraci\u243?n final de WebView; mantener el dispositivo y WebView actualizados. Evidencia: revisi\u243?n de paquete y pruebas en tel\u233?fono.\par
+\pard\sl360\slmult1\sa120 (AQUI VA CUADRO 6)\par
+\pard\sl360\slmult1\sa120 Matriz de riesgos: amenaza, activo, probabilidad, impacto, control actual, limitaci\u243?n, contramedida, responsable y prueba. Separar expresamente controles implementados de mejoras pendientes.\par
+\pard\sl360\slmult1\sa120 \b 12. Conclusiones\b0\par
+\pard\sl360\slmult1\sa120 1. COOPAECA integra difusi\u243?n institucional y administraci\u243?n comercial mediante una aplicaci\u243?n web. Su extensi\u243?n Android basada en Capacitor sustenta la clasificaci\u243?n h\u237?brida de la versi\u243?n m\u243?vil, mientras la ejecuci\u243?n en coopaeca.test corresponde al componente web.\par
+\pard\sl360\slmult1\sa120 2. La arquitectura cliente-servidor y la separaci\u243?n de rutas, controladores, servicios, vistas y persistencia permiten organizar la soluci\u243?n por m\u243?dulos. La integridad de inventario, pedidos y ventas necesita validaci\u243?n transaccional y de concurrencia, adem\u225?s de revisar pantallas.\par
+\pard\sl360\slmult1\sa120 3. La copia importada y las verificaciones locales aportan evidencia inicial de funcionamiento. Las cuatro pruebas unitarias tienen alcance limitado; faltan evidencias por m\u243?dulo, aceptaci\u243?n de usuarios y pruebas de Android, integraciones y desempe\u241?o.\par
+\pard\sl360\slmult1\sa120 4. Las medidas de autenticaci\u243?n, autorizaci\u243?n, CSRF, consultas parametrizadas, sesiones y cifrado reducen riesgos, pero requieren comprobaci\u243?n sistem\u225?tica. Se priorizan HTTPS productivo, m\u237?nimos privilegios, l\u237?mites persistentes, respaldo y protecci\u243?n de secretos.\par
+\pard\sl360\slmult1\sa120 5. El modelo de calidad propuesto vincula requisitos con m\u233?tricas y evidencias. La entrega acad\u233?mica debe completar diagramas, c\u243?digo y capturas con fecha y hora reales, y ajustar la metodolog\u237?a y cronograma al trabajo realizado por el equipo.\par
+\pard\sl360\slmult1\sa120 \b 13. Anexos\b0\par
+\pard\sl360\slmult1\sa120 \b Anexo A. C\u243?digo de implementaci\u243?n de cada m\u243?dulo\b0\par
+\pard\sl360\slmult1\sa120 Incorporar c\u243?digo real o extractos representativos con ruta de origen y explicaci\u243?n de su funci\u243?n. Si la consigna exige c\u243?digo completo, adjuntar los archivos de cada m\u243?dulo adem\u225?s de los extractos. No incluir .env, claves, contrase\u241?as, dumps con datos personales ni credenciales de correo.\par
+\pard\sl360\slmult1\sa120 A.1. Sitio p\u250?blico y compra\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DEL MODULO SITIO P\u218?BLICO Y COMPRA)\par
+\pard\sl360\slmult1\sa120 Archivos base: app/Controllers/LandingController.php; app/Controllers/CheckoutController.php. Incluir vistas relacionadas, registro de rutas y validaciones pertinentes. Explicar entradas, reglas, persistencia y respuesta.\par
+\pard\sl360\slmult1\sa120 A.2. Autenticaci\u243?n y perfil\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DEL MODULO AUTENTICACI\u211?N Y PERFIL)\par
+\pard\sl360\slmult1\sa120 Archivos base: app/Controllers/AuthController.php; app/Controllers/ProfileController.php; app/Helpers/auth.php. Incluir vistas relacionadas, registro de rutas y validaciones pertinentes. Explicar entradas, reglas, persistencia y respuesta.\par
+\pard\sl360\slmult1\sa120 A.3. Usuarios y permisos\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DEL MODULO USUARIOS Y PERMISOS)\par
+\pard\sl360\slmult1\sa120 Archivos base: app/Controllers/UserController.php; app/Helpers/auth.php. Incluir vistas relacionadas, registro de rutas y validaciones pertinentes. Explicar entradas, reglas, persistencia y respuesta.\par
+\pard\sl360\slmult1\sa120 A.4. Productos y medios de pago\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DEL MODULO PRODUCTOS Y MEDIOS DE PAGO)\par
+\pard\sl360\slmult1\sa120 Archivos base: app/Controllers/ProductController.php; app/Controllers/PaymentMethodController.php. Incluir vistas relacionadas, registro de rutas y validaciones pertinentes. Explicar entradas, reglas, persistencia y respuesta.\par
+\pard\sl360\slmult1\sa120 A.5. Pedidos\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DEL MODULO PEDIDOS)\par
+\pard\sl360\slmult1\sa120 Archivos base: app/Controllers/OrderController.php; app/Services/OrderService.php. Incluir vistas relacionadas, registro de rutas y validaciones pertinentes. Explicar entradas, reglas, persistencia y respuesta.\par
+\pard\sl360\slmult1\sa120 A.6. Ventas y comprobantes\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DEL MODULO VENTAS Y COMPROBANTES)\par
+\pard\sl360\slmult1\sa120 Archivos base: app/Controllers/SalesController.php; app/Services/SaleService.php; app/Services/ReceiptService.php. Incluir vistas relacionadas, registro de rutas y validaciones pertinentes. Explicar entradas, reglas, persistencia y respuesta.\par
+\pard\sl360\slmult1\sa120 A.7. Inventario\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DEL MODULO INVENTARIO)\par
+\pard\sl360\slmult1\sa120 Archivos base: app/Controllers/InventoryController.php; app/Services/InventoryService.php. Incluir vistas relacionadas, registro de rutas y validaciones pertinentes. Explicar entradas, reglas, persistencia y respuesta.\par
+\pard\sl360\slmult1\sa120 A.8. Publicaciones y servicios\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DEL MODULO PUBLICACIONES Y SERVICIOS)\par
+\pard\sl360\slmult1\sa120 Archivos base: app/Controllers/PostController.php; app/Controllers/ServiceController.php. Incluir vistas relacionadas, registro de rutas y validaciones pertinentes. Explicar entradas, reglas, persistencia y respuesta.\par
+\pard\sl360\slmult1\sa120 A.9. Galer\u237?as, sliders y archivos\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DEL MODULO GALER\u205?AS, SLIDERS Y ARCHIVOS)\par
+\pard\sl360\slmult1\sa120 Archivos base: app/Controllers/GalleryController.php; app/Controllers/SliderController.php; app/Controllers/MediaController.php. Incluir vistas relacionadas, registro de rutas y validaciones pertinentes. Explicar entradas, reglas, persistencia y respuesta.\par
+\pard\sl360\slmult1\sa120 A.10. Contactos y correo\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DEL MODULO CONTACTOS Y CORREO)\par
+\pard\sl360\slmult1\sa120 Archivos base: app/Controllers/ContactController.php; app/Controllers/Mail/; app/Services/ImapService.php; app/Services/SmtpService.php. Incluir vistas relacionadas, registro de rutas y validaciones pertinentes. Explicar entradas, reglas, persistencia y respuesta.\par
+\pard\sl360\slmult1\sa120 A.11. Configuraci\u243?n y presentaci\u243?n institucional\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DEL MODULO CONFIGURACI\u211?N Y PRESENTACI\u211?N INSTITUCIONAL)\par
+\pard\sl360\slmult1\sa120 Archivos base: app/Controllers/SettingsController.php; app/Controllers/AboutController.php; app/Controllers/SocialNetworkController.php; app/Controllers/DashboardController.php. Incluir vistas relacionadas, registro de rutas y validaciones pertinentes. Explicar entradas, reglas, persistencia y respuesta.\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DEL CONTENEDOR ANDROID Y LA PWA)\par
+\pard\sl360\slmult1\sa120 Incluir capacitor.config.json, public/manifest.webmanifest, public/sw.js y public/assets/js/pwa.js. Explicar servidor remoto, controles de WebView, alcance de cach\u233? y dependencia de conectividad.\par
+\pard\sl360\slmult1\sa120 \b Anexo B. C\u243?digo de conexi\u243?n a la base de datos\b0\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DE CONEXION A LA BASE DE DATOS)\par
+\pard\sl360\slmult1\sa120 Incluir app/Core/Database.php y app/Config/database.php. Explicar DSN MySQL, charset utf8mb4, credenciales mediante variables de entorno, PDO::ERRMODE_EXCEPTION, FETCH_ASSOC y ATTR_EMULATE_PREPARES=false. No copiar valores secretos; usar ejemplos ficticios.\par
+\pard\sl360\slmult1\sa120 (AQUI VA CODIGO DE UNA CONSULTA PARAMETRIZADA Y UNA TRANSACCION)\par
+\pard\sl360\slmult1\sa120 Seleccionar ejemplos reales de OrderService, SaleService o InventoryService; explicar prepare/execute, beginTransaction, commit/rollback y bloqueo FOR UPDATE. Documentar por qu\u233? deben ejecutarse como una unidad consistente.\par
+\pard\sl360\slmult1\sa120 \b Anexo C. Capturas de pruebas por m\u243?dulo\b0\par
+\pard\sl360\slmult1\sa120 Todas las pruebas siguientes requieren fecha y hora del computador visibles. No presentar marcadores como evidencia completada. Si una prueba falla, registrar el fallo, la correcci\u243?n y la nueva ejecuci\u243?n.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 19)\par
+\pard\sl360\slmult1\sa120 Evidencia PV-01, m\u243?dulo Sitio p\u250?blico y compra: Abrir cat\u225?logo, seleccionar producto, registrar pedido de prueba y comprobar confirmaci\u243?n. Registrar esperado, observado, estado, fecha/hora y datos ficticios usados.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 20)\par
+\pard\sl360\slmult1\sa120 Evidencia PV-02, m\u243?dulo Autenticaci\u243?n y perfil: Probar credenciales v\u225?lidas e inv\u225?lidas y comprobar que una ruta privada no abre sin sesi\u243?n. Registrar esperado, observado, estado, fecha/hora y datos ficticios usados.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 21)\par
+\pard\sl360\slmult1\sa120 Evidencia PV-03, m\u243?dulo Usuarios y permisos: Asignar acceso a un m\u243?dulo a una cuenta de prueba y contrastar acceso permitido y denegado. Registrar esperado, observado, estado, fecha/hora y datos ficticios usados.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 22)\par
+\pard\sl360\slmult1\sa120 Evidencia PV-04, m\u243?dulo Productos y medios de pago: Registrar y editar producto de prueba; validar precio, datos obligatorios y presentaci\u243?n del medio de pago. Registrar esperado, observado, estado, fecha/hora y datos ficticios usados.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 23)\par
+\pard\sl360\slmult1\sa120 Evidencia PV-05, m\u243?dulo Pedidos: Registrar pedido, revisar detalle y probar aprobaci\u243?n/rechazo en una copia de pruebas; verificar estado e inventario. Registrar esperado, observado, estado, fecha/hora y datos ficticios usados.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 24)\par
+\pard\sl360\slmult1\sa120 Evidencia PV-06, m\u243?dulo Ventas y comprobantes: Crear venta con stock disponible, verificar total y documento; cancelar y comprobar restituci\u243?n conforme a la regla implementada. Registrar esperado, observado, estado, fecha/hora y datos ficticios usados.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 25)\par
+\pard\sl360\slmult1\sa120 Evidencia PV-07, m\u243?dulo Inventario: Comparar existencias antes/despu\u233?s de una operaci\u243?n; intentar cantidad superior al disponible y comprobar consistencia. Registrar esperado, observado, estado, fecha/hora y datos ficticios usados.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 26)\par
+\pard\sl360\slmult1\sa120 Evidencia PV-08, m\u243?dulo Publicaciones y servicios: Publicar contenido de prueba, comprobar visualizaci\u243?n p\u250?blica y validar entradas inv\u225?lidas. Registrar esperado, observado, estado, fecha/hora y datos ficticios usados.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 27)\par
+\pard\sl360\slmult1\sa120 Evidencia PV-09, m\u243?dulo Galer\u237?as, sliders y archivos: Subir imagen permitida, comprobar presentaci\u243?n e intentar archivo no permitido en el entorno de pruebas. Registrar esperado, observado, estado, fecha/hora y datos ficticios usados.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 28)\par
+\pard\sl360\slmult1\sa120 Evidencia PV-10, m\u243?dulo Contactos y correo: Registrar consulta local y comprobar su almacenamiento; probar correo \u250?nicamente con cuenta de pruebas y servicio autorizado. Registrar esperado, observado, estado, fecha/hora y datos ficticios usados.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 29)\par
+\pard\sl360\slmult1\sa120 Evidencia PV-11, m\u243?dulo Configuraci\u243?n y presentaci\u243?n institucional: Cambiar un valor en la copia de pruebas y comprobar su efecto en la interfaz; verificar restricciones de acceso. Registrar esperado, observado, estado, fecha/hora y datos ficticios usados.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 30)\par
+\pard\sl360\slmult1\sa120 Pruebas de seguridad: CSRF, permisos, l\u237?mite de intentos y archivos no permitidos; agregar capturas separadas identificadas por ID de prueba.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 31)\par
+\pard\sl360\slmult1\sa120 Pruebas de integridad: concurrencia, rollback y restauraci\u243?n; mostrar resultados relevantes con reloj visible.\par
+\pard\sl360\slmult1\sa120 (AQUI VA IMAGEN 32)\par
+\pard\sl360\slmult1\sa120 Pruebas Android/PWA: instalaci\u243?n, navegaci\u243?n y ausencia de conexi\u243?n. Mantener fecha/hora visible en el tel\u233?fono y/o computador seg\u250?n la exigencia del docente.\par
+\pard\sl360\slmult1\sa120 \b Anexo D. Ficha de registro de evidencia\b0\par
+\pard\sl360\slmult1\sa120 ID de prueba: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 M\u243?dulo y requisito: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Versi\u243?n y ambiente: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Usuario de prueba y permisos: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Precondiciones y datos: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Pasos ejecutados: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Resultado esperado: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Resultado observado: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Estado: aprobado/fallido/pendiente: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Fecha y hora del computador: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Nombre de captura: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 Incidencia y nueva ejecuci\u243?n: [COMPLETAR]\par
+\pard\sl360\slmult1\sa120 \b Anexo E. Referencias\b0\par
+\pard\sl360\slmult1\sa120 ISO. ISO/IEC 25010:2023. Systems and software engineering \u8212? SQuaRE \u8212? Product quality model. https://www.iso.org/standard/78176.html. Consultado el 7 de octubre de 2026.\par
+\pard\sl360\slmult1\sa120 OWASP Foundation. Application Security Verification Standard (ASVS). https://owasp.org/projects/asvs. Consultado el 7 de octubre de 2026.\par
+\pard\sl360\slmult1\sa120 Repositorio COOPAECA. C\u243?digo, configuraci\u243?n y esquema revisados: README.md; docs/PWA_CAPACITOR_ANDROID.md; public/index.php; app/Core/Database.php; app/Helpers/auth.php; app/Helpers/security.php; app/Helpers/crypto.php; app/Services; tests/Unit; capacitor.config.json; dashboard_base.sql. Evidencia primaria del proyecto local.\par
+}

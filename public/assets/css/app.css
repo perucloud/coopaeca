@@ -3271,20 +3271,28 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
   .dashboard-desktop { display: none; }
   .dashboard-mobile {
     display: grid;
-    gap: 16px;
-    background: #eef1f5;
-    border-radius: 8px;
-    padding: 18px;
-    margin: -2px 0 4px;
+    gap: 22px;
+    background: linear-gradient(145deg, #f8fbff 0%, #edf3fb 100%);
+    border-radius: 18px;
+    padding: 26px 22px;
+    margin: -2px 0 8px;
+  }
+  .dashboard-mobile-head .eyebrow {
+    color: #0868e8;
+    font-size: 12px;
+    letter-spacing: .13em;
   }
   .dashboard-mobile-head h2 {
-    margin: 5px 0 4px;
-    font-size: 24px;
+    margin: 7px 0 8px;
+    font-size: 34px;
+    line-height: 1.05;
+    letter-spacing: -.03em;
   }
   .dashboard-mobile-head p {
     margin: 0;
     color: var(--muted);
-    line-height: 1.5;
+    font-size: 16px;
+    line-height: 1.45;
   }
   .dashboard-mobile-grid {
     display: grid;
@@ -3292,69 +3300,98 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spa
     gap: 12px;
   }
   .dashboard-mobile-card {
-    min-height: 132px;
+    min-height: 178px;
+    position: relative;
+    overflow: hidden;
     display: grid;
-    align-content: center;
-    justify-items: center;
-    gap: 8px;
-    text-align: center;
-    border: 1px solid #dfe5ed;
-    border-radius: 8px;
-    background: #fff;
-    color: var(--text);
-    padding: 16px 10px;
-    box-shadow: 0 8px 20px rgba(20,32,52,.06);
+    grid-template-rows: 1fr auto auto;
+    align-content: stretch;
+    justify-items: start;
+    gap: 4px;
+    text-align: left;
+    border: 0;
+    border-radius: 20px;
+    color: #fff;
+    padding: 18px;
+    box-shadow: 0 14px 28px rgba(20,48,92,.16);
+    transition: transform .15s ease, box-shadow .15s ease;
   }
-  .dashboard-mobile-card span {
-    width: 48px;
-    height: 48px;
+  .dashboard-mobile-card:active { transform: scale(.98); }
+  .dashboard-mobile-card .dashboard-mobile-card-icon {
+    width: 68px;
+    height: 68px;
     display: grid;
     place-items: center;
-    border-radius: 8px;
-    background: #f1f5f9;
-    color: var(--primary);
+    border-radius: 50%;
+    background: rgba(255,255,255,.18);
+    color: #fff;
   }
-  .dashboard-mobile-card span .icon {
-    width: 24px;
-    height: 24px;
+  .dashboard-mobile-card .dashboard-mobile-card-icon .icon {
+    width: 34px;
+    height: 34px;
+    stroke-width: 2.2;
+  }
+  .dashboard-mobile-card .dashboard-mobile-card-arrow {
+    position: absolute;
+    top: 28px;
+    right: 18px;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,.16);
+  }
+  .dashboard-mobile-card-arrow .icon {
+    width: 21px;
+    height: 21px;
+    stroke-width: 3;
   }
   .dashboard-mobile-card strong {
-    font-size: 14px;
-    line-height: 1.2;
+    font-size: 20px;
+    line-height: 1.15;
+    letter-spacing: -.02em;
   }
   .dashboard-mobile-card small {
-    color: var(--muted);
-    font-size: 11.5px;
+    color: rgba(255,255,255,.9);
+    font-size: 14px;
     line-height: 1.3;
   }
+  .dashboard-mobile-card.mobile-card-summary { background: linear-gradient(135deg, #0877f9, #0064e9); }
+  .dashboard-mobile-card.mobile-card-content { background: linear-gradient(135deg, #8129ec, #6416e8); }
+  .dashboard-mobile-card.mobile-card-commerce { background: linear-gradient(135deg, #10bd62, #049746); }
+  .dashboard-mobile-card.mobile-card-inventory { background: linear-gradient(135deg, #ff7814, #ff5a05); }
+  .dashboard-mobile-card.mobile-card-communication { background: linear-gradient(135deg, #1ca9ff, #078cf1); }
+  .dashboard-mobile-card.mobile-card-admin { background: linear-gradient(135deg, #47566a, #263445); }
   [data-theme="dark"] .dashboard-mobile {
     background: #111827;
   }
   [data-theme="dark"] .dashboard-mobile-card {
-    background: var(--panel);
-    border-color: var(--line);
-  }
-  [data-theme="dark"] .dashboard-mobile-card span {
-    background: #1e3a5f;
+    color: #fff;
   }
 }
 
 @media (max-width: 520px) {
   .dashboard-mobile {
-    padding: 14px;
+    padding: 22px 14px;
+    border-radius: 14px;
   }
   .dashboard-mobile-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
   .dashboard-mobile-card {
-    min-height: 118px;
-    padding: 14px 8px;
+    min-height: 148px;
+    padding: 15px;
+    border-radius: 16px;
   }
-  .dashboard-mobile-card span { width: 42px; height: 42px; }
-  .dashboard-mobile-card span .icon { width: 21px; height: 21px; }
-  .dashboard-mobile-card strong { font-size: 13px; }
-  .dashboard-mobile-card small { font-size: 10.5px; }
+  .dashboard-mobile-head h2 { font-size: 30px; }
+  .dashboard-mobile-head p { font-size: 14px; }
+  .dashboard-mobile-card .dashboard-mobile-card-icon { width: 58px; height: 58px; }
+  .dashboard-mobile-card .dashboard-mobile-card-icon .icon { width: 29px; height: 29px; }
+  .dashboard-mobile-card .dashboard-mobile-card-arrow { top: 23px; right: 14px; width: 34px; height: 34px; }
+  .dashboard-mobile-card strong { font-size: 17px; }
+  .dashboard-mobile-card small { font-size: 12px; }
 }
 
 /* Panel rapido movil: tarjetas con tinte pastel distintivo por modulo,

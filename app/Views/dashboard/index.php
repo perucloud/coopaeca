@@ -28,6 +28,43 @@ $quickLinks = [
     ['perm' => 'settings',        'url' => '/settings',           'icon' => 'settings', 'label' => 'Configuracion', 'hint' => 'Parametros generales', 'color' => 'config'],
 ];
 $quickLinks = array_values(array_filter($quickLinks, fn ($link) => can($link['perm'])));
+
+// El inicio movil agrupa los modulos en seis areas para ofrecer una navegacion
+// mas clara. Cada tarjeta usa el primer destino que el usuario puede consultar.
+$mobileGroups = [
+    ['perms' => [],                                           'url' => '/dashboard',       'icon' => 'bar-chart',      'color' => 'summary',       'label' => 'Resumen',        'hint' => 'Panel general'],
+    ['perms' => ['posts', 'pages', 'services', 'galleries'],  'url' => '/posts',           'icon' => 'file-text',      'color' => 'content',       'label' => 'Contenido',      'hint' => 'Noticias y paginas'],
+    ['perms' => ['products', 'orders', 'sales'],              'url' => '/products',        'icon' => 'shopping-cart',  'color' => 'commerce',      'label' => 'Comercio',       'hint' => 'Productos y ventas'],
+    ['perms' => ['inventory'],                                'url' => '/inventory',       'icon' => 'package',        'color' => 'inventory',     'label' => 'Inventario',     'hint' => 'Stock y control'],
+    ['perms' => ['contacts', 'social_networks'],              'url' => '/contacts',        'icon' => 'message-circle', 'color' => 'communication', 'label' => 'Comunicacion',   'hint' => 'Mensajes y redes'],
+    ['perms' => ['users', 'settings'],                        'url' => '/settings',        'icon' => 'settings',       'color' => 'admin',         'label' => 'Administracion', 'hint' => 'Usuarios y ajustes'],
+];
+
+foreach ($mobileGroups as &$group) {
+    if (!$group['perms']) continue;
+
+    $allowedPermission = null;
+    foreach ($group['perms'] as $permission) {
+        if (can($permission)) {
+            $allowedPermission = $permission;
+            break;
+        }
+    }
+    $group['allowed'] = $allowedPermission !== null;
+
+    // Si el destino principal no esta permitido, dirigir a la primera opcion
+    // disponible dentro del mismo grupo.
+    $fallbacks = [
+        'pages' => '/about', 'services' => '/services', 'galleries' => '/galleries',
+        'orders' => '/orders', 'sales' => '/sales', 'social_networks' => '/social-networks',
+        'users' => '/users',
+    ];
+    if ($allowedPermission !== null && !can(ltrim(explode('/', $group['url'])[1] ?? '', '/'))) {
+        $group['url'] = $fallbacks[$allowedPermission] ?? $group['url'];
+    }
+}
+unset($group);
+$mobileGroups = array_values(array_filter($mobileGroups, fn ($group) => ($group['allowed'] ?? true)));
 $visibleLatestContents = array_values(array_filter($latestContents ?? [], fn ($item) => can($item['permission'])));
 
 // En escritorio, "Accesos rapidos" solo debe listar modulos que NO ya tienen su propia
@@ -355,11 +392,12 @@ $statusClass = function (?string $status): string {
     </div>
 
     <div class="dashboard-mobile-grid">
-        <?php foreach ($quickLinks as $link): ?>
-            <a class="dashboard-mobile-card qc-<?= e($link['color']) ?>" href="<?= e(url($link['url'])) ?>">
-                <span><?= icon($link['icon']) ?></span>
-                <strong><?= e($link['label']) ?></strong>
-                <small><?= e($link['hint']) ?></small>
+        <?php foreach ($mobileGroups as $group): ?>
+            <a class="dashboard-mobile-card mobile-card-<?= e($group['color']) ?>" href="<?= e(url($group['url'])) ?>">
+                <span class="dashboard-mobile-card-icon"><?= icon($group['icon']) ?></span>
+                <span class="dashboard-mobile-card-arrow"><?= icon('chevron-right') ?></span>
+                <strong><?= e($group['label']) ?></strong>
+                <small><?= e($group['hint']) ?></small>
             </a>
         <?php endforeach; ?>
     </div>

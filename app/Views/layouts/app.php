@@ -4,7 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
+    <meta name="theme-color" content="#004d2e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title><?= e($title ?? dashboard_name()) ?> - <?= e(dashboard_name()) ?></title>
+    <link rel="manifest" href="<?= e(url('/manifest.webmanifest')) ?>">
+    <link rel="apple-touch-icon" href="<?= e(url('/assets/icons/pwa-192.png')) ?>">
     <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>">
 </head>
 <body data-orders-pending-url="<?= e(url('/orders/pending-count')) ?>">
@@ -327,5 +333,6 @@ foreach ($mobileNavCandidatos as [$mod, $path, $ic, $label]) {
 </nav>
 
 <script src="<?= e(asset('js/app.js')) ?>"></script>
+<script src="<?= e(asset('js/pwa.js')) ?>"></script>
 </body>
 </html>

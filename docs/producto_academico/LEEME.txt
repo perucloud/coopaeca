@@ -1,0 +1,1 @@
+Documento editable en Arial 12. Completar portada, marcadores y evidencias. Si la universidad exige .doc: abrir el .docx en Microsoft Word, Archivo > Guardar como > Documento de Word 97-2003 (*.doc). Cambiar Apellido1_Apellido2_Apellido3 por los apellidos reales. No se ha renombrado un formato distinto como .doc. Se incluye una alternativa RTF compatible con Word.

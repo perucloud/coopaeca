@@ -1,0 +1,18 @@
+{
+  "appId": "com.ccopaeca.app",
+  "appName": "COOPAECA",
+  "webDir": "mobile/www",
+  "server": {
+    "url": "https://coopaeca.org.pe/dashboard",
+    "cleartext": false,
+    "allowNavigation": [
+      "coopaeca.org.pe",
+      "www.coopaeca.org.pe"
+    ]
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  }
+}
